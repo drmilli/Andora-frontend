@@ -5,7 +5,6 @@ import InfluencerProfile from "./influencer/InfluencerProfile";
 import InfluencerJobs from "../dashboard_pages/influencer/InfluencerJobs";
 import InfluencerWallet from "./influencer/InfluencerWallet";
 
-
 import {
   ArrowUpRight,
   FileText,
@@ -33,6 +32,11 @@ import StationNotificationsDetail from "./station/StationNotificationsDetail";
 import StationJobs from "./station/StationJobs";
 import StationPricing from "./station/StationPricing";
 import StationProfile from "./station/StationProfile";
+import AdminDashboard from "./admin/AdminDashboard";
+import AdminNotifications from "./admin/AdminNotifications";
+import AdminNotificationsDetails from "./admin/AdminNotificationsDetails";
+import AdminWallet from "./admin/AdminWallet";
+import AdminProfile from "./admin/AdminProfile";
 
 /**
  * Dashboard index page (restored from original design)
@@ -445,20 +449,29 @@ export const DASHBOARD_ROUTES = [
   { path: "jobs", element: <JobsPage /> },
   { path: "wallet", element: <WalletPage /> },
   { path: "profile", element: <ProfilePage /> },
-   { path: "influencerboard", element: <InfluencerDashboard/> },
-    { path: "influencernotifications", element: <InfluencerNotifications/> },
-   { path: "influencerjobs", element: <InfluencerJobs/> },
-      { path: "influencerprofile", element: <InfluencerProfile/> },
-         { path: "influencerwallets", element: <InfluencerWallet/> },
-        //  notifcation page detail route
-        {path: "influencernotifications/:id", element: <InfluencerNotificationsDetail/>},
-        //station routes can be added here later
-        {path:"stationboard", element: <StationDashboard/> },
-        {path:"stationnotification", element: <StationNotifications/> },
-        {path:"stationnotification/:id", element: <StationNotificationsDetail/> },
-        {path:"stationprofile", element: <StationProfile/> },
-         {path:"stationjobs", element: <StationJobs/> },
-          {path:"stationpricing", element: <StationPricing/> },
+  { path: "influencerboard", element: <InfluencerDashboard /> },
+  { path: "influencernotifications", element: <InfluencerNotifications /> },
+  { path: "influencerjobs", element: <InfluencerJobs /> },
+  { path: "influencerprofile", element: <InfluencerProfile /> },
+  { path: "influencerwallets", element: <InfluencerWallet /> },
+  //  notifcation page detail route
+  {
+    path: "influencernotifications/:id",
+    element: <InfluencerNotificationsDetail />,
+  },
+  //station routes can be added here later
+  { path: "stationboard", element: <StationDashboard /> },
+  { path: "stationnotification", element: <StationNotifications /> },
+  { path: "stationnotification/:id", element: <StationNotificationsDetail /> },
+  { path: "stationprofile", element: <StationProfile /> },
+  { path: "stationjobs", element: <StationJobs /> },
+  { path: "stationpricing", element: <StationPricing /> },
+  //admin routes can be added here later
+    { path: "adminboard", element: <AdminDashboard /> },
+    { path: "adminnotification", element: <AdminNotifications /> },
+    { path: "adminnotification/:id", element: <AdminNotificationsDetails /> },
+    { path: "adminwallets", element: <AdminWallet/> },
+    { path: "adminprofile", element: <AdminProfile/> },
 
 ];
 

@@ -1,31 +1,33 @@
 
 import { Card, CardContent } from '@/components/ui/card';
-import { Ellipsis, Triangle } from 'lucide-react';
-import { ChartLineLinear } from '@/components/charts/ChartLineLinear';
+
+import {  Ellipsis, Triangle } from 'lucide-react';
+import { AdminChartLineLinear } from '@/components/charts/admin/AdminChartLineLinear';
+
 
 const statistics = [
-  { label: 'Received Jobs', value: '123,456', rate: '+5.4%' },
-  { label: 'New Jobs', value: '567,890', rate: '+2.1%' },
-  { label: 'Pending Jobs', value: '123,456', rate: '+3.2%' },
-  { label: 'Completed Jobs', value: '78,910', rate: '+4.5%' },
+  { label: 'Artists', value: '900,456,000', rate: '75%' },
+  { label: 'Influencers', value: '23,456', rate: '75%' },
+  { label: 'Radios', value: '34,456', rate: '75%' },
+  { label: 'TV Stations', value: '1,234', rate: '75%' },
+  { label: 'Audio Uploads', value: '12,123,456', rate: '75%' },
+  { label: ' Video Uploads', value: '1,123,456', rate: '75%' } 
 ];
 const overalls = [
-  { label: 'Total Made', value: '900,456,000', rate: '+5.4%' },
-  { label: 'Disputes', value: '567,890', rate: '+2.1%' },
-  { label: 'Presenters', value: '123,456', rate: '+3.2%' },
+  { label: 'Received Jobs', value: '123,456', rate: '75%' },
+  { label: 'Pending Jobs', value: '123,456', rate: '75%' },
+  { label: 'Completed Jobs', value: '123,456', rate: '75%' },
+   { label: 'Disputes', value: '3,456', rate: '75%' },
 ];
-
-function StationDashboard() {
+function AdminDashboard() {
   return (
-    <div>
-      {' '}
-      <div>
+    <div>   <div>
         <div>
           <h1>Hello,Issac</h1>
         </div>
         <div className="flex w-full max-w-full lg:max-w-sm flex-col gap-6 mt-10">
           <div>
-            <Card className="bg-transparent border-0 w-full lg:w-[1032px]  grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 ">
+            <Card className="bg-transparent border-0 w-full lg:w-[1032px]  grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ">
               {statistics.map((stat, index) => (
                 <CardContent
                   key={index}
@@ -64,7 +66,7 @@ function StationDashboard() {
                 </CardContent>
               ))}
             </Card>
-            <Card className="bg-transparent border-0 w-full lg:w-[1032px]  grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ">
+            <Card className="bg-transparent border-0 w-full lg:w-[1032px]  grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 ">
               {overalls.map((overall, index) => (
                 <CardContent
                   key={index}
@@ -104,13 +106,12 @@ function StationDashboard() {
               ))}
             </Card>
             <div>
-              <ChartLineLinear/>
+              <AdminChartLineLinear/>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
+      </div></div>
+  )
 }
 
-export default StationDashboard;
+export default AdminDashboard

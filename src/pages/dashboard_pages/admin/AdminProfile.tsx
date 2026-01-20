@@ -8,8 +8,10 @@ import { Plus, } from "lucide-react";
 
 const tabs = [{ value: "Info" }, { value: "Edit" }];
 
-function StationProfile() {
-  const [banner, setBanner] = useState<string | null>(null);
+
+
+function AdminProfile() {
+      const [banner, setBanner] = useState<string | null>(null);
   const [profile, setProfile] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -257,7 +259,7 @@ function StationProfile() {
         </Tabs>
       </div>
     </div>
-  );
+  )
 }
 
-export default StationProfile;
+export default AdminProfile

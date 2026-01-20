@@ -17,7 +17,8 @@ import {
 } from "@/components/ui/carousel";
 
 import { Download,  NotebookPen } from "lucide-react";
-function InfluencerWallet() {
+
+function AdminWallet() {
   const summaries = [
     {
       id: 1,
@@ -99,8 +100,9 @@ function InfluencerWallet() {
     }
   };
 
+
   return (
-    <div>
+   <div>
 <div className="">
   <Carousel>
     <CarouselContent>
@@ -331,7 +333,7 @@ function InfluencerWallet() {
 
       </div>
     </div>
-  );
+  )
 }
 
-export default InfluencerWallet;
+export default AdminWallet
