@@ -1,95 +1,95 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Check, X } from 'lucide-react';
-import DayTab from '@/components/tabs/DayTab';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Check, X } from "lucide-react";
+import DayTab from "@/components/tabs/DayTab";
 
 const tabs = [
-  { value: 'General' },
-  { value: 'Presenter' },
-  { value: 'Interviewer' },
+  { value: "General" },
+  { value: "Presenter" },
+  { value: "Interviewer" },
 ];
 
 const subtabs = [
-  { value: 'Presenters' },
-  { value: 'Pricing' },
-  { value: 'Roasters' },
+  { value: "Presenters" },
+  { value: "Pricing" },
+  { value: "Roasters" },
 ];
 
 const days = [
-  { value: 'Mon' },
-  { value: 'Tue' },
-  { value: 'Wed' },
-  { value: 'Thur' },
-  { value: 'Fri' },
-  { value: 'Sat' },
-  { value: 'Sun' },
+  { value: "Mon" },
+  { value: "Tue" },
+  { value: "Wed" },
+  { value: "Thur" },
+  { value: "Fri" },
+  { value: "Sat" },
+  { value: "Sun" },
 ];
 type UserType = {
-    id: number,
-    name: string,
-    image: string,
-    status: string,
-    price:string,
-    starttime:string,
-    endtime: string,
+  id: number;
+  name: string;
+  image: string;
+  status: string;
+  price: string;
+  starttime: string;
+  endtime: string;
 };
-const interviewers: UserType =[
+const interviewers: UserType = [
   {
     id: 1,
-    name: 'Mathew Steven',
-    image: '/images/presenters/mathew-steven.jpg',
-    status: 'approved',
-    price: '95,000',
-    starttime: '02:00',
-    endtime: '06:20',
+    name: "Mathew Steven",
+    image: "/images/presenters/mathew-steven.jpg",
+    status: "approved",
+    price: "95,000",
+    starttime: "02:00",
+    endtime: "06:20",
   },
   {
     id: 2,
-    name: 'Bola Ahmed',
-    image: '/images/presenters/bola-ahmed.jpg',
-    status: 'pending',
-    price: '15,000',
-    starttime: '04:40',
-    endtime: '06:20',
+    name: "Bola Ahmed",
+    image: "/images/presenters/bola-ahmed.jpg",
+    status: "pending",
+    price: "15,000",
+    starttime: "04:40",
+    endtime: "06:20",
   },
   {
     id: 3,
-    name: 'Tunde Fatai',
-    image: '/images/presenters/tunde-fatai.jpg',
-    status: 'approved',
-    price: '45,000',
-    starttime: '02:50',
-    endtime: '07:20',
+    name: "Tunde Fatai",
+    image: "/images/presenters/tunde-fatai.jpg",
+    status: "approved",
+    price: "45,000",
+    starttime: "02:50",
+    endtime: "07:20",
   },
   {
     id: 4,
-    name: 'Ijeoma Blessing',
-    image: '/images/presenters/ijeoma-blessing.jpg',
-    status: 'pending',
-    price: '65,000',
-    starttime: '03:30',
-    endtime: '06:20',
+    name: "Ijeoma Blessing",
+    image: "/images/presenters/ijeoma-blessing.jpg",
+    status: "pending",
+    price: "65,000",
+    starttime: "03:30",
+    endtime: "06:20",
   },
   {
     id: 5,
-    name: 'Okoro Samuel',
-    image: '/images/presenters/okoro-samuel.jpg',
-    status: 'approved',
-    price: '95,030',
-    starttime: '12:00',
-    endtime: '01:20',
+    name: "Okoro Samuel",
+    image: "/images/presenters/okoro-samuel.jpg",
+    status: "approved",
+    price: "95,030",
+    starttime: "12:00",
+    endtime: "01:20",
   },
   {
     id: 6,
-    name: 'Habib Musa',
-    image: '/images/presenters/habib-musa.jpg',
-    status: 'pending',
-    price: '1,00,000',
-    starttime: '08:00',
-    endtime: '10:20',
+    name: "Habib Musa",
+    image: "/images/presenters/habib-musa.jpg",
+    status: "pending",
+    price: "1,00,000",
+    starttime: "08:00",
+    endtime: "10:20",
   },
 ];
 type FormDataType = {
@@ -107,17 +107,17 @@ function StationPricing() {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   const [formData, setFormData] = useState<FormDataType>({
-    accountname: '',
-    accountnumber: '',
-    bankname: '',
-    pricing: '',
-    presenting: '',
-    interview: '',
-    user: Array(interviewers.length).fill(''),
-    interviewerprice: Array(interviewers.length).fill(''),
+    accountname: "",
+    accountnumber: "",
+    bankname: "",
+    pricing: "",
+    presenting: "",
+    interview: "",
+    user: Array(interviewers.length).fill(""),
+    interviewerprice: Array(interviewers.length).fill(""),
   });
   function handlecancel(key: string) {
-    setFormData({ ...formData, [key]: '' });
+    setFormData({ ...formData, [key]: "" });
     console.log(formData.user);
   }
   //for changing interviwers profile
@@ -141,9 +141,9 @@ function StationPricing() {
   const handleUserCancel = (index: number) => {
     const check = setFormData({
       ...formData,
-      user: formData.user.map((user, i) => (i === index ? '' : user)),
+      user: formData.user.map((user, i) => (i === index ? "" : user)),
       interviewerprice: formData.interviewerprice.map((user, i) =>
-        i === index ? '' : user
+        i === index ? "" : user,
       ),
     });
     setEditingIndex(null);
@@ -171,18 +171,18 @@ function StationPricing() {
                   className="border border-gray-600  rounded px-4 py-2 w-[308px]"
                 />
               </div>
-              {formData.accountnumber.trim() !== '' && (
+              {formData.accountnumber.trim() !== "" && (
                 <div className="flex gap-4">
                   <div className="w-[45px] h-[45px] bg-[#00A861]  py-2 rounded-lg">
                     <Check className="text-center m-auto" />
                   </div>
                   <div
                     className="w-[45px] h-[45px] bg-[#C8170D]  py-2 rounded-lg"
-                    onClick={() => handlecancel('accountnumber')}
+                    onClick={() => handlecancel("accountnumber")}
                   >
                     <X
                       className="text-center m-auto"
-                      onClick={() => handlecancel('accountnumber')}
+                      onClick={() => handlecancel("accountnumber")}
                     />
                   </div>
                 </div>
@@ -202,7 +202,7 @@ function StationPricing() {
                   }
                 />
               </div>
-              {formData.accountname.trim() !== '' && (
+              {formData.accountname.trim() !== "" && (
                 <div className="flex gap-4">
                   <div className="w-[45px] h-[45px] bg-[#00A861]  py-2 rounded-lg">
                     <Check className="text-center m-auto" />
@@ -210,7 +210,7 @@ function StationPricing() {
                   <div className="w-[45px] h-[45px] bg-[#C8170D]  py-2 rounded-lg">
                     <X
                       className="text-center m-auto"
-                      onClick={() => handlecancel('accountname')}
+                      onClick={() => handlecancel("accountname")}
                     />
                   </div>
                 </div>
@@ -230,7 +230,7 @@ function StationPricing() {
                   }
                 />
               </div>
-              {formData.bankname.trim() !== '' && (
+              {formData.bankname.trim() !== "" && (
                 <div className="flex gap-4 animate-out transition-discrete ease-in-out">
                   <div className="w-[45px] h-[45px] bg-[#00A861]  py-2 rounded-lg">
                     <Check className="text-center m-auto" />
@@ -238,7 +238,7 @@ function StationPricing() {
                   <div className="w-[45px] h-[45px] bg-[#C8170D]  py-2 rounded-lg">
                     <X
                       className="text-center m-auto"
-                      onClick={() => handlecancel('bankname')}
+                      onClick={() => handlecancel("bankname")}
                     />
                   </div>
                 </div>
@@ -286,8 +286,8 @@ function StationPricing() {
                 ))}
               </TabsList>
 
-              <TabsContent value={'General'} className=" w-[1020px]">
-                {' '}
+              <TabsContent value={"General"} className=" w-[1020px]">
+                {" "}
                 <div className="grid grid-cols-4 h-98">
                   <div className="col-span-3 ">
                     <form action="">
@@ -308,7 +308,7 @@ function StationPricing() {
                             className="border border-gray-600  rounded px-4 py-2 w-[308px]"
                           />
                         </div>
-                        {formData.presenting.trim() !== '' && (
+                        {formData.presenting.trim() !== "" && (
                           <div className="flex gap-4">
                             <div className="w-[45px] h-[45px] bg-[#00A861]  py-2 rounded-lg">
                               <Check className="text-center m-auto" />
@@ -316,7 +316,7 @@ function StationPricing() {
                             <div className="w-[45px] h-[45px] bg-[#C8170D]  py-2 rounded-lg">
                               <X
                                 className="text-center m-auto"
-                                onClick={() => handlecancel('presenting')}
+                                onClick={() => handlecancel("presenting")}
                               />
                             </div>
                           </div>
@@ -341,7 +341,7 @@ function StationPricing() {
                             className="border border-gray-600  rounded px-4 py-2 w-[308px]"
                           />
                         </div>
-                        {formData.interview.trim() !== '' && (
+                        {formData.interview.trim() !== "" && (
                           <div className="flex gap-4">
                             <div className="w-[45px] h-[45px] bg-[#00A861]  py-2 rounded-lg">
                               <Check className="text-center m-auto" />
@@ -349,7 +349,7 @@ function StationPricing() {
                             <div className="w-[45px] h-[45px] bg-[#C8170D]  py-2 rounded-lg">
                               <X
                                 className="text-center m-auto"
-                                onClick={() => handlecancel('interview')}
+                                onClick={() => handlecancel("interview")}
                               />
                             </div>
                           </div>
@@ -372,7 +372,7 @@ function StationPricing() {
                 </div>
               </TabsContent>
 
-              <TabsContent value={'Presenter'}>
+              <TabsContent value={"Presenter"}>
                 <Tabs defaultValue="Presenters">
                   <TabsList className="flex bg-transparent p-2 gap-2 lg:gap-10 mb-10">
                     {subtabs.map((tab) => (
@@ -395,7 +395,7 @@ function StationPricing() {
                     ))}
                   </TabsList>
 
-                  <TabsContent value={'Presenters'} className=" w-[1020px]">
+                  <TabsContent value={"Presenters"} className=" w-[1020px]">
                     <div>
                       {interviewers.map((interviewer, index) => (
                         <div className="grid grid-cols-3 gap-10">
@@ -414,7 +414,7 @@ function StationPricing() {
                                     handleUserChange(index, e.target.value)
                                   }
                                 />
-                                {formData.user[index] !== '' && (
+                                {formData.user[index] !== "" && (
                                   <div className="flex gap-4 ml-5">
                                     <div className="w-[45px] h-[45px] bg-[#00A861]  py-2 rounded-lg">
                                       <Check className="text-center m-auto" />
@@ -465,7 +465,7 @@ function StationPricing() {
                       Add Presenter
                     </Button>
                   </TabsContent>
-                  <TabsContent value={'Pricing'} className=" w-[1020px]">
+                  <TabsContent value={"Pricing"} className=" w-[1020px]">
                     <div>
                       {interviewers.map((interviewer, index) => (
                         <div className="grid grid-cols-3 gap-10">
@@ -496,7 +496,7 @@ function StationPricing() {
                                     handleUserPriceChange(index, e.target.value)
                                   }
                                 />
-                                {formData.interviewerprice[index] !== '' && (
+                                {formData.interviewerprice[index] !== "" && (
                                   <div className="flex gap-4 ml-5">
                                     <div className="w-[45px] h-[45px] bg-[#00A861]  py-2 rounded-lg">
                                       <Check className="text-center m-auto" />
@@ -527,7 +527,7 @@ function StationPricing() {
                       Add Presenter
                     </Button>
                   </TabsContent>
-                  <TabsContent value={'Roasters'} className=" w-[1020px]">
+                  <TabsContent value={"Roasters"} className=" w-[1020px]">
                     <Tabs defaultValue="Mon">
                       <TabsList className="flex bg-transparent p-2 gap-2 lg:gap-25">
                         {days.map((day) => (
@@ -551,14 +551,20 @@ function StationPricing() {
                           </TabsTrigger>
                         ))}
                       </TabsList>
-                    
-                      <DayTab value={"Mon"} selectedInterviwer={selectedInterviwer}/>
-                      <DayTab value={"Tue"} selectedInterviwer={selectedInterviwer}/>
+
+                      <DayTab
+                        value={"Mon"}
+                        selectedInterviwer={selectedInterviwer}
+                      />
+                      <DayTab
+                        value={"Tue"}
+                        selectedInterviwer={selectedInterviwer}
+                      />
                     </Tabs>
                   </TabsContent>
                 </Tabs>
               </TabsContent>
-              <TabsContent value={'Interviewer'} className=" w-[1020px]">
+              <TabsContent value={"Interviewer"} className=" w-[1020px]">
                 <div className="grid grid-cols-4 h-98">
                   <div className="col-span-3 ">
                     <form action="">
@@ -579,7 +585,7 @@ function StationPricing() {
                             className="border border-gray-600  rounded px-4 py-2 w-[308px]"
                           />
                         </div>
-                        {formData.pricing.trim() !== '' && (
+                        {formData.pricing.trim() !== "" && (
                           <div className="flex gap-4">
                             <div className="w-[45px] h-[45px] bg-[#00A861]  py-2 rounded-lg">
                               <Check className="text-center m-auto" />

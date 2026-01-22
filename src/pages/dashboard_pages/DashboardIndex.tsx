@@ -37,6 +37,12 @@ import AdminNotifications from "./admin/AdminNotifications";
 import AdminNotificationsDetails from "./admin/AdminNotificationsDetails";
 import AdminWallet from "./admin/AdminWallet";
 import AdminProfile from "./admin/AdminProfile";
+import AdminInfluencers from "./admin/AdminInfluencers";
+import AdminInfluencersDetail from "./admin/AdminInfluencersDetail";
+import AdminRadio from "./admin/AdminRadio";
+import AdminTv from "./admin/AdminTv";
+import AdminRadioDetails from "./admin/AdminRadioDetails";
+import AdminTvDetails from "./admin/AdminTvDetails";
 
 /**
  * Dashboard index page (restored from original design)
@@ -472,6 +478,12 @@ export const DASHBOARD_ROUTES = [
     { path: "adminnotification/:id", element: <AdminNotificationsDetails /> },
     { path: "adminwallets", element: <AdminWallet/> },
     { path: "adminprofile", element: <AdminProfile/> },
+ { path: "admininfluencers", element: <AdminInfluencers/> },
+ { path: "admininfluencers/:id", element: <AdminInfluencersDetail/> },
+  { path: "adminradios", element: <AdminRadio/> },
+    { path: "adminradios/:id", element: <AdminRadioDetails/> },
+    { path: "admintv", element: <AdminTv/> },
+    { path: "admintv/:id", element: <AdminTvDetails/> },
 
 ];
 
