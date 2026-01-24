@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
-import { NotificationIcon } from "@/assets/notification";
+import { NotificationIcon } from "../../../assets/notification";
 
-function AdminNotificationsDetails() {
+const NotificationDetails: React.FC = () => {
   const navigate = useNavigate();
 
   return (
@@ -61,6 +61,6 @@ function AdminNotificationsDetails() {
       </div>
     </div>
   );
-}
+};
 
-export default AdminNotificationsDetails;
+export default NotificationDetails;
