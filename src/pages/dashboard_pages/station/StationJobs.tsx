@@ -210,7 +210,7 @@ const percentages = [25, 50, 70, 100];
 function StationJobs() {
   const [progress, setProgress] = useState<number>(50);
   return (
-    <div>
+     <div>
       <div className="flex w-full max-w-full lg:max-w-sm flex-col gap-6 mt-10">
         <Tabs defaultValue="New" className="w-full">
           <TabsList className="flex bg-transparent p-2 gap-2 lg:gap-25">

@@ -5,7 +5,6 @@ import InfluencerNotifications from "./influencer/InfluencerNotifications";
 import InfluencerProfile from "./influencer/InfluencerProfile";
 import InfluencerJobs from "../dashboard_pages/influencer/InfluencerJobs";
 import InfluencerWallet from "./influencer/InfluencerWallet";
-
 import {
   ArrowUpRight,
   FileText,
@@ -55,6 +54,9 @@ import AdminRadio from "./admin/AdminRadio";
 import AdminTv from "./admin/AdminTv";
 import AdminRadioDetails from "./admin/AdminRadioDetails";
 import AdminTvDetails from "./admin/AdminTvDetails";
+import AdminJob from "./admin/AdminJob";
+import AdminArtist from "./admin/AdminArtist";
+import AdminArtistDetails from "./admin/AdminArtistDetails";
 
 /**
  * Dashboard index page (restored from original design)
@@ -2932,6 +2934,9 @@ export const DASHBOARD_ROUTES = [
   { path: "adminradios/:id", element: <AdminRadioDetails /> },
   { path: "admintv", element: <AdminTv /> },
   { path: "admintv/:id", element: <AdminTvDetails /> },
+  { path: "adminjob", element: <AdminJob /> },
+   { path: "admin/artist", element: <AdminArtist/> },
+      { path: "admin/artist/:id", element: <AdminArtistDetails/> },
 ];
 
 export default DashboardHome;

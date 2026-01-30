@@ -35,7 +35,8 @@ type UserType = {
   price: string;
   starttime: string;
   endtime: string;
-};
+  
+}
 const interviewers: UserType = [
   {
     id: 1,
