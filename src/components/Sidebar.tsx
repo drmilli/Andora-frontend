@@ -12,6 +12,7 @@ import {
   LogOut,
   Lock,
   Scale,
+  X
 } from "lucide-react";
 import audoraLogo from "../assets/audora-logo.svg";
 import profilePic from "../assets/ProfilePic.png";
@@ -45,12 +46,34 @@ const NAV_ITEMS: NavItem[] = [
   { to: "/dashboard/profile", label: "Profile", icon: <User size={20} /> },
 ];
 
-export const Sidebar: React.FC = (): React.ReactElement => {
+export const Sidebar: React.FC<{
+  isOpen?: boolean;
+  onClose?: () => void;
+}> = ({ isOpen = false, onClose }): React.ReactElement => {
   return (
-    <aside
-      className="w-64 shrink-0 border-r border-gray-900 hidden md:flex md:flex-col md:justify-between md:p-4 bg-[#050505] h-[100dvh] min-h-0"
-      aria-label="Primary"
-    >
+    <>
+      {/* Mobile Overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-900 bg-[#050505] h-[100dvh] transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:flex md:flex-col md:justify-between md:p-4 ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+        aria-label="Primary"
+      >
+        {/* Close button for mobile */}
+        <div className="md:hidden absolute top-4 right-4">
+            <button onClick={onClose} className="text-gray-400 hover:text-white" aria-label="Close sidebar">
+                <X size={24} />
+            </button>
+        </div>
+
       {/* Top scrollable area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <div className="overflow-y-auto pr-2">
@@ -73,6 +96,7 @@ export const Sidebar: React.FC = (): React.ReactElement => {
               <NavLink
                 key={item.to}
                 to={item.to}
+                onClick={onClose}
                 end={item.to === "/dashboard"}
                 className={({ isActive }: { isActive: boolean }) =>
                   `flex items-center w-full transition-colors mb-2 ${
@@ -134,6 +158,7 @@ export const Sidebar: React.FC = (): React.ReactElement => {
         </div>
       </div>
     </aside>
+    </>
   );
 };
 

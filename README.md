@@ -1,73 +1,60 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Welcome to Audora
 
-Currently, two official plugins are available:
+**Elevating Music & Creativity.**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Audora is the premier digital marketplace and social platform designed specifically for the music industry. Whether you are a vocalist, producer, sound engineer, or someone looking to hire top-tier musical talent, Audora connects you with the right opportunities.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🎵 What You Can Do on Audora
 
-## Expanding the ESLint configuration
+### For Artists & Creatives
+*   **Showcase Your Talent**: Upload your beats, tracks, and samples to your personal portfolio.
+*   **Automatic Distribution**: Your music is automatically distributed to radio stations, TV networks, and major streaming platforms like Spotify, Apple Music, and more.
+*   **Find Work**: Browse the **Job Marketplace** for gigs that match your skills (e.g., "Lead Vocalist needed", "Mixing Engineer for Pop Track").
+*   **Apply with Confidence**: Submit proposals with a cover letter and your bid amount.
+*   **Get Paid**: Securely receive payments directly into your Audora Wallet upon job completion.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### For Producers & Employers
+*   **Hire the Best**: Post detailed job listings to find exactly the sound you need.
+*   **Review Applications**: See applicant profiles, cover letters, and bid amounts in one place.
+*   **Manage Projects**: Accept proposals and collaborate seamlessly.
+*   **Secure Transactions**: Fund your wallet easily and pay only when you hire.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 🌟 Social & Community
+*   **Connect**: Follow other artists and build your professional network.
+*   **Share**: Create posts to share your latest work, thoughts, or industry news.
+*   **Stay Updated**: Receive real-time notifications for likes, follows, and new opportunities.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 💼 Managing Your Finances
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Audora comes with a built-in **Wallet System** to make transactions smooth and secure.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+*   **Deposit Funds**: Easily add money to your wallet using secure payment gateways (Paystack).
+*   **Withdraw Earnings**: Cash out your hard-earned money directly to your bank account.
+*   **Track History**: Keep a clear record of every deposit, withdrawal, and payment.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+
+## 🔔 Stay in the Loop
+
+We ensure you never miss an important update. Audora sends you:
+
+1.  **In-App Notifications**: Instant alerts while you are using the platform.
+2.  **Email Notifications**: Beautifully designed emails delivered to your inbox for:
+    *   New Job Applications
+    *   Job Approvals/Rejections
+    *   Wallet Transactions
+    *   Media Upload Status
+    *   New Followers & Likes
+
+---
+
+## ✨ Our Commitment
+
+Audora is built with a premium **Black & Gold** aesthetic to reflect the quality and prestige of the art created by our community. We are dedicated to providing a professional, secure, and inspiring environment for your musical journey.
+
+**Join us and let your sound be heard.**

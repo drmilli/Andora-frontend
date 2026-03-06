@@ -11,6 +11,7 @@ import smilingGuyImage from "../assets/work-with-us-sections/smiling-guy.png";
 import signer from "../assets/landing-page/about-us/signer.png";
 import blurFlameLeft from "../assets/landing-page/blur-flame.png";
 import mic from "../assets/landing-page/about-us/microphone.png";
+import { SEO } from "../components/SEO";
 
 export const navLinks: Array<{
   label: string;
@@ -109,6 +110,10 @@ export const testimonials: Array<{
 export const WorkWithUsPage: React.FC = () => {
   return (
     <div className="relative bg-black text-white">
+      <SEO 
+        title="Work With Us - Audora" 
+        description="Join Audora as a media partner or influencer. Amplify powerful sounds and redefine music reach."
+      />
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(245,182,64,0.12),_transparent_55%)]" />
 
       <div className=" min-h-[100dvh] max-h-[100dvh] overflow-y-clip">

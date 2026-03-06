@@ -1,15 +1,16 @@
 //src/components/Header.tsx
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, type ChangeEvent } from "react";
 import { useLocation } from 'react-router-dom';
 import { Link } from "react-router-dom";
 import { getPageTitle } from '../lib/pageTitles';
-import { Search, Bell, User, Settings, Wallet } from "lucide-react";
+import { Search, Bell, Wallet, Menu } from "lucide-react";
 
 type HeaderProps = {
   title?: string;
   placeholder?: string;
   showSearch?: boolean;
   onSearch?: (query: string) => void;
+  onMenuClick?: () => void;
 };
 
 export const Header: React.FC<HeaderProps> = ({
@@ -17,6 +18,7 @@ export const Header: React.FC<HeaderProps> = ({
   placeholder = "Search here",
   showSearch = true,
   onSearch,
+  onMenuClick,
 }) => {
   const [query, setQuery] = useState("");
   const { pathname } = useLocation();
@@ -32,8 +34,18 @@ export const Header: React.FC<HeaderProps> = ({
       role="banner"
       aria-label="Page header"
     >
-      <div className="flex items-center gap-6">
-        <h1 className="text-2xl font-bold text-white tracking-wide uppercase">
+      <div className="flex items-center gap-4 sm:gap-6">
+        {/* Mobile Menu Toggle */}
+        <button
+          type="button"
+          className="md:hidden text-gray-400 hover:text-white focus:outline-none"
+          onClick={onMenuClick}
+          aria-label="Toggle menu"
+        >
+          <Menu size={24} />
+        </button>
+
+        <h1 className="text-xl sm:text-2xl font-bold text-white tracking-wide uppercase truncate max-w-[200px] sm:max-w-none">
             {getPageTitle(pathname)}
         </h1>
 

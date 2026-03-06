@@ -21,6 +21,8 @@ import {
  * Keep the named export `DashboardPage` for compatibility with existing imports.
  */
 export function DashboardPage(): React.ReactElement {
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+
   const navItemClass = (isActive: boolean) =>
     `flex flex-col items-center gap-1 ${isActive ? "text-[#A67102]" : "text-gray-200"}`;
 
@@ -42,10 +44,13 @@ export function DashboardPage(): React.ReactElement {
 
   return (
     <div className="flex h-screen bg-black text-gray-300 font-sans overflow-hidden hero-font">
-      <Sidebar />
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       <main className="flex-1 flex flex-col overflow-hidden bg-black">
-        <Header title={headerTitle} />
+        <Header 
+          title={headerTitle} 
+          onMenuClick={() => setIsSidebarOpen(true)}
+        />
 
         {/* Main content area where nested routes will render */}
         <div className="flex-1 overflow-y-auto p-8 pt-4">

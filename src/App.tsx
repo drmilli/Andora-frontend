@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./App.css";
 import linesGraphic from "./assets/landing-page/audora-lines.png";
@@ -31,8 +31,13 @@ import {
   Linkedin,
   Twitter,
   Youtube,
+  Menu,
+  X,
   type LucideIcon,
 } from "lucide-react";
+import { SEO } from "./components/SEO";
+import { useInstallPrompt } from "./hooks/useInstallPrompt";
+import { InstallBanner } from "./components/InstallBanner";
 
 type FaqItem = {
   question: string;
@@ -139,10 +144,12 @@ const faqCategories: FaqCategory[] = [
 ];
 
 function App() {
+  const { isInstallable, promptInstall } = useInstallPrompt();
   const [activeCategoryId, setActiveCategoryId] = useState(faqCategories[0].id);
   const [openQuestion, setOpenQuestion] = useState(
     faqCategories[0].faqs[2].question
   );
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const activeCategory =
     faqCategories.find((category) => category.id === activeCategoryId) ??
@@ -176,11 +183,16 @@ function App() {
 
   return (
     <div className="bg-[#050505] text-white">
+      <SEO 
+        title="Audora - Your Sound, the World's Stage" 
+        description="Audora connects musicians with influencers and media outlets to amplify their reach. Promote your music effectively today."
+      />
+      <InstallBanner show={isInstallable} onInstall={promptInstall} />
       <div className="relative min-h-screen overflow-hidden rounded-b-[4rem] bg-gradient-to-b from-black via-[#1a1207] to-[#b27618]">
         <img
           src={linesGraphic}
           alt="Decorative waveform"
-          className="pointer-events-none select-none absolute inset-x-0 bottom-[-6rem] mx-auto w-[115%] max-w-none opacity-90"
+          className="animate-wave pointer-events-none select-none absolute inset-x-0 bottom-[-6rem] mx-auto w-[115%] max-w-none opacity-90"
         />
 
         <header className="absolute inset-x-0 top-6 z-30">
@@ -217,38 +229,83 @@ function App() {
                 </button>
               </Link>
             </div>
+
+            {/* Mobile Menu Toggle */}
+            <div className="md:hidden">
+              <button
+                type="button"
+                className="text-white hover:text-[#f5b640] focus:outline-none"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                aria-label="Toggle menu"
+              >
+                {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+              </button>
+            </div>
           </nav>
+
+          {/* Mobile Navigation Drawer */}
+          {isMenuOpen && (
+            <div className="absolute top-full left-0 right-0 z-50 bg-black/95 backdrop-blur-md border-b border-white/10 p-6 md:hidden">
+              <ul className="flex flex-col gap-6 text-white text-lg font-medium text-center">
+                <li className="hover:text-[#f5b640]">
+                  <a href="#home" onClick={() => setIsMenuOpen(false)}>Home</a>
+                </li>
+                <li className="hover:text-[#f5b640]">
+                  <a href="#offer" onClick={() => setIsMenuOpen(false)}>What we offer</a>
+                </li>
+                <li className="hover:text-[#f5b640]">
+                  <a href="#faq" onClick={() => setIsMenuOpen(false)}>FAQ</a>
+                </li>
+                <li className="hover:text-[#f5b640]">
+                  <a href="#about-us" onClick={() => setIsMenuOpen(false)}>About</a>
+                </li>
+                <li className="hover:text-[#f5b640]">
+                  <a href="#contact" onClick={() => setIsMenuOpen(false)}>Contact</a>
+                </li>
+                <li className="hover:text-[#f5b640]">
+                  <a href="/work-with-us" onClick={() => setIsMenuOpen(false)}>Work With Us</a>
+                </li>
+                <li className="pt-4">
+                  <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                    <button className="w-full rounded-full bg-[#f5b640] px-6 py-3 text-base font-semibold text-black">
+                      Get Started
+                    </button>
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          )}
         </header>
         <section
           id="home"
           className="hero-font relative z-10 flex min-h-screen flex-col items-center justify-start px-6 pt-24 pb-24 sm:pt-28"
         >
-          <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80 shadow-[0_10px_30px_rgba(0,0,0,0.45)]">
+          <span className="animate-fade-in-up inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80 shadow-[0_10px_30px_rgba(0,0,0,0.45)]">
             <span className="mr-2">🚀</span>
             Distribute Your First Track
           </span>
 
-          <h1 className="mt-10 max-w-4xl text-center text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
+          <h1 className="animate-fade-in-up delay-100 mt-10 max-w-4xl text-center text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
             With <span className="text-[#f5b640]">Audora</span>, take your music
             from your device to the world
           </h1>
 
-          <p className="mt-6 max-w-2xl text-center text-base text-white/80 sm:text-lg">
+          <p className="animate-fade-in-up delay-200 mt-6 max-w-2xl text-center text-base text-white/80 sm:text-lg">
             Upload your songs and videos once, and we'll deliver them to top
             streaming platforms, radio stations, TV channels, and influencers.
           </p>
 
-          <Link to="/login">
+          <Link to="/login" className="animate-fade-in-up delay-300">
             <button className="mt-10 inline-flex items-center rounded-full bg-[#f5b640] px-8 py-3 text-base font-semibold text-black transition duration-200 hover:bg-[#ffca52] focus:outline-none focus-visible:ring-2 focus-visible:ring-black/40">
               Get Started for Free
             </button>
           </Link>
 
-          <p className="mt-6 text-sm font-medium uppercase tracking-[0.3em] text-white/60">
+          <p className="animate-fade-in-up delay-400 mt-6 text-sm font-medium uppercase tracking-[0.3em] text-white/60">
             All at the beat of your palm.
           </p>
 
-          <div className="mt-16 w-full max-w-5xl">
+          <div className="animate-fade-in-up delay-400 mt-16 w-full max-w-5xl">
             <div className="relative rounded-[2.5rem] border border-white/10 bg-black/80 p-4 shadow-[0_40px_120px_rgba(0,0,0,0.6)] backdrop-blur">
               <div className="rounded-[2rem] bg-gradient-to-br from-black via-[#120b05] to-[#281b0c] p-6">
                 <img
@@ -694,6 +751,7 @@ function App() {
         </div>
       </section>
       <footer className="bg-gradient-to-b from-black via-[#2d1608] to-[#b27618]">
+        {/* Footer content */}
         <div className="relative mx-auto max-w-5xl px-6 py-24 text-center">
           <div className="hero-font">
             <h2 className="text-3xl font-semibold text-white sm:text-4xl">
@@ -720,12 +778,12 @@ function App() {
 
           <p className="mt-6 text-sm text-white/70">
             We care about the protection of your data. Read our{" "}
-            <a
-              href="#privacy"
+            <Link
+              to="/privacy-policy"
               className="underline decoration-[#f5b640] decoration-2 underline-offset-4 hover:text-white"
             >
               Privacy Policy.
-            </a>
+            </Link>
           </p>
 
           <div className="mt-10 flex justify-center gap-4">
@@ -745,6 +803,14 @@ function App() {
           </div>
 
           <div className="mt-6 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            {isInstallable && (
+              <button 
+                onClick={promptInstall}
+                className="flex items-center gap-3 rounded-full bg-white text-black px-6 py-3 text-sm font-semibold shadow-[0_18px_40px_rgba(255,255,255,0.1)] transition hover:translate-y-[-2px] hover:bg-gray-100"
+              >
+                Install Web App
+              </button>
+            )}
             <button className="flex items-center gap-3 rounded-full bg-gradient-to-r from-[#f5b640] via-[#f0a71e] to-[#d78919] px-6 py-3 text-sm font-semibold text-black shadow-[0_18px_40px_rgba(214,137,25,0.45)] transition hover:translate-y-[-2px]">
               <img src={appstore} alt="apple store" className=" w-5 h-5" />
               Apple Store

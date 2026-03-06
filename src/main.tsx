@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import "./index.css";
 import App from "./App";
 import { LoginPage } from "./pages/login";
@@ -12,13 +13,15 @@ import DashboardPage from "./pages/dashboard";
 import { DASHBOARD_ROUTES } from "./pages/dashboard_pages/DashboardIndex";
 
 import { WorkWithUsPage } from "./pages/work-with-us";
+import { PrivacyPolicyPage } from "./pages/privacy-policy";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
 );
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <HelmetProvider>
+      <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/login" element={<LoginPage />} />
@@ -32,8 +35,10 @@ root.render(
           ))}
         </Route>
         <Route path="/work-with-us" element={<WorkWithUsPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       </Routes>
-    </BrowserRouter>
+      </BrowserRouter>
+    </HelmetProvider>
   </React.StrictMode>,
 );
 
