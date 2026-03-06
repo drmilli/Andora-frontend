@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -7,7 +5,6 @@ import Facebook from '../../../assets/socials/Facebook.png';
 import Instagram from '../../../assets/socials/Instagram.png';
 import Snapchat from '../../../assets/socials/Snapchat.png';
 import Twitter from '../../../assets/socials/X.png';
-import Youtube from '../../../assets/socials/Youtube.png';
 import Tiktok from '../../../assets/socials/Tiktok.png';
 import All from '../../../assets/socials/All.png';
 import Fm from '../../../assets/influencer/Fm.png';
@@ -16,17 +13,8 @@ import {
   Copy,
   Download,
   DownloadIcon,
-  MessageSquareReply,
   TriangleAlert,
 } from 'lucide-react';
-
-const socials = [
-  { icon: All, value: 'all' },
-  { icon: Twitter, value: 'twitter' },
-  { icon: Instagram, value: 'instagram' },
-  { icon: Facebook, value: 'facebook' },
-  { icon: Youtube, value: 'youtube' },
-];
 
 const tabs = [
   { icon: All, value: 'New' },
@@ -205,10 +193,7 @@ const artists : Artist[] = [
 ];
 
 
-const percentages = [25, 50, 70, 100];
-
 function StationJobs() {
-  const [progress, setProgress] = useState<number>(50);
   return (
      <div>
       <div className="flex w-full max-w-full lg:max-w-sm flex-col gap-6 mt-10">

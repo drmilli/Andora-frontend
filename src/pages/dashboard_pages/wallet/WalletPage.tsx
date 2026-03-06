@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, type FC } from "react";
 import { Search, X, Download, SquarePen, ChevronDown } from "lucide-react";
 
 interface Transaction {
@@ -9,7 +9,7 @@ interface Transaction {
   status: "Pending" | "Successful" | "Failed";
 }
 
-const WalletPage: React.FC = () => {
+const WalletPage: FC = () => {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [selectedTransaction, setSelectedTransaction] =
@@ -57,6 +57,16 @@ const WalletPage: React.FC = () => {
     setSelectedTransaction(tx);
     setShowSummaryModal(true);
   };
+
+  // Placeholder transaction for when selectedTransaction is null (or handle it conditionally)
+  const defaultTx = {
+    id: "N/A",
+    type: "N/A",
+    date: "N/A",
+    amount: "N/A",
+    status: "Pending"
+  };
+  const txToDisplay = selectedTransaction || defaultTx;
 
   return (
     <div className="w-full text-white bg-black min-h-screen px-4 sm:px-8 pb-16">
@@ -211,14 +221,15 @@ const WalletPage: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-12">
+              <SummaryRow label="Date" value={txToDisplay.date} />
+              <SummaryRow label="Amount" value={txToDisplay.amount} />
+              <SummaryRow label="Payment Types" value={txToDisplay.type} />
+              <SummaryRow label="Status" value={txToDisplay.status} />
+              {/* Fallback hardcoded values for missing fields */}
               <SummaryRow label="Customer's Name" value="Abbey Thompson" />
               <SummaryRow label="Product Name" value="Coin Purchase" />
-              <SummaryRow label="Product ID" value="13A57B80" />
+              <SummaryRow label="Product ID" value={txToDisplay.id} />
               <SummaryRow label="Quantity" value="2,000.00C" />
-              <SummaryRow label="Amount" value="50,000.00" />
-              <SummaryRow label="Payment Types" value="Wallet" />
-              <SummaryRow label="Time" value="3:40PM" />
-              <SummaryRow label="Status" value="Successful" />
             </div>
 
             <div className="mb-10">
@@ -240,7 +251,7 @@ const WalletPage: React.FC = () => {
   );
 };
 
-const TransactionRow: React.FC<{
+const TransactionRow: FC<{
   transaction: Transaction;
   onView: () => void;
 }> = ({ transaction, onView }) => {
@@ -287,7 +298,7 @@ const TransactionRow: React.FC<{
   );
 };
 
-const SummaryRow: React.FC<{ label: string; value: string }> = ({
+const SummaryRow: FC<{ label: string; value: string }> = ({
   label,
   value,
 }) => (

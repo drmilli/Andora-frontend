@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Check, X } from "lucide-react";
 import DayTab from "@/components/tabs/DayTab";
@@ -35,9 +34,8 @@ type UserType = {
   price: string;
   starttime: string;
   endtime: string;
-  
 }
-const interviewers: UserType = [
+const interviewers: UserType[] = [
   {
     id: 1,
     name: "Mathew Steven",
@@ -105,8 +103,6 @@ type FormDataType = {
 };
 
 function StationPricing() {
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-
   const [formData, setFormData] = useState<FormDataType>({
     accountname: "",
     accountnumber: "",
@@ -127,7 +123,6 @@ function StationPricing() {
     newUsers[index] = value;
 
     setFormData({ ...formData, user: newUsers });
-    setEditingIndex(index);
     console.log(newUsers[index]);
   };
 
@@ -137,7 +132,6 @@ function StationPricing() {
     interviewerPrice[index] = value;
 
     setFormData({ ...formData, interviewerprice: interviewerPrice });
-    setEditingIndex(index);
   };
   const handleUserCancel = (index: number) => {
     const check = setFormData({
@@ -147,7 +141,6 @@ function StationPricing() {
         i === index ? "" : user,
       ),
     });
-    setEditingIndex(null);
     console.log(check);
   };
 
