@@ -14,7 +14,6 @@ import Facebook from '../../../assets/socials/Facebook.png';
 import Instagram from '../../../assets/socials/Instagram.png';
 import Snapchat from '../../../assets/socials/Snapchat.png';
 import Twitter from '../../../assets/socials/X.png';
-import Youtube from '../../../assets/socials/Youtube.png';
 import Tiktok from '../../../assets/socials/Tiktok.png';
 import All from '../../../assets/socials/All.png';
 import Fm from '../../../assets/influencer/Fm.png';

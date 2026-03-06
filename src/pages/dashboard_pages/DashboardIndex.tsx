@@ -361,6 +361,8 @@ const PageShell: React.FC<{ title: string; description?: string }> = ({
   </div>
 );
 
+export { PageShell };
+
 export const NotificationPage: React.FC = () => {
   const notifications = [
     {
@@ -1836,7 +1838,7 @@ export const PromotionPage: React.FC = () => {
             </div>
 
             {/* Selections */}
-            {selections.map((selection, index) => (
+            {selections.map((selection) => (
               <div key={selection} className="mb-6">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-lg font-semibold">
@@ -1932,7 +1934,7 @@ export const PromotionPage: React.FC = () => {
             </div>
 
             {/* Selections */}
-            {selections.map((selection, index) => (
+            {selections.map((selection) => (
               <div key={selection} className="mb-6">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-lg font-semibold">
@@ -2429,8 +2431,8 @@ export const JobsPage: React.FC = () => {
                       {/* Influencer Info */}
                       <div className="flex flex-col items-center justify-center">
                         <img
-                          src={job.influencer.avatar}
-                          alt={job.influencer.name}
+                          src={job.influencer?.avatar}
+                          alt={job.influencer?.name}
                           className="w-20 h-20 rounded-full mb-3"
                         />
                         <p className="text-white font-medium">Influencer</p>
@@ -2447,7 +2449,7 @@ export const JobsPage: React.FC = () => {
 
                       {/* Songs and Actions */}
                       <div className="space-y-3">
-                        {job.songs.map((song, idx) => (
+                        {job.songs?.map((song, idx) => (
                           <div key={idx} className="flex items-center gap-3">
                             <div className="bg-white rounded-lg p-2 flex-shrink-0">
                               <div className="w-16 h-16 flex items-center justify-center">
@@ -2510,7 +2512,7 @@ export const JobsPage: React.FC = () => {
                           </div>
                         </div>
                         <p className="text-white font-medium">
-                          {job.station.name}
+                          {job.station?.name}
                         </p>
                       </div>
 
@@ -2525,11 +2527,11 @@ export const JobsPage: React.FC = () => {
                         </div>
                         <div className="flex-1">
                           <p className="text-white text-sm font-medium mb-1">
-                            {job.song.title}
+                            {job.song?.title}
                           </p>
                           <div className="flex items-center gap-2 text-xs text-gray-400">
-                            <span>{job.song.duration}</span>
-                            <span>{job.song.format}</span>
+                            <span>{job.song?.duration}</span>
+                            <span>{job.song?.format}</span>
                           </div>
                         </div>
                       </div>
@@ -2537,7 +2539,7 @@ export const JobsPage: React.FC = () => {
                       {/* Presenters */}
                       <div className="flex flex-col items-center justify-center">
                         <div className="flex -space-x-2 mb-2">
-                          {job.presenters.map((presenter, idx) => (
+                          {job.presenters?.map((presenter, idx) => (
                             <img
                               key={idx}
                               src={presenter.avatar}
@@ -2547,7 +2549,7 @@ export const JobsPage: React.FC = () => {
                           ))}
                         </div>
                         <p className="text-xs text-gray-400">
-                          {job.presenters[0].name}
+                          {job.presenters?.[0]?.name}
                         </p>
                       </div>
 

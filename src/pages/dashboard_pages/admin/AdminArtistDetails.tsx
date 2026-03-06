@@ -1,11 +1,10 @@
 import {
-  AlertTriangleIcon,
   ArrowLeftIcon,
-  ChevronDown,
   Search,
+  ChevronDown,
 } from "lucide-react";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   DropdownMenu,
@@ -13,13 +12,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Card, CardContent } from "@/components/ui/card";
 
-import musiccover from "../../../assets/admin/MusicCover.png";
-import ProfilePic from "../../../assets/influencer/ProfilePic.png";
-import { Copy, Download, MessageSquareReply } from "lucide-react";
-
-import { Link } from "react-router-dom";
 import coverphoto from "../../../assets/admin/influencercover.png";
+import musiccover from "../../../assets/admin/MusicCover.png";
 
 const tabs = [{ value: "Audio" }, { value: "Video" }, { value: "Jobs" }];
 

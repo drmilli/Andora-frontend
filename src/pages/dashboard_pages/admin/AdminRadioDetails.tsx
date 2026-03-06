@@ -1,18 +1,14 @@
 import { ArrowLeftIcon } from "lucide-react";
-import { useState } from "react";
-
-import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
+import { Card, CardContent } from "@/components/ui/card";
 import Instagram from "../../../assets/socials/Instagram.png";
-
 import Twitter from "../../../assets/socials/X.png";
+import { Link } from "react-router-dom";
 
-import ProfilePic from "../../../assets/influencer/ProfilePic.png";
+import coverphoto from "../../../assets/admin/influencercover.png";
+import ProfilePic from "../../../assets/admin/influencer.png";
 import Cover from "../../../assets/admin/MusicCover.png";
 import influencerCover from "../../../assets/admin/influencer.png";
-import { Link } from "react-router-dom";
-import coverphoto from "../../../assets/admin/influencercover.png";
 const tabs = [
   { icon: Twitter, value: "Jobs" },
   { icon: Instagram, value: "Presenters" },
