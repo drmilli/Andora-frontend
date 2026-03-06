@@ -2,10 +2,17 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
+import { registerSW } from 'virtual:pwa-register';
 import "./index.css";
 import App from "./App";
 import { LoginPage } from "./pages/login";
 import { SignupPage } from "./pages/signup";
+
+// Register Service Worker
+registerSW({
+  onNeedRefresh() {},
+  onOfflineReady() {},
+});
 import { ForgotPasswordPage } from "./pages/forgot-password";
 import { VerifyOtpPage } from "./pages/verify-otp";
 import { ResetPasswordPage } from "./pages/reset-password";
