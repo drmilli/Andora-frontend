@@ -1,11 +1,10 @@
 import React, { useState, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Cover from "../../../assets/influencer/cover.png";
 import Nopic from "../../../assets/influencer/nopic.png";
-import { Plus, Upload } from "lucide-react";
+import { Plus } from "lucide-react";
 
 const tabs = [{ value: "Info" }, { value: "Edit" }];
 

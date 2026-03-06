@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -24,13 +22,6 @@ import ProfilePic from '../../../assets/influencer/ProfilePic.png';
 import { Copy, Download, MessageSquareReply } from 'lucide-react';
 import { ChartRadialText } from '@/components/charts/ChartRadialText';
 
-const socials = [
-  { icon: All, value: 'all' },
-  { icon: Twitter, value: 'twitter' },
-  { icon: Instagram, value: 'instagram' },
-  { icon: Facebook, value: 'facebook' },
-  { icon: Youtube, value: 'youtube' },
-];
 
 const tabs = [
   { icon: All, value: 'Accepted' },

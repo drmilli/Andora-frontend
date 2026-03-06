@@ -1,5 +1,5 @@
 import { AlertTriangleIcon, ArrowLeftIcon } from "lucide-react";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Dialog,
   DialogContent,

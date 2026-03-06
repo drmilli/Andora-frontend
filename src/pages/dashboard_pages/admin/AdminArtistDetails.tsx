@@ -17,7 +17,6 @@ import {
 import musiccover from "../../../assets/admin/MusicCover.png";
 import ProfilePic from "../../../assets/influencer/ProfilePic.png";
 import { Copy, Download, MessageSquareReply } from "lucide-react";
-import { ChartRadialText } from "@/components/charts/ChartRadialText";
 
 import { Link } from "react-router-dom";
 import coverphoto from "../../../assets/admin/influencercover.png";
