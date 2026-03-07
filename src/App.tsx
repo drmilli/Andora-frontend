@@ -144,7 +144,7 @@ const faqCategories: FaqCategory[] = [
 ];
 
 function App() {
-  const { isInstallable, promptInstall } = useInstallPrompt();
+  const { isInstallable, promptInstall, isIOS } = useInstallPrompt();
   const [activeCategoryId, setActiveCategoryId] = useState(faqCategories[0].id);
   const [openQuestion, setOpenQuestion] = useState(
     faqCategories[0].faqs[2].question
@@ -187,7 +187,7 @@ function App() {
         title="Audora - Your Sound, the World's Stage" 
         description="Audora connects musicians with influencers and media outlets to amplify their reach. Promote your music effectively today."
       />
-      <InstallBanner show={isInstallable} onInstall={promptInstall} />
+      <InstallBanner show={isInstallable} onInstall={promptInstall} isIOS={isIOS} />
       <div className="relative min-h-screen overflow-hidden rounded-b-[4rem] bg-gradient-to-b from-black via-[#1a1207] to-[#b27618]">
         <img
           src={linesGraphic}
