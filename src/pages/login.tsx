@@ -1,11 +1,26 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import { AuthLayout } from "../components/auth/AuthLayout";
 import { AuthInput } from "../components/auth/AuthInput";
 import { AuthButton } from "../components/auth/AuthButton";
 import { SocialButton } from "../components/auth/SocialButton";
+import { useAuth } from "./../hooks/useAuth";
+
 
 export const LoginPage: React.FC = () => {
+  const { login, loading, error } = useAuth();
+  const navigate = useNavigate();
+
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    const form = new FormData(e.target);
+    await login({
+      email:String(form.get("email")) ,
+      password:String(form.get("password")) ,
+    });
+    navigate("/dashboard");
+  };
   return (
     <AuthLayout
       title="Login"
@@ -24,21 +39,23 @@ export const LoginPage: React.FC = () => {
         <div className="flex-grow border-t border-white/15" />
       </div>
 
-      <form className="mt-8 space-y-6">
+      <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
         <AuthInput
           id="email"
           label="Email Address"
           type="email"
           placeholder="you@example.com"
           required
+          name="email"
         />
-
+ {error && <p>{error}</p>}
         <AuthInput
           id="password"
           label="Password"
           type="password"
           placeholder="Enter your password"
           required
+          name="password"
         />
 
         <div className="flex justify-end pt-1">

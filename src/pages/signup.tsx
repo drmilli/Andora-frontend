@@ -4,8 +4,25 @@ import { AuthLayout } from "../components/auth/AuthLayout";
 import { AuthInput } from "../components/auth/AuthInput";
 import { AuthButton } from "../components/auth/AuthButton";
 import { SocialButton } from "../components/auth/SocialButton";
+import { useAuth } from "./../hooks/useAuth";
+
 
 export const SignupPage: React.FC = () => {
+  const {register,loading,error} = useAuth();
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    const form = new FormData(e.target);
+    await register({
+      firstname:String(form.get("firstname")) ,
+      lastname:String(form.get("lastname")) ,
+      username:String(form.get("username")) ,
+      email:String(form.get("email")) ,
+      password:String(form.get("password")) ,
+      password_confirmation:String(form.get("password_confirmation")) ,
+    });
+ 
+  };
   return (
     <AuthLayout
       title="Create an Account"
@@ -25,19 +42,21 @@ export const SignupPage: React.FC = () => {
         <div className="flex-grow border-t border-white/15" />
       </div>
 
-      <form className="mt-5 space-y-5">
+      <form className="mt-5 space-y-5" onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <AuthInput
             label="First Name"
             type="text"
             placeholder="Enter first name"
             required
+            name="firstname"
           />
           <AuthInput
             label="Last Name"
             type="text"
             placeholder="Enter last name"
             required
+            name="lastname"
           />
         </div>
 
@@ -47,12 +66,14 @@ export const SignupPage: React.FC = () => {
             type="text"
             placeholder="Choose a username"
             required
+            name="username"
           />
           <AuthInput
             label="Email Address"
             type="email"
             placeholder="you@example.com"
             required
+            name="email"
           />
         </div>
 
@@ -62,12 +83,14 @@ export const SignupPage: React.FC = () => {
             type="password"
             placeholder="Enter password"
             required
+            name="password"
           />
           <AuthInput
             label="Re-type Password"
             type="password"
             placeholder="Re-enter password"
             required
+            name="password_confirmation"
           />
         </div>
 

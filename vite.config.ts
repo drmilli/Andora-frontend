@@ -34,4 +34,13 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://server.audorasounds.com/api',
+        changeOrigin: true,
+        secure: true,
+      }
+    }
+  }
 })

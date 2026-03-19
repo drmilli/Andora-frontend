@@ -11,6 +11,7 @@ export const AuthInput: React.FC<AuthInputProps> = ({
   type,
   className,
   id,
+  name,
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -23,6 +24,7 @@ export const AuthInput: React.FC<AuthInputProps> = ({
       <div className="relative mt-2">
         <input
           id={id}
+          name={name}
           type={inputType}
           className={cn(
             "w-full border-b border-white/15 bg-transparent pb-2 text-base font-semibold text-white placeholder-white/40 transition focus:border-[#f5b640] focus:outline-none",
