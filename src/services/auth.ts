@@ -3,6 +3,7 @@ import type { LoginPayload, AuthResponse, SignupPayload } from "../types/auth";
 
 export const loginUser = async (data: LoginPayload): Promise<AuthResponse> => {
   const res = await api.post("/auth/login", data);
+  console.log(res.data);
   return res.data;
 };
 

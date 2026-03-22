@@ -1,4 +1,14 @@
 export const getPageTitle = (pathname: string): string => {
+  if (pathname === "/dashboard" || pathname === "/dashboard/") return "Dashboard";
+  if (pathname.startsWith("/dashboard/earnings")) return "Earnings";
+  if (pathname.startsWith("/dashboard/payouts")) return "Payouts";
+  if (pathname.startsWith("/dashboard/categories/new")) return "New Category";
+  if (pathname.startsWith("/dashboard/categories")) return "Categories";
+  if (pathname.startsWith("/dashboard/menu/new")) return "Add Food Item";
+  if (pathname.startsWith("/dashboard/menu")) return "Menu";
+  if (pathname.startsWith("/dashboard/orders")) return "Orders";
+  if (pathname.startsWith("/dashboard/reviews")) return "Reviews";
+  if (pathname.startsWith("/dashboard/settings")) return "Settings";
   if (pathname === "/dashboard_pages") return "Dashboard";
 
   if (pathname.startsWith("/dashboard/notifications")) return "Notification";

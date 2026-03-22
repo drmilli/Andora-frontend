@@ -1,10 +1,18 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { loginUser, signupUser } from "./../services/auth";
 import type { LoginPayload, SignupPayload } from "../types/auth";
+import { AppContext } from "../Context/AppContext";
 
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const context = useContext(AppContext);
+
+  if (!context) {
+    throw new Error("useAuth must be used within AppProvider");
+  }
+
+  const { setToken, setUser } = context;
 
 const login = async (payload: LoginPayload) => {
   try {
@@ -13,6 +21,8 @@ const login = async (payload: LoginPayload) => {
 
     const data = await loginUser(payload);
     localStorage.setItem("token", data.token);
+    setToken(data.token);
+    setUser(data.user);
     return data;
 
   } catch (err: any) {
@@ -27,8 +37,11 @@ const login = async (payload: LoginPayload) => {
   const register = async (payload: SignupPayload) => {
     try {
       setLoading(true);
+      setError(null);
       const data = await signupUser(payload);
       localStorage.setItem("token", data.token);
+      setToken(data.token);
+      setUser(data.user);
       return data;
     } catch (err: any) {
       setError(err.response?.data?.message || "Register failed");
@@ -39,6 +52,8 @@ const login = async (payload: LoginPayload) => {
   };
   const logout = () => {
     localStorage.removeItem("token");
+    setToken(null);
+    setUser(null);
   };
 
   return { login, register, logout, loading, error };

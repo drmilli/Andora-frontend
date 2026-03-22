@@ -1,6 +1,5 @@
 
-
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import { registerSW } from 'virtual:pwa-register';
 import { useContext } from "react";
@@ -36,7 +35,16 @@ if (!context) {
   throw new Error("AppContext must be used within AppProvider");
 }
 
-const { user } = context;
+const { user, loading } = context;
+
+if (loading) {
+  return (
+    <div className="flex items-center justify-center h-screen bg-black text-[#A67102]">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#A67102]"></div>
+    </div>
+  );
+}
+
   return (
       <BrowserRouter>
       <Routes>
@@ -51,7 +59,7 @@ const { user } = context;
       
         </Route>
 
-        <Route path="/dashboard" element={ user?<DashboardPage />:<Home/>}>
+        <Route path="/dashboard" element={user ? <DashboardPage /> : <Navigate to="/login" />}>
           {DASHBOARD_ROUTES.map((r) => (
             <Route key={r.path || "index"} path={r.path} element={r.element} />
           ))}

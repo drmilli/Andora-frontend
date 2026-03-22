@@ -1,4 +1,3 @@
-//src/components/Header.tsx
 import React, { useState, type ChangeEvent } from "react";
 import { useLocation } from 'react-router-dom';
 import { Link } from "react-router-dom";
