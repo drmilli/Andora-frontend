@@ -1,10 +1,10 @@
 import React from "react";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthLayout } from "../components/auth/AuthLayout";
 import { AuthInput } from "../components/auth/AuthInput";
 import { AuthButton } from "../components/auth/AuthButton";
 import { SocialButton } from "../components/auth/SocialButton";
-import { useAuth } from "./../hooks/useAuth";
+import { useAuth } from "../hooks/auth/useAuth";
 
 
 export const LoginPage: React.FC = () => {
@@ -16,8 +16,8 @@ export const LoginPage: React.FC = () => {
     e.preventDefault();
     const form = new FormData(e.target);
     await login({
-      email:String(form.get("email")) ,
-      password:String(form.get("password")) ,
+      email: String(form.get("email")),
+      password: String(form.get("password")),
     });
     navigate("/dashboard");
   };
@@ -48,7 +48,7 @@ export const LoginPage: React.FC = () => {
           required
           name="email"
         />
- {error && <p>{error}</p>}
+        {error && <p>{error}</p>}
         <AuthInput
           id="password"
           label="Password"

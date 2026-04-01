@@ -95,7 +95,7 @@ const artists = [
 
 function InfluencerDashboard() {
   return (
-    <div>
+    <div className='  px-15 '>
       <div>
         <h1>Hello,Issac</h1>
       </div>

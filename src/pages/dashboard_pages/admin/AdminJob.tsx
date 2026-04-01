@@ -100,7 +100,7 @@ const subtabs = [
 
 function AdminJob() {
   return (
-    <div>
+    <div className='  px-10 '>
       <div className="flex w-full max-w-full lg:max-w-sm flex-col gap-6 mt-10">
         <Tabs defaultValue="Pending Job" className="w-full">
           <TabsList className="flex bg-transparent p-2 gap-2 lg:gap-25">

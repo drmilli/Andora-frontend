@@ -99,7 +99,7 @@ function InfluencerWallet() {
   };
 
   return (
-    <div>
+    <div className='  px-10 '>
 <div className="">
   <Carousel>
     <CarouselContent>

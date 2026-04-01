@@ -82,43 +82,39 @@ export const PromotionPage: React.FC = () => {
     },
   ];
 
+  const tabs = [
+    { id: "audio", label: "Audio" },
+    { id: "video", label: "Video" },
+    { id: "influencer", label: "Influencer" },
+  ];
+
   return (
     <div className="min-h-screen bg-black text-white p-4">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-2xl font-semibold mb-6">PROMOTE</h1>
-
         {/* Tabs */}
-        <div className="flex gap-8 border-b border-gray-700 mb-6">
-          <button
-            onClick={() => setActiveTab("audio")}
-            className={`pb-4 font-semibold transition-colors ${
-              activeTab === "audio"
-                ? "text-white border-b-2 border-[#A67102]"
-                : "text-gray-400"
-            }`}
-          >
-            Audio
-          </button>
-          <button
-            onClick={() => setActiveTab("video")}
-            className={`pb-4 font-semibold transition-colors ${
-              activeTab === "video"
-                ? "text-white border-b-2 border-[#A67102]"
-                : "text-gray-400"
-            }`}
-          >
-            Video
-          </button>
-          <button
-            onClick={() => setActiveTab("influencer")}
-            className={`pb-4 font-semibold transition-colors ${
-              activeTab === "influencer"
-                ? "text-white border-b-2 border-[#A67102]"
-                : "text-gray-400"
-            }`}
-          >
-            Influencer
-          </button>
+        <div className="flex  bg-transparent  lg:gap-25 gap-8 border-b border-gray-700 mb-6">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as "audio" | "video" | "influencer")}
+              className={`
+        w-[100px] h-[100px]
+        md:w-[50px] md:h-[50px]
+        lg:w-[250px] lg:h-[52px]
+       rounded-none
+        bg-transparent
+          text-white
+           data-[state=active]:bg-transparent
+        data-[state=active]:border-b-amber-500 " ${activeTab === tab.id
+                  ? "text-white border-b-2 border-[#A67102]"
+                  : "text-gray-400"
+                }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+
+
         </div>
 
         {/* Description Text */}
@@ -395,12 +391,11 @@ export const PromotionPage: React.FC = () => {
                 <button
                   key={platform.id}
                   onClick={() => toggleSocial(platform.id)}
-                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${
-                    selectedSocials.includes(platform.id) ||
-                    platform.id === "instagram"
+                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${selectedSocials.includes(platform.id) ||
+                      platform.id === "instagram"
                       ? "bg-[#A67102]"
                       : "bg-[#3a3a3a] hover:bg-[#4a4a4a]"
-                  }`}
+                    }`}
                 >
                   {platform.icon === "instagram" && (
                     <svg

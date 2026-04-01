@@ -111,6 +111,18 @@ export const MediaPage: React.FC = () => {
         "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop",
     },
   ];
+function Yearselection() {
+  const curYear = new Date().getFullYear();
+  const years = [];
+  for (let i = curYear - 200; i <= curYear; i++) {
+    years.push(
+      <option key={i} value={i} className="">
+        {i}
+      </option>,
+    );
+  }
+  return <>{years}</>;
+}
 
   return (
     <div className="min-h-screen bg-black text-white p-4">
@@ -227,8 +239,8 @@ export const MediaPage: React.FC = () => {
                           <label className="block text-sm text-gray-400 mb-2">
                             Copyright Year
                           </label>
-                          <select className="w-full bg-transparent border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#A67102]">
-                            <option>year</option>
+                          <select id='date-dropdown' className="w-full bg-[#0D0B07] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#A67102]">
+                            {Yearselection()}
                           </select>
                         </div>
                       </div>
@@ -248,8 +260,8 @@ export const MediaPage: React.FC = () => {
                           <label className="block text-sm text-gray-400 mb-2">
                             Production Year
                           </label>
-                          <select className="w-full bg-transparent border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#A67102]">
-                            <option>year</option>
+                          <select className="w-full bg-[#0D0B07] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#A67102]">
+                            {Yearselection()}
                           </select>
                         </div>
                       </div>

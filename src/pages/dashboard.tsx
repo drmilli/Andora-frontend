@@ -53,7 +53,7 @@ export function DashboardPage(): React.ReactElement {
         />
 
         {/* Main content area where nested routes will render */}
-        <div className="flex-1 overflow-y-auto p-8 pt-4">
+        <div className="flex-1 overflow-y-auto p-15 pt-4">
           <Outlet />
         </div>
       </main>

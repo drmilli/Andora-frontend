@@ -3,6 +3,8 @@ import { LayoutDashboard, BarChart2, Music, Megaphone, User } from "lucide-react
 import { FileText, Video } from "lucide-react";
 import { ArrowUpRight } from "lucide-react";
 import { StatCard } from "@/components/artist/StatCard";
+import { useContext } from "react";
+import { AppContext } from "@/Context/AppContext";
 
 type RecentUpload = {
   type: string;
@@ -66,9 +68,14 @@ const recentUploads: RecentUpload[] = [
 ];
 
 export const DashboardHome: React.FC = () => {
+  // const { user } = useContext(AppContext);
+  const context = useContext(AppContext);
+  const user = context?.user;
+  console.log(user);
+
   return (
     <div className="w-full pb-28 md:pb-0">
-      <p className="text-lg text-gray-300 mb-6">Hello, Abbey</p>
+      <p className="text-lg text-gray-300 mb-6">Hello, {user?.username}</p>
 
       {/* Stats Grid - responsive: 1 col on mobile, 2 on sm, 4 on lg */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mb-6">

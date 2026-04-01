@@ -17,7 +17,7 @@ export default function AppProvider({ children }: { children: ReactNode }) {
     const [token, setToken] = useState<string | null>(localStorage.getItem("token") || null);
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState<boolean>(!!token);
-
+ 
 async function getUser() {
   if (token) {
     try {

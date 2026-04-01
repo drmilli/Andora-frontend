@@ -17,7 +17,7 @@ const overalls = [
 
 function StationDashboard() {
   return (
-    <div>
+    <div className='  px-15 '>
       {' '}
       <div>
         <div>

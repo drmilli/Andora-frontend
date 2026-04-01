@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import audoraLogo from "../assets/audora-logo.svg";
 import profilePic from "../assets/ProfilePic.png";
+import { AppContext } from "@/Context/AppContext";
 
 type NavItem = {
   to: string;
@@ -50,6 +51,11 @@ export const Sidebar: React.FC<{
   isOpen?: boolean;
   onClose?: () => void;
 }> = ({ isOpen = false, onClose }): React.ReactElement => {
+
+    const context = useContext(AppContext);
+    const user = context?.user;
+    console.log(user);
+  
   return (
     <>
       {/* Mobile Overlay */}
@@ -86,8 +92,8 @@ export const Sidebar: React.FC<{
                 className="w-full h-full object-cover"
               />
             </div>
-            <h3 className="text-white font-semibold">Abbey Lincoln</h3>
-            <p className="text-xs text-gray-500">@abbeylin</p>
+            <h3 className="text-white font-semibold">{user?.username}</h3>
+            <p className="text-xs text-gray-500 truncate w-40">{user?.email}</p>
           </div>
 
           {/* Navigation */}

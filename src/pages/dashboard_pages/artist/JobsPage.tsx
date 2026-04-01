@@ -146,44 +146,37 @@ export const JobsPage: React.FC = () => {
     if (activeFilterTab === "tv") return job.type === "tv";
     return true;
   });
-
+  const tabs = [
+    { id: "pending", label: "Pending" },
+    { id: "completed", label: "Completed" },
+  ];
   return (
     <div className="min-h-screen bg-black text-white p-4">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-2xl font-semibold mb-6">JOBS</h1>
 
         {/* Main Tabs */}
-        <div className="flex gap-8 border-b border-gray-700 mb-6">
-          <button
-            onClick={() => setActiveMainTab("pending")}
-            className={`pb-4 font-semibold transition-colors ${
-              activeMainTab === "pending"
-                ? "text-white border-b-2 border-[#A67102]"
-                : "text-gray-400"
-            }`}
-          >
-            {activeMainTab === "pending" ? "Pending" : "Pending Jobs"}
-          </button>
-          <button
-            onClick={() => setActiveMainTab("completed")}
-            className={`pb-4 font-semibold transition-colors ${
-              activeMainTab === "completed"
-                ? "text-white border-b-2 border-[#A67102]"
-                : "text-gray-400"
-            }`}
-          >
-            Completed
-          </button>
-          <button
-            onClick={() => setActiveMainTab("disputes")}
-            className={`pb-4 font-semibold transition-colors ${
-              activeMainTab === "disputes"
-                ? "text-white border-b-2 border-[#A67102]"
-                : "text-gray-400"
-            }`}
-          >
-            Disputes
-          </button>
+        <div className="flex  bg-transparent  lg:gap-25 gap-8 border-b border-gray-700 mb-6">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveMainTab(tab.id as "pending" | "completed")}
+              className={`
+          w-[120px] h-[120px]
+        md:w-[50px] md:h-[50px]
+        lg:w-[450px] lg:h-[52px]
+       rounded-none
+        bg-transparent
+          text-white
+           data-[state=active]:bg-transparent
+        data-[state=active]:border-b-amber-500 " ${activeMainTab === tab.id
+                  ? "text-white border-b-2 border-[#A67102]"
+                  : "text-gray-400"
+                }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
 
         {activeMainTab === "pending" && (

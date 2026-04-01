@@ -195,7 +195,7 @@ const artists : Artist[] = [
 
 function StationJobs() {
   return (
-     <div>
+     <div className='  px-10 '>
       <div className="flex w-full max-w-full lg:max-w-sm flex-col gap-6 mt-10">
         <Tabs defaultValue="New" className="w-full">
           <TabsList className="flex bg-transparent p-2 gap-2 lg:gap-25">
@@ -226,7 +226,7 @@ function StationJobs() {
                     key={index}
                     className="bg-[#4040404D] border-0 w-full lg:w-[1032px] h-auto lg:h-[283px] mt-10"
                   >
-                    <CardContent className="grid gap-6">
+                    <CardContent className=" ">
                       <div className="grid grid-cols-1">
                         <div className="flex justify-between flex-col md:flex-row md:justify-between gap-4">
                           <div className="shrink-0"></div>

@@ -4,24 +4,24 @@ import { AuthLayout } from "../components/auth/AuthLayout";
 import { AuthInput } from "../components/auth/AuthInput";
 import { AuthButton } from "../components/auth/AuthButton";
 import { SocialButton } from "../components/auth/SocialButton";
-import { useAuth } from "./../hooks/useAuth";
+import { useAuth } from "../hooks/auth/useAuth";
 
 
 export const SignupPage: React.FC = () => {
-  const {register,loading,error} = useAuth();
+  const { register, loading, error } = useAuth();
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const form = new FormData(e.target);
     await register({
-      firstname:String(form.get("firstname")) ,
-      lastname:String(form.get("lastname")) ,
-      username:String(form.get("username")) ,
-      email:String(form.get("email")) ,
-      password:String(form.get("password")) ,
-      password_confirmation:String(form.get("password_confirmation")) ,
+      firstname: String(form.get("firstname")),
+      lastname: String(form.get("lastname")),
+      username: String(form.get("username")),
+      email: String(form.get("email")),
+      password: String(form.get("password")),
+      password_confirmation: String(form.get("password_confirmation")),
     });
- 
+
   };
   return (
     <AuthLayout
