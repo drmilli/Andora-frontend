@@ -1,7 +1,6 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { LayoutDashboard, BarChart2, Music, Megaphone, User } from "lucide-react";
 import { FileText, Video } from "lucide-react";
-import { ArrowUpRight } from "lucide-react";
 import { StatCard } from "@/components/artist/StatCard";
 import { useContext } from "react";
 import { AppContext } from "@/Context/AppContext";

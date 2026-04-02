@@ -1,6 +1,4 @@
 import React from "react";
-import { ArrowUpRight, FileText, Video, LayoutDashboard, BarChart2, Music, Megaphone, User, ThumbsUp, Download, MapPin, Radio, Clock, Trash2, Search } from "lucide-react";
-
 
 
 export const JobsPage: React.FC = () => {

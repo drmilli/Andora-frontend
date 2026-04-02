@@ -1,4 +1,3 @@
-import React from 'react';
 import blurFlameLeft from "./../blur-flame.png";
 import blurFlameRight from "./../blur-flame2.png";
 

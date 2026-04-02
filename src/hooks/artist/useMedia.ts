@@ -1,10 +1,9 @@
-import { useState, useContext } from "react";
-import { loginUser, signupUser } from "../../services/auth";
-import type { LoginPayload, SignupPayload } from "../../types/auth";
+import { useState } from "react";
+import { loginUser } from "../../services/auth";
+import type { LoginPayload } from "../../types/auth";
 
 
 export const useMedia = () => {
-    const [media, setMedia] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -28,5 +27,5 @@ export const useMedia = () => {
 
 
 
-    return { login, loading, error };
+    return { uploadMedia, loading, error };
 };

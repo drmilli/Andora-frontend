@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import linesGraphic from ".././assets/landing-page/audora-lines.png";
-import previewScreen from ".././assets/landing-page/audorascreen.svg";
-import logo from ".././assets/audora-logo.svg";
 import cardOneGlow from ".././assets/landing-page/first-card/card-1-above-light.png";
 import cardOneBulb from ".././assets/landing-page/first-card/light-bulb.png";
 import cardOneStack from ".././assets/landing-page/first-card/stack.png";
@@ -22,18 +20,8 @@ import blurFlameLeft from ".././assets/landing-page/blur-flame.png";
 import blurFlameRight from ".././assets/landing-page/blur-flame2.png";
 import mic from ".././assets/landing-page/mic.png";
 import singer from ".././assets/landing-page/image1.png";
-import googleplay from ".././assets/landing-page/footer/google-play.svg";
-import appstore from ".././assets/landing-page/footer/app-store.svg";
 import {
   ChevronRight,
-  Facebook,
-  Instagram,
-  Linkedin,
-  Twitter,
-  Youtube,
-  Menu,
-  X,
-  type LucideIcon,
   Headphones,
 } from "lucide-react";
 import { SEO } from ".././components/SEO";

@@ -8,7 +8,7 @@ import { useAuth } from "../hooks/auth/useAuth";
 
 
 export const LoginPage: React.FC = () => {
-  const { login, loading, error } = useAuth();
+  const { login, error } = useAuth();
   const navigate = useNavigate();
 
 

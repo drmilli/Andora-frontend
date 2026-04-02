@@ -1,23 +1,18 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import {
-  ChevronRight,
   Facebook,
   Instagram,
   Linkedin,
   Twitter,
   Youtube,
-  Menu,
-  X,
   type LucideIcon,
-  Headphones,
 } from "lucide-react";
 import { useInstallPrompt } from "../../hooks/useInstallPrompt";
 
 
 
 export const Footer: React.FC = () => {
-      const { isInstallable, promptInstall, isIOS } = useInstallPrompt();
+      const { promptInstall } = useInstallPrompt();
       const socialPlatforms: Array<{ name: string; Icon: LucideIcon }> = [
         { name: "Facebook", Icon: Facebook },
         { name: "Twitter", Icon: Twitter },

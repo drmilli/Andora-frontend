@@ -1,40 +1,8 @@
-import React from "react";
-import { Link } from "react-router-dom";
 import InfluencerDashboard from "./influencer/InfluencerDashboard";
 import InfluencerNotifications from "./influencer/InfluencerNotifications";
 import InfluencerProfile from "./influencer/InfluencerProfile";
 import InfluencerJobs from "../dashboard_pages/influencer/InfluencerJobs";
 import InfluencerWallet from "./influencer/InfluencerWallet";
-import {
-  ArrowUpRight,
-  FileText,
-  Video,
-  LayoutDashboard,
-  BarChart2,
-  Music,
-  Megaphone,
-  User,
-  ThumbsUp,
-  Download,
-  MapPin,
-  Radio,
-  Clock,
-  Trash2,
-  Search,
-} from "lucide-react";
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import { NotificationIcon } from "../../assets/notification";
-
 import InfluencerNotificationsDetail from "./influencer/InfluencerNotificationsDetail";
 import StationDashboard from "./station/StationDashboard";
 import StationNotifications from "./station/StationNotifications";
