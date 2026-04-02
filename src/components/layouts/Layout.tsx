@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { Footer } from './Footer';
 import { Nav } from './Nav';
-import ContactForm from '@/assets/landing-page/contact-us/ContactForm';
+import ContactForm from '@/components/contact-us/ContactForm';
 
 
 

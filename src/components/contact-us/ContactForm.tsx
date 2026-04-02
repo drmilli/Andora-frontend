@@ -1,10 +1,10 @@
-import blurFlameLeft from "./../blur-flame.png";
-import blurFlameRight from "./../blur-flame2.png";
+import blurFlameLeft from "../../assets/landing-page/blur-flame.png";
+import blurFlameRight from "../../assets/landing-page/blur-flame2.png";
 
 const ContactForm = () => {
     return (
         <div>
-         <section id="contact" className="relative overflow-hidden py-28 bg-black">
+         <section id="contact" className="relative overflow-hidden py-10 md:py-28 bg-black">
         <img
           src={blurFlameLeft}
           alt="Decorative blur"
@@ -43,7 +43,7 @@ const ContactForm = () => {
               </span>
               <div>
                 <p className="text-sm font-semibold text-white/80">Email</p>
-                <p className="text-sm text-[#f5b640]">audora@gmail.com</p>
+                <p className="text-sm text-[#f5b640]">audorasounds@gmail.com</p>
               </div>
             </div>
 
@@ -64,7 +64,7 @@ const ContactForm = () => {
                   Phone number
                 </p>
                 <p className="text-sm text-[#f5b640]">
-                  +(234) 812 - 345 - 6789
+                 +(234) 708 - 707 - 7113 
                 </p>
               </div>
             </div>

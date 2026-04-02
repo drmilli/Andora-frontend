@@ -1,0 +1,253 @@
+[1mdiff --git a/src/assets/landing-page/contact-us/ContactForm.tsx b/src/assets/landing-page/contact-us/ContactForm.tsx[m
+[1mindex fbd922b..14ef97f 100644[m
+[1m--- a/src/assets/landing-page/contact-us/ContactForm.tsx[m
+[1m+++ b/src/assets/landing-page/contact-us/ContactForm.tsx[m
+[36m@@ -1,4 +1,3 @@[m
+[31m-import React from 'react';[m
+ import blurFlameLeft from "./../blur-flame.png";[m
+ import blurFlameRight from "./../blur-flame2.png";[m
+ [m
+[36m@@ -115,4 +114,4 @@[m [mconst ContactForm = () => {[m
+     );[m
+ };[m
+ [m
+[31m-export default ContactForm;[m
+\ No newline at end of file[m
+[32m+[m[32mexport default ContactForm;[m
+[1mdiff --git a/src/components/layouts/Footer.tsx b/src/components/layouts/Footer.tsx[m
+[1mindex 449a406..c42f6cf 100644[m
+[1m--- a/src/components/layouts/Footer.tsx[m
+[1m+++ b/src/components/layouts/Footer.tsx[m
+[36m@@ -1,23 +1,18 @@[m
+[31m-import React from "react";[m
+ import { Link } from "react-router-dom";[m
+ import {[m
+[31m-  ChevronRight,[m
+   Facebook,[m
+   Instagram,[m
+   Linkedin,[m
+   Twitter,[m
+   Youtube,[m
+[31m-  Menu,[m
+[31m-  X,[m
+   type LucideIcon,[m
+[31m-  Headphones,[m
+ } from "lucide-react";[m
+ import { useInstallPrompt } from "../../hooks/useInstallPrompt";[m
+ [m
+ [m
+ [m
+ export const Footer: React.FC = () => {[m
+[31m-      const { isInstallable, promptInstall, isIOS } = useInstallPrompt();[m
+[32m+[m[32m      const { promptInstall } = useInstallPrompt();[m
+       const socialPlatforms: Array<{ name: string; Icon: LucideIcon }> = [[m
+         { name: "Facebook", Icon: Facebook },[m
+         { name: "Twitter", Icon: Twitter },[m
+[36m@@ -106,4 +101,4 @@[m [mexport const Footer: React.FC = () => {[m
+         </div>[m
+       </footer>[m
+     );[m
+[31m-};[m
+\ No newline at end of file[m
+[32m+[m[32m};[m
+[1mdiff --git a/src/components/layouts/Layout.tsx b/src/components/layouts/Layout.tsx[m
+[1mindex 190541d..c9ecde8 100644[m
+[1m--- a/src/components/layouts/Layout.tsx[m
+[1m+++ b/src/components/layouts/Layout.tsx[m
+[36m@@ -1,5 +1,3 @@[m
+[31m-[m
+[31m-import React from 'react';[m
+ import { Outlet } from "react-router-dom";[m
+ import { Footer } from './Footer';[m
+ import { Nav } from './Nav';[m
+[1mdiff --git a/src/hooks/artist/useMedia.ts b/src/hooks/artist/useMedia.ts[m
+[1mindex cc956a1..6ab40b8 100644[m
+[1m--- a/src/hooks/artist/useMedia.ts[m
+[1m+++ b/src/hooks/artist/useMedia.ts[m
+[36m@@ -1,10 +1,9 @@[m
+[31m-import { useState, useContext } from "react";[m
+[31m-import { loginUser, signupUser } from "../../services/auth";[m
+[31m-import type { LoginPayload, SignupPayload } from "../../types/auth";[m
+[32m+[m[32mimport { useState } from "react";[m
+[32m+[m[32mimport { loginUser } from "../../services/auth";[m
+[32m+[m[32mimport type { LoginPayload } from "../../types/auth";[m
+ [m
+ [m
+ export const useMedia = () => {[m
+[31m-    const [media, setMedia] = useState<any[]>([]);[m
+     const [loading, setLoading] = useState(false);[m
+     const [error, setError] = useState<string | null>(null);[m
+ [m
+[36m@@ -28,5 +27,5 @@[m [mexport const useMedia = () => {[m
+ [m
+ [m
+ [m
+[31m-    return { login, loading, error };[m
+[32m+[m[32m    return { uploadMedia, loading, error };[m
+ };[m
+[1mdiff --git a/src/lib/axios.ts b/src/lib/axios.ts[m
+[1mindex 85bf02e..bac5a2a 100644[m
+[1m--- a/src/lib/axios.ts[m
+[1m+++ b/src/lib/axios.ts[m
+[36m@@ -1,8 +1,4 @@[m
+ import axios from "axios";[m
+[31m-import { useContext } from "react";[m
+[31m-import { AppContext } from "../Context/AppContext";[m
+[31m-[m
+[31m-[m
+ [m
+ const api = axios.create({[m
+   baseURL: import.meta.env.VITE_API_URL,[m
+[1mdiff --git a/src/pages/Home.tsx b/src/pages/Home.tsx[m
+[1mindex 2ee1231..490fb39 100644[m
+[1m--- a/src/pages/Home.tsx[m
+[1m+++ b/src/pages/Home.tsx[m
+[36m@@ -2,8 +2,6 @@[m [mimport { useState } from "react";[m
+ import { Link } from "react-router-dom";[m
+ [m
+ import linesGraphic from ".././assets/landing-page/audora-lines.png";[m
+[31m-import previewScreen from ".././assets/landing-page/audorascreen.svg";[m
+[31m-import logo from ".././assets/audora-logo.svg";[m
+ import cardOneGlow from ".././assets/landing-page/first-card/card-1-above-light.png";[m
+ import cardOneBulb from ".././assets/landing-page/first-card/light-bulb.png";[m
+ import cardOneStack from ".././assets/landing-page/first-card/stack.png";[m
+[36m@@ -22,18 +20,8 @@[m [mimport blurFlameLeft from ".././assets/landing-page/blur-flame.png";[m
+ import blurFlameRight from ".././assets/landing-page/blur-flame2.png";[m
+ import mic from ".././assets/landing-page/mic.png";[m
+ import singer from ".././assets/landing-page/image1.png";[m
+[31m-import googleplay from ".././assets/landing-page/footer/google-play.svg";[m
+[31m-import appstore from ".././assets/landing-page/footer/app-store.svg";[m
+ import {[m
+   ChevronRight,[m
+[31m-  Facebook,[m
+[31m-  Instagram,[m
+[31m-  Linkedin,[m
+[31m-  Twitter,[m
+[31m-  Youtube,[m
+[31m-  Menu,[m
+[31m-  X,[m
+[31m-  type LucideIcon,[m
+   Headphones,[m
+ } from "lucide-react";[m
+ import { SEO } from ".././components/SEO";[m
+[1mdiff --git a/src/pages/dashboard_pages/DashboardIndex.tsx b/src/pages/dashboard_pages/DashboardIndex.tsx[m
+[1mindex 63ac846..a410274 100644[m
+[1m--- a/src/pages/dashboard_pages/DashboardIndex.tsx[m
+[1m+++ b/src/pages/dashboard_pages/DashboardIndex.tsx[m
+[36m@@ -1,40 +1,8 @@[m
+[31m-import React from "react";[m
+[31m-import { Link } from "react-router-dom";[m
+ import InfluencerDashboard from "./influencer/InfluencerDashboard";[m
+ import InfluencerNotifications from "./influencer/InfluencerNotifications";[m
+ import InfluencerProfile from "./influencer/InfluencerProfile";[m
+ import InfluencerJobs from "../dashboard_pages/influencer/InfluencerJobs";[m
+ import InfluencerWallet from "./influencer/InfluencerWallet";[m
+[31m-import {[m
+[31m-  ArrowUpRight,[m
+[31m-  FileText,[m
+[31m-  Video,[m
+[31m-  LayoutDashboard,[m
+[31m-  BarChart2,[m
+[31m-  Music,[m
+[31m-  Megaphone,[m
+[31m-  User,[m
+[31m-  ThumbsUp,[m
+[31m-  Download,[m
+[31m-  MapPin,[m
+[31m-  Radio,[m
+[31m-  Clock,[m
+[31m-  Trash2,[m
+[31m-  Search,[m
+[31m-} from "lucide-react";[m
+[31m-import {[m
+[31m-  LineChart,[m
+[31m-  Line,[m
+[31m-  BarChart,[m
+[31m-  Bar,[m
+[31m-  XAxis,[m
+[31m-  YAxis,[m
+[31m-  CartesianGrid,[m
+[31m-  Tooltip,[m
+[31m-  ResponsiveContainer,[m
+[31m-} from "recharts";[m
+[31m-import { NotificationIcon } from "../../assets/notification";[m
+[31m-[m
+ import InfluencerNotificationsDetail from "./influencer/InfluencerNotificationsDetail";[m
+ import StationDashboard from "./station/StationDashboard";[m
+ import StationNotifications from "./station/StationNotifications";[m
+[1mdiff --git a/src/pages/dashboard_pages/artist/DashboardHome.tsx b/src/pages/dashboard_pages/artist/DashboardHome.tsx[m
+[1mindex b5644de..af20962 100644[m
+[1m--- a/src/pages/dashboard_pages/artist/DashboardHome.tsx[m
+[1m+++ b/src/pages/dashboard_pages/artist/DashboardHome.tsx[m
+[36m@@ -1,7 +1,6 @@[m
+ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";[m
+ import { LayoutDashboard, BarChart2, Music, Megaphone, User } from "lucide-react";[m
+ import { FileText, Video } from "lucide-react";[m
+[31m-import { ArrowUpRight } from "lucide-react";[m
+ import { StatCard } from "@/components/artist/StatCard";[m
+ import { useContext } from "react";[m
+ import { AppContext } from "@/Context/AppContext";[m
+[1mdiff --git a/src/pages/dashboard_pages/artist/JobsPage.tsx b/src/pages/dashboard_pages/artist/JobsPage.tsx[m
+[1mindex 50bef32..172c3aa 100644[m
+[1m--- a/src/pages/dashboard_pages/artist/JobsPage.tsx[m
+[1m+++ b/src/pages/dashboard_pages/artist/JobsPage.tsx[m
+[36m@@ -1,6 +1,4 @@[m
+ import React from "react";[m
+[31m-import { ArrowUpRight, FileText, Video, LayoutDashboard, BarChart2, Music, Megaphone, User, ThumbsUp, Download, MapPin, Radio, Clock, Trash2, Search } from "lucide-react";[m
+[31m-[m
+ [m
+ [m
+ export const JobsPage: React.FC = () => {[m
+[36m@@ -557,4 +555,4 @@[m [mexport const JobsPage: React.FC = () => {[m
+       </div>[m
+     </div>[m
+   );[m
+[31m-};[m
+\ No newline at end of file[m
+[32m+[m[32m};[m
+[1mdiff --git a/src/pages/dashboard_pages/artist/StatisticsPage.tsx b/src/pages/dashboard_pages/artist/StatisticsPage.tsx[m
+[1mindex 69bfc83..4399677 100644[m
+[1m--- a/src/pages/dashboard_pages/artist/StatisticsPage.tsx[m
+[1m+++ b/src/pages/dashboard_pages/artist/StatisticsPage.tsx[m
+[36m@@ -2,8 +2,6 @@[m [mimport React from "react";[m
+ import {[m
+   LineChart,[m
+   Line,[m
+[31m-  BarChart,[m
+[31m-  Bar,[m
+   XAxis,[m
+   YAxis,[m
+   CartesianGrid,[m
+[36m@@ -297,4 +295,4 @@[m [mexport const StatisticsPage: React.FC = () => {[m
+       )}[m
+     </div>[m
+   );[m
+[31m-};[m
+\ No newline at end of file[m
+[32m+[m[32m};[m
+[1mdiff --git a/src/pages/login.tsx b/src/pages/login.tsx[m
+[1mindex 84c7e64..56e8c6f 100644[m
+[1m--- a/src/pages/login.tsx[m
+[1m+++ b/src/pages/login.tsx[m
+[36m@@ -8,7 +8,7 @@[m [mimport { useAuth } from "../hooks/auth/useAuth";[m
+ [m
+ [m
+ export const LoginPage: React.FC = () => {[m
+[31m-  const { login, loading, error } = useAuth();[m
+[32m+[m[32m  const { login, error } = useAuth();[m
+   const navigate = useNavigate();[m
+ [m
+ [m
+[1mdiff --git a/src/pages/signup.tsx b/src/pages/signup.tsx[m
+[1mindex 8f02942..ac53126 100644[m
+[1m--- a/src/pages/signup.tsx[m
+[1m+++ b/src/pages/signup.tsx[m
+[36m@@ -8,7 +8,7 @@[m [mimport { useAuth } from "../hooks/auth/useAuth";[m
+ [m
+ [m
+ export const SignupPage: React.FC = () => {[m
+[31m-  const { register, loading, error } = useAuth();[m
+[32m+[m[32m  const { register } = useAuth();[m
+ [m
+   const handleSubmit = async (e: any) => {[m
+     e.preventDefault();[m

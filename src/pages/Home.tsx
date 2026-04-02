@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-
+import previewScreen from ".././assets/landing-page/audorascreen.svg";
 import linesGraphic from ".././assets/landing-page/audora-lines.png";
 import cardOneGlow from ".././assets/landing-page/first-card/card-1-above-light.png";
 import cardOneBulb from ".././assets/landing-page/first-card/light-bulb.png";
@@ -57,7 +58,7 @@ const faqCategories: FaqCategory[] = [
       {
         question: "What is your refund policy?",
         answer:
-          "Our refund policy is no refund after payment. So please don't come and ask for refund because we are not giving you anything. Shishi you are not getting you scammer, after we have promoted your song.",
+          "All payments made on Audora are non-refundable. Once a payment has been completed and a track or album has been submitted for distribution, the service is considered rendered and processing begins immediately.",
       },
       {
         question: "What payment methods do you accept?",
@@ -160,75 +161,129 @@ function Home() {
     setOpenQuestion((current) => (current === question ? "" : question));
   };
 
+  const fadeInUp = {
+    initial: { opacity: 0, y: 30 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.6, ease: "easeOut" }
+  };
 
+  const staggerContainer = {
+    animate: {
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const cardVariants = {
+    initial: { opacity: 0, y: 20 },
+    whileInView: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 }
+    },
+    hover: {
+      y: -8,
+      transition: { duration: 0.3 },
+      boxShadow: "0 25px 50px -12px rgba(245, 182, 64, 0.25)"
+    }
+  };
 
   return (
-    <div className="bg-[#050505] text-white p-4">
-      <SEO 
-        title="Audora - Your Sound, the World's Stage" 
+    <div className="bg-[#050505] text-white p-0 md:p-4">
+      <SEO
+        title="Audora - Your Sound, the World's Stage"
         description="Audora connects musicians with influencers and media outlets to amplify their reach. Promote your music effectively today."
       />
       <InstallBanner show={isInstallable} onInstall={promptInstall} isIOS={isIOS} />
-      <div className="relative min-h-screen overflow-hidden rounded-b-[4rem] bg-gradient-to-b from-black via-[#1a1207] to-[#b27618]">
+      <div className="relative overflow-hidden rounded-b-[2rem] bg-gradient-to-b from-black md:h-auto h-[70vh] via-[#1a1207] to-[#b27618]">
         <img
           src={linesGraphic}
           alt="Decorative waveform"
-          className="animate-wave pointer-events-none select-none absolute inset-x-0 bottom-[-6rem] mx-auto w-[115%] max-w-none opacity-90"
+          className="hidden md:block animate-wave pointer-events-none select-none absolute inset-x-0 bottom-[-6rem] mx-auto w-[115%] max-w-none opacity-90"
         />
 
-     
-        <section
+
+        <motion.section
           id="home"
+          initial="initial"
+          animate="animate"
+          variants={staggerContainer}
           className="hero-font relative z-10 flex min-h-screen flex-col items-center justify-start px-6 pt-24 pb-24 sm:pt-28"
         >
-          <span className="animate-fade-in-up inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80 shadow-[0_10px_30px_rgba(0,0,0,0.45)]">
+          <motion.span
+            variants={fadeInUp}
+            className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-white/80 shadow-[0_10px_30px_rgba(0,0,0,0.45)]"
+          >
             <span className="mr-2">🚀</span>
             Distribute Your First Track
-          </span>
+          </motion.span>
 
-          <h1 className="animate-fade-in-up delay-100 mt-10 max-w-4xl text-center text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
+          <motion.h1
+            variants={fadeInUp}
+            className="mt-10 max-w-4xl text-center text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl"
+          >
             With <span className="text-[#f5b640]">Audora</span>, take your music
             from your device to the world
-          </h1>
+          </motion.h1>
 
-          <p className="animate-fade-in-up delay-200 mt-6 max-w-2xl text-center text-base text-white/80 sm:text-lg">
+          <motion.p
+            variants={fadeInUp}
+            className="mt-6 max-w-2xl text-center text-base text-white/80 sm:text-lg"
+          >
             Upload your songs and videos once, and we'll deliver them to top
             streaming platforms, radio stations, TV channels, and influencers.
-          </p>
+          </motion.p>
 
-          <Link to="/login" className="animate-fade-in-up delay-300">
-            <button className="mt-10  text-white inline-flex items-center rounded-lg bg-gradient-to-r from-[#FFAD00] to-[#BD8000] px-10 py-5 text-base font-semibold text-black transition duration-200 hover:bg-[#ffca52] focus:outline-none focus-visible:ring-2 focus-visible:ring-black/40">
-             <Headphones className="w-6 h-6 mr-2"/> Get Started for Free
-            </button>
-          </Link>
+          <motion.div variants={fadeInUp}>
+            <Link to="/login">
+              <button className="mt-10  text-white inline-flex items-center rounded-lg bg-gradient-to-r from-[#FFAD00] to-[#BD8000] px-10 py-5 text-base font-semibold text-black transition duration-200 hover:bg-[#ffca52] focus:outline-none focus-visible:ring-2 focus-visible:ring-black/40">
+                <Headphones className="w-6 h-6 mr-2" /> Get Started for Free
+              </button>
+            </Link>
+          </motion.div>
 
-          <p className="animate-fade-in-up delay-400 mt-6 text-sm font-medium uppercase tracking-[0.3em] text-white/60">
+          <motion.p
+            variants={fadeInUp}
+            className="mt-6 text-sm font-medium uppercase tracking-[0.3em] text-white/60"
+          >
             All at the beat of your palm.
-          </p>
+          </motion.p>
 
-          <div className="animate-fade-in-up delay-400 mt-16 w-full max-w-5xl">
-            {/* <div className="relative rounded-[2.5rem] border border-white/10 bg-black/80 p-4 shadow-[0_40px_120px_rgba(0,0,0,0.6)] backdrop-blur">
-              <div className="rounded-[2rem] bg-gradient-to-br from-black via-[#120b05] to-[#281b0c] p-6">
-                <img
-                  src={previewScreen}
-                  alt="Audora dashboard preview"
-                  className="w-full"
-                />
-              </div>
-              <div className="pointer-events-none absolute inset-0 rounded-[2.5rem] ring-1 ring-white/5" />
-            </div> */}
-          </div>
-        </section>
+          <motion.div
+            variants={fadeInUp}
+            className="mt-16 w-full max-w-7xl relative z-10 bottom-[-8rem]"
+          >
+            <div className="rounded-[2rem] bg-gradient-to-br from-black via-[#120b05] to-[#281b0c] p-6">
+              <img
+                src={previewScreen}
+                alt="Audora dashboard preview"
+                className="w-[2100px]"
+              />
+            </div>
+            <div className="pointer-events-none absolute inset-0 rounded-[2.5rem] ring-1 ring-white/5" />
+          </motion.div>
+        </motion.section>
       </div>
-      <section id="about-us" className="relative overflow-hidden py-28">
-        <img
+      <section id="about-us" className="relative overflow-hidden py-0 md:py-28">
+        <motion.img
+          initial={{ opacity: 0, x: 50 }}
+          whileInView={{ opacity: 0.6, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
           src={blurFlameRight}
           alt="Decorative blur"
           className="pointer-events-none absolute -left-24 top-10 w-80 opacity-60 blur-lg"
         />
         <div className="relative mx-auto max-w-6xl px-6">
           <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-12">
-            <div className="hero-font md:col-span-5">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+              className="hero-font md:col-span-5"
+            >
               <img src={mic} alt="Golden microphone " className="w-50" />
               <h2 className="text-3xl font-semibold text-white sm:text-4xl">
                 About Us
@@ -243,36 +298,51 @@ function Home() {
               <p className="mt-8 text-2xl font-semibold text-[#f5b640] sm:text-3xl">
                 Audora - Your Sound, the World&apos;s Stage.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="md:col-span-7 flex items-start justify-end gap-6">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+              className="md:col-span-7 flex items-start justify-end gap-6"
+            >
               <img
                 src={singer}
                 alt="Singer recording"
                 className="h-[617px] w-[701px]  object-cover shadow-[0_25px_80px_rgba(10,0,0,0.6)]"
               />
-              {/* <div className="flex flex-col justify-end">
-                <div className="h-[220px] w-[280px] overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#1a0d07] via-[#120805] to-[#050302] shadow-[0_20px_60px_rgba(10,0,0,0.55)]">
-                  <div className="h-full w-full bg-[radial-gradient(circle_at_center,_rgba(245,182,64,0.18),_transparent_65%)]" />
-                </div>
-              </div> */}
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
-      <section id="offer" className="relative overflow-hidden py-24">
-        <img
+      <section id="offer" className="relative overflow-hidden py-10 md:py-24">
+        <motion.img
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 0.7, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.2 }}
           src={blurFlameLeft}
           alt="Decorative blur"
           className="pointer-events-none absolute -left-32 top-[15%] w-72 opacity-70 blur-sm"
         />
-        <img
+        <motion.img
+          initial={{ opacity: 0, x: 50 }}
+          whileInView={{ opacity: 0.7, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1.2 }}
           src={blurFlameRight}
           alt="Decorative blur"
           className="pointer-events-none absolute -right-24 bottom-0 w-72 opacity-70 blur-sm"
         />
         <div className="relative mx-auto max-w-7xl px-6">
-          <div className="hero-font text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="hero-font text-center"
+          >
             <h2 className="text-3xl font-semibold sm:text-4xl">
               Why Clients Stick With Us
             </h2>
@@ -282,10 +352,20 @@ function Home() {
               building your audience, we provide the tools, network, and support
               to take your music further.
             </p>
-          </div>
+          </motion.div>
 
-          <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-12 ">
-            <div className="relative overflow-hidden rounded-[28px] border border-white/5 bg-gradient-to-br from-[#1f120a] via-[#0d0805] to-[#1a0d07] w-[380.02px] h-[349.93px] p-6 shadow-[0_30px_80px_rgba(8,0,0,0.55)] md:col-span-4">
+          <motion.div
+            initial="initial"
+            whileInView="whileInView"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+            className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-12 "
+          >
+            <motion.div
+              variants={cardVariants}
+              whileHover="hover"
+              className="relative overflow-hidden rounded-[28px] border border-white/5 bg-gradient-to-br from-[#1f120a] via-[#0d0805] to-[#1a0d07]  p-6 shadow-[0_30px_80px_rgba(8,0,0,0.55)] md:col-span-4"
+            >
               <img
                 src={cardOneGlow}
                 alt=""
@@ -315,9 +395,13 @@ function Home() {
                   performance, view insights, and stay updated on every release.
                 </p>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="relative overflow-hidden rounded-[28px] border border-white/5 bg-gradient-to-br from-[#2d170b] via-[#120905] to-[#1b0d07] w-[380.02px] h-[349.93px] p-6 shadow-[0_30px_80px_rgba(8,0,0,0.55)] md:col-span-4">
+            <motion.div
+              variants={cardVariants}
+              whileHover="hover"
+              className="relative overflow-hidden rounded-[28px] border border-white/5 bg-gradient-to-br from-[#2d170b] via-[#120905] to-[#1b0d07]  p-6 shadow-[0_30px_80px_rgba(8,0,0,0.55)] md:col-span-4"
+            >
               <img
                 src={cardTwoGlow}
                 alt=""
@@ -343,9 +427,13 @@ function Home() {
                   worldwide. No hassle, no middlemen. Just pure reach.
                 </p>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="relative overflow-hidden rounded-[28px] border border-white/5 bg-gradient-to-br from-[#20170e] via-[#0e0a07] to-[#1a120b] w-[380.02px] h-[349.93px] p-6 shadow-[0_30px_80px_rgba(8,0,0,0.55)] md:col-span-4">
+            <motion.div
+              variants={cardVariants}
+              whileHover="hover"
+              className="relative overflow-hidden rounded-[28px] border border-white/5 bg-gradient-to-br from-[#20170e] via-[#0e0a07] to-[#1a120b]  p-6 shadow-[0_30px_80px_rgba(8,0,0,0.55)] md:col-span-4"
+            >
               <img
                 src={cardThreeGlow}
                 alt=""
@@ -366,9 +454,13 @@ function Home() {
                   completed tasks all in one place.
                 </p>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="relative overflow-hidden rounded-[28px] border border-white/5 bg-gradient-to-br from-[#221307] via-[#120805] to-[#0c0805] px-7 py-8 shadow-[0_30px_80px_rgba(8,0,0,0.55)] md:col-span-7">
+            <motion.div
+              variants={cardVariants}
+              whileHover="hover"
+              className="relative overflow-hidden rounded-[28px] border border-white/5 bg-gradient-to-br from-[#221307] via-[#120805] to-[#0c0805] px-7 py-8 shadow-[0_30px_80px_rgba(8,0,0,0.55)] md:col-span-7"
+            >
               <img
                 src={cardFourCorner}
                 alt=""
@@ -405,9 +497,13 @@ function Home() {
                   <span className="text-xs text-white/60">uploaded media</span>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="relative overflow-hidden rounded-[28px] border border-white/5 bg-gradient-to-br from-[#2c1808] via-[#120904] to-[#120804] px-7 py-8 shadow-[0_30px_80px_rgba(8,0,0,0.55)] md:col-span-5">
+            <motion.div
+              variants={cardVariants}
+              whileHover="hover"
+              className="relative overflow-hidden rounded-[28px] border border-white/5 bg-gradient-to-br from-[#2c1808] via-[#120904] to-[#120804] px-7 py-8 shadow-[0_30px_80px_rgba(8,0,0,0.55)] md:col-span-5"
+            >
               <img
                 src={cardFiveCorner}
                 alt=""
@@ -429,22 +525,26 @@ function Home() {
                   connects with your sound.
                 </p>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           <div className="mt-16 flex flex-col items-center gap-6 text-center md:flex-row md:justify-between">
             <p className="max-w-3xl text-sm text-white/70 sm:text-base md:text-left">
               Are you an artist? Click the Join Us button to on-board on Audora
               to make your music career experience smoother than ever.
             </p>
-            <button className="inline-flex items-center rounded-full bg-[#f5b640] px-8 py-3 text-sm font-semibold text-black transition duration-200 hover:bg-[#ffca52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#f5b640]/40">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-flex items-center rounded-lg bg-[#FFAD00] px-8 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-[#ffca52] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#f5b640]/40"
+            >
               Join Us
-            </button>
+            </motion.button>
           </div>
         </div>
       </section>
 
-      <section id="faq" className="relative overflow-hidden py-24">
+      <section id="faq" className="relative overflow-hidden py-10 md:py-24">
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-white/0 opacity-[0.15]" />
         <img
           src={blurFlameLeft}
@@ -474,11 +574,10 @@ function Home() {
                     key={category.id}
                     type="button"
                     onClick={() => handleCategoryChange(category.id)}
-                    className={`group flex w-full items-center justify-between rounded-3xl border px-5 py-4 text-sm font-medium transition-all duration-200 ${
-                      isActive
-                        ? "border-white/10 bg-gradient-to-r from-[#f5b640] via-[#f0a11c] to-[#d4861a] text-black shadow-[0_18px_40px_rgba(212,134,26,0.35)]"
-                        : "border-white/10 bg-white/5 text-white/75 hover:border-[#f5b640]/60 hover:text-white"
-                    }`}
+                    className={`group flex w-full items-center justify-between rounded-3xl border px-5 py-4 text-sm font-medium transition-all duration-200 ${isActive
+                      ? "border-white/10 bg-gradient-to-r from-[#f5b640] via-[#f0a11c] to-[#d4861a] text-black shadow-[0_18px_40px_rgba(212,134,26,0.35)]"
+                      : "border-white/10 bg-white/5 text-white/75 hover:border-[#f5b640]/60 hover:text-white"
+                      }`}
                   >
                     <span className="hero-font text-base">
                       {category.label}
@@ -496,11 +595,10 @@ function Home() {
                 return (
                   <div
                     key={faq.question}
-                    className={`overflow-hidden rounded-3xl border transition-all duration-300 ${
-                      isOpen
-                        ? "border-[#f5b640]/60 bg-white/10 shadow-[0_25px_65px_rgba(9,0,0,0.45)]"
-                        : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
-                    }`}
+                    className={`overflow-hidden rounded-3xl border transition-all duration-300 ${isOpen
+                      ? "border-[#f5b640]/60 bg-white/10 shadow-[0_25px_65px_rgba(9,0,0,0.45)]"
+                      : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
+                      }`}
                   >
                     <button
                       type="button"
@@ -514,11 +612,21 @@ function Home() {
                         {isOpen ? "-" : "+"}
                       </span>
                     </button>
-                    {isOpen && (
-                      <div className="border-t border-white/10 px-6 pb-6 text-sm text-white/70">
-                        {faq.answer}
-                      </div>
-                    )}
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="border-t border-white/10 px-6 pb-6 text-sm text-white/70"
+                        >
+                          <div className="pt-4">
+                            {faq.answer}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 );
               })}
