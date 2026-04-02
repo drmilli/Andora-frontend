@@ -196,7 +196,7 @@ function Home() {
         description="Audora connects musicians with influencers and media outlets to amplify their reach. Promote your music effectively today."
       />
       <InstallBanner show={isInstallable} onInstall={promptInstall} isIOS={isIOS} />
-      <div className="relative overflow-hidden rounded-b-[2rem] bg-gradient-to-b from-black md:h-auto h-[70vh] via-[#1a1207] to-[#b27618]">
+      <div className="relative overflow-hidden rounded-b-[2rem] bg-gradient-to-b from-black md:h-auto h-[100vh] via-[#1a1207] to-[#b27618]">
         <img
           src={linesGraphic}
           alt="Decorative waveform"
@@ -245,7 +245,7 @@ function Home() {
 
           <motion.p
             variants={fadeInUp}
-            className="mt-6 text-sm font-medium uppercase tracking-[0.3em] text-white/60"
+            className="mt-6 text-sm text-center font-medium uppercase tracking-[0.3em] text-white/60"
           >
             All at the beat of your palm.
           </motion.p>
