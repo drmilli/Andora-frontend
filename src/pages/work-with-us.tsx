@@ -193,7 +193,7 @@ export const WorkWithUsPage: React.FC = () => {
             {/* Text Column — comes AFTER image on mobile (order-2), BEFORE image on desktop (order-1) */}
             <div className="flex flex-col justify-center p-8 md:p-12 lg:p-24 relative order-1 lg:order-1">
               {/* Badge Pill — desktop only */}
-              <div className="h-[90px] md:h-[130px] w-[120px] md:w-[200px] flex justify-center items-center text-2xl md:text-[40px] font-medium rounded-b-full bg-[#A67102] absolute top-0 left-0 md:left-25 z-20 ">
+              <div className="h-[90px] md:h-[130px] w-[120px] md:w-[200px] flex justify-center items-center text-2xl md:text-[40px] font-medium rounded-b-full bg-[#A67102] absolute top-0 left-0 md:left-11 z-20 ">
                 Radio
               </div>
 
@@ -238,7 +238,7 @@ export const WorkWithUsPage: React.FC = () => {
             {/* Text Column — second on mobile/md, right on lg+ */}
             <div className="flex flex-col justify-center p-8 md:p-12 lg:p-24 relative order-1 lg:order-2">
               {/* Badge Pill — desktop only */}
-              <div className="h-[90px] md:h-[130px] w-[120px] md:w-[200px] flex justify-center items-center text-2xl md:text-[40px] font-medium rounded-b-full bg-[#A67102] absolute top-0 left-0 md:left-[73%]  z-20 ">
+              <div className="h-[90px] md:h-[130px] w-[120px] md:w-[200px] flex justify-center items-center text-2xl md:text-[40px] font-medium rounded-b-full bg-[#A67102] absolute top-0 left-0 md:left-[79%]  z-20 ">
                 Tv
               </div>
 

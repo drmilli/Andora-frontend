@@ -1,4 +1,8 @@
 import React from "react";
+import { ScheduleStep } from "@/components/schedule/ScheduleStep";
+import type { ScheduleData } from "@/types/schedule";
+import { PlatformsStep } from "@/components/platforms/PlatformsStep";
+import type { PlatformsData } from "@/components/platforms/PlatformsStep";
 
 
 const FilterButtons: React.FC<{ type: "songs" | "videos" }> = ({ type }) => (
@@ -28,6 +32,13 @@ export const MediaPage: React.FC = () => {
   const [videoDetailTab, setVideoDetailTab] = React.useState<
     "videos" | "about"
   >("videos");
+  // These will be sent to the backend on final submission (Review step)
+
+  const [scheduleData, setScheduleData] = React.useState<ScheduleData | null>(null);
+  console.log(scheduleData)
+
+  const [platformsData, setPlatformsData] = React.useState<PlatformsData | null>(null);
+  console.log(platformsData)
 
   const songs = [
     {
@@ -174,7 +185,11 @@ function Yearselection() {
                         | "review",
                     )
                   }
-                  className={`pb-3 text-sm font-medium transition-colors ${
+                  className={`pb-3 text-sm font-medium transition-colors
+                       w-[80px] h-[80px]
+        md:w-[50px] md:h-[50px]
+        lg:w-[250px] lg:h-[52px]
+                    ${
                     uploadStep === tab.id
                       ? "text-white border-b-2 border-[#A67102]"
                       : "text-gray-400"
@@ -411,141 +426,24 @@ function Yearselection() {
             )}
 
             {uploadStep === "schedule" && (
-              <div>
-                <h2 className="text-xl font-semibold mb-6">
-                  Select Date and Time
-                </h2>
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm text-gray-400 mb-2">
-                      Time
-                    </label>
-                    <div className="flex gap-4 items-center">
-                      <input
-                        type="text"
-                        value="10:30"
-                        readOnly
-                        className="flex-1 bg-transparent border border-gray-700 rounded-lg px-4 py-3 text-white"
-                      />
-                      <span className="text-gray-400 text-sm">(GMT +1)</span>
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex gap-4 overflow-x-auto pb-2">
-                      {[
-                        "9:00",
-                        "9:30",
-                        "10:00",
-                        "10:30",
-                        "11:00",
-                        "11:30",
-                        "12:00",
-                        "12:30",
-                      ].map((time) => (
-                        <button
-                          key={time}
-                          className={`px-3 py-2 rounded-lg whitespace-nowrap text-sm font-medium transition-colors ${
-                            time === "10:30"
-                              ? "bg-[#A67102] text-white"
-                              : "bg-[#2a2a2a] text-gray-400 hover:bg-[#3a3a3a]"
-                          }`}
-                        >
-                          {time}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm text-gray-400 mb-4">
-                      Date
-                    </label>
-                    <p className="text-white mb-4">6. January 2022</p>
-                    <div className="bg-[#1a1a1a] rounded-lg p-4">
-                      <p className="text-gray-400 text-sm">Calendar picker</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-4 mt-8">
-                  <button
-                    onClick={() => setUploadStep("tracks")}
-                    className="flex-1 px-4 py-3 border border-gray-700 text-white rounded-lg hover:bg-[#1a1a1a] transition-colors font-medium"
-                  >
-                    Back
-                  </button>
-                  <button
-                    onClick={() => setUploadStep("platforms")}
-                    className="flex-1 px-4 py-3 bg-[#A67102] text-white rounded-lg hover:bg-[#8a5e02] transition-colors font-medium"
-                  >
-                    Continue
-                  </button>
-                </div>
-              </div>
+              <ScheduleStep
+                onBack={() => setUploadStep("tracks")}
+                onContinue={(data) => {
+                  setScheduleData(data);
+                  setUploadStep("platforms");
+                }}
+              />
             )}
 
             {uploadStep === "platforms" && (
-              <div>
-                <h2 className="text-xl font-semibold mb-6">
-                  {activeTab === "songs" ? "Streaming Apps" : "Video Platforms"}
-                </h2>
-                <div className="grid grid-cols-2 gap-4">
-                  {activeTab === "videos"
-                    ? [
-                        "Sportify",
-                        "Youtube Music",
-                        "Bandcamp",
-                        "Tidal Music",
-                        "Pandora",
-                      ].map((platform) => (
-                        <div
-                          key={platform}
-                          className="bg-[#1a1a1a] rounded-lg p-4 border border-gray-700 hover:border-[#A67102] cursor-pointer transition-colors"
-                        >
-                          <p className="text-white text-sm font-medium">
-                            {platform}
-                          </p>
-                        </div>
-                      ))
-                    : [
-                        "Spotify",
-                        "Apple Music",
-                        "Amazon Music",
-                        "Tidal Music",
-                        "Deezer",
-                        "Sound Cloud",
-                        "Qobuz",
-                        "Youtube Music",
-                        "Bandcamp",
-                        "Pandora",
-                      ].map((platform) => (
-                        <div
-                          key={platform}
-                          className="bg-[#1a1a1a] rounded-lg p-4 border border-gray-700 hover:border-[#A67102] cursor-pointer transition-colors"
-                        >
-                          <p className="text-white text-sm font-medium">
-                            {platform}
-                          </p>
-                        </div>
-                      ))}
-                </div>
-
-                <div className="flex gap-4 mt-8">
-                  <button
-                    onClick={() => setUploadStep("schedule")}
-                    className="flex-1 px-4 py-3 border border-gray-700 text-white rounded-lg hover:bg-[#1a1a1a] transition-colors font-medium"
-                  >
-                    Back
-                  </button>
-                  <button
-                    onClick={() => setUploadStep("review")}
-                    className="flex-1 px-4 py-3 bg-[#A67102] text-white rounded-lg hover:bg-[#8a5e02] transition-colors font-medium"
-                  >
-                    Continue
-                  </button>
-                </div>
-              </div>
+              <PlatformsStep
+                type={activeTab}
+                onBack={() => setUploadStep("schedule")}
+                onContinue={(data) => {
+                  setPlatformsData(data);
+                  setUploadStep("review");
+                }}
+              />
             )}
 
             {uploadStep === "review" && (
@@ -827,7 +725,7 @@ function Yearselection() {
             )}
           </div>
         ) : (
-          // Main Media View
+      
           <>
             <h1 className="text-2xl font-semibold mb-6">MEDIA</h1>
 
@@ -835,7 +733,9 @@ function Yearselection() {
             <div className="flex gap-8 border-b border-gray-700 mb-6">
               <button
                 onClick={() => setActiveTab("songs")}
-                className={`pb-4 font-semibold transition-colors ${
+                className={`pb-4 font-semibold transition-colors                   w-[80px] h-[80px]
+        md:w-[50px] md:h-[50px]
+        lg:w-[550px] lg:h-[52px] ${
                   activeTab === "songs"
                     ? "text-white border-b-2 border-[#A67102]"
                     : "text-gray-400"
@@ -845,7 +745,9 @@ function Yearselection() {
               </button>
               <button
                 onClick={() => setActiveTab("videos")}
-                className={`pb-4 font-semibold transition-colors ${
+                className={`pb-4 font-semibold transition-colors  w-[80px] h-[80px]
+        md:w-[50px] md:h-[50px]
+        lg:w-[550px] lg:h-[52px] ${
                   activeTab === "videos"
                     ? "text-white border-b-2 border-[#A67102]"
                     : "text-gray-400"
