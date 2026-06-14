@@ -15,6 +15,7 @@ export const useAuth = () => {
   const { setToken, setUser } = context;
 
   const login = async (payload: LoginPayload) => {
+    console.log(payload)
     try {
       setLoading(true);
       setError(null);
@@ -35,6 +36,7 @@ export const useAuth = () => {
   };
 
   const register = async (payload: SignupPayload) => {
+    console.log(payload)
     try {
       setLoading(true);
       setError(null);
@@ -50,6 +52,7 @@ export const useAuth = () => {
       setLoading(false);
     }
   };
+  console.log(error)
   const logout = () => {
     localStorage.removeItem("token");
     setToken(null);

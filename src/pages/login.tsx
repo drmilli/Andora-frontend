@@ -40,6 +40,7 @@ export const LoginPage: React.FC = () => {
       </div>
 
       <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        {error && <p className="text-red-500">{error}</p>}
         <AuthInput
           id="email"
           label="Email Address"

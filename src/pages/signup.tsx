@@ -8,14 +8,14 @@ import { useAuth } from "../hooks/auth/useAuth";
 
 
 export const SignupPage: React.FC = () => {
-  const { register } = useAuth();
+  const { register,error } = useAuth();
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const form = new FormData(e.target);
     await register({
       firstname: String(form.get("firstname")),
-      lastname: String(form.get("lastname")),
+      surname: String(form.get("surname")),
       username: String(form.get("username")),
       email: String(form.get("email")),
       password: String(form.get("password")),
@@ -43,6 +43,7 @@ export const SignupPage: React.FC = () => {
       </div>
 
       <form className="mt-5 space-y-5" onSubmit={handleSubmit}>
+        {error && <p className="text-red-500">{error}</p>}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <AuthInput
             label="First Name"
@@ -52,11 +53,11 @@ export const SignupPage: React.FC = () => {
             name="firstname"
           />
           <AuthInput
-            label="Last Name"
+            label="Surname"
             type="text"
-            placeholder="Enter last name"
+            placeholder="Enter surname"
             required
-            name="lastname"
+            name="surname"
           />
         </div>
 

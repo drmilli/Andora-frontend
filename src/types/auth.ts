@@ -7,7 +7,7 @@ export interface LoginPayload {
 
 export interface SignupPayload {
   firstname:string;
-  lastname:string;
+  surname:string;
   username:string;
   email: string;
   password: string;
