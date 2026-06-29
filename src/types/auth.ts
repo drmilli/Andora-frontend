@@ -14,15 +14,15 @@ export interface SignupPayload {
   password_confirmation:string
 }
 
-export interface  SignupResponse {
-  email: string;
-  password: string;
-}
 
 export interface User {
-  id: number;
+  id: string;
   email: string;
   username: string;
+  firstname: string;
+  surname: string;
+  role: string;
+  profilePicture?: string | null;
 }
 export interface AuthResponse {
   token: string;

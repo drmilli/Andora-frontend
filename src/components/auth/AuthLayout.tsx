@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import logo from "../../assets/audora-logo.svg";
 import diskwave from "../../assets/auth/diskwave.svg";
 
@@ -30,7 +31,9 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
 
       <div className={`relative z-10 w-full ${maxWidthClass} px-6`}>
         <div className="flex justify-center">
-          <img src={logo} alt="Audora" className="h-14 w-auto" />
+          <Link to="/">
+            <img src={logo} alt="Audora" className="h-14 w-auto" />
+          </Link>
         </div>
 
         <div className="mt-8 text-center">

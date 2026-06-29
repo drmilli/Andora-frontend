@@ -1,9 +1,10 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { LayoutDashboard, BarChart2, Music, Megaphone, User } from "lucide-react";
+import { LayoutDashboard, BarChart2, Music, Megaphone, User, X, CheckCircle } from "lucide-react";
 import { FileText, Video } from "lucide-react";
 import { StatCard } from "@/components/artist/StatCard";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AppContext } from "@/Context/AppContext";
+import { useLocation } from "react-router-dom";
 
 type RecentUpload = {
   type: string;
@@ -67,13 +68,38 @@ const recentUploads: RecentUpload[] = [
 ];
 
 export const DashboardHome: React.FC = () => {
-  // const { user } = useContext(AppContext);
   const context = useContext(AppContext);
   const user = context?.user;
-  console.log(user);
+  const location = useLocation();
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (location.state?.signupSuccess) {
+      setSuccessMessage(
+        `Welcome, ${location.state.username || user?.username || ""}! Your account has been created successfully.`
+      );
+      // Clear the state so the banner doesn't reappear on navigation
+      window.history.replaceState({}, document.title);
+      // Auto-dismiss after 6 seconds
+      const timer = setTimeout(() => setSuccessMessage(null), 6000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   return (
     <div className="w-full pb-28 md:pb-0">
+      {successMessage && (
+        <div className="mb-6 flex items-center gap-3 rounded-xl border border-[#A67102]/40 bg-[#A67102]/10 px-4 py-3 text-sm text-[#f5b640]">
+          <CheckCircle size={18} className="shrink-0" />
+          <span className="flex-1">{successMessage}</span>
+          <button
+            onClick={() => setSuccessMessage(null)}
+            className="shrink-0 rounded p-0.5 transition hover:bg-[#A67102]/20"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
       <p className="text-lg text-gray-300 mb-6">Hello, {user?.username}</p>
 
       {/* Stats Grid - responsive: 1 col on mobile, 2 on sm, 4 on lg */}
