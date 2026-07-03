@@ -8,7 +8,7 @@ import { useAuth } from "../hooks/auth/useAuth";
 
 
 export const SignupPage: React.FC = () => {
-  const { register,error } = useAuth();
+  const { register, error } = useAuth();
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();

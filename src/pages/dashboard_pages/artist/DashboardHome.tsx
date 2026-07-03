@@ -1,6 +1,7 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { LayoutDashboard, BarChart2, Music, Megaphone, User, Banknote, Clipboard } from "lucide-react";
-import { FileText } from "lucide-react";
+import { LayoutDashboard, BarChart2, Music, Megaphone, User, Clipboard, Banknote } from "lucide-react";
+import { FileText, } from "lucide-react";
+
 import { StatCard } from "@/components/artist/StatCard";
 import { useContext } from "react";
 import { AppContext } from "@/Context/AppContext";

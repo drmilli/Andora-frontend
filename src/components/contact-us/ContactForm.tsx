@@ -1,11 +1,12 @@
-import blurFlameLeft from "../../assets/landing-page/blur-flame.png";
-import blurFlameRight from "../../assets/landing-page/blur-flame2.png";
+
+// import blurFlameLeft from "./../blur-flame.png";
+// import blurFlameRight from "./../blur-flame2.png";
 
 const ContactForm = () => {
     return (
         <div>
          <section id="contact" className="relative overflow-hidden py-10 md:py-28 bg-black">
-        <img
+        {/* <img
           src={blurFlameLeft}
           alt="Decorative blur"
           className="pointer-events-none absolute -left-24 top-10 w-96 opacity-70 blur-2xl"
@@ -14,7 +15,7 @@ const ContactForm = () => {
           src={blurFlameRight}
           alt="Decorative blur"
           className="pointer-events-none absolute -right-20 bottom-10 w-[26rem] opacity-60 blur-2xl"
-        />
+        /> */}
         <div className="relative mx-auto max-w-5xl px-6">
           <div className="hero-font text-center">
             <h2 className="text-3xl font-semibold text-white sm:text-4xl">

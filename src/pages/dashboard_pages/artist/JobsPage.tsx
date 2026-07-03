@@ -1,6 +1,7 @@
 import React from "react";
 
 
+
 export const JobsPage: React.FC = () => {
   const [activeMainTab, setActiveMainTab] = React.useState<
     "pending" | "completed" | "disputes"

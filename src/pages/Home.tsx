@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import previewScreen from ".././assets/landing-page/audorascreen.svg";
-import linesGraphic from ".././assets/landing-page/audora-lines.png";
+
 import cardOneGlow from ".././assets/landing-page/first-card/card-1-above-light.png";
 import cardOneBulb from ".././assets/landing-page/first-card/light-bulb.png";
 import cardOneStack from ".././assets/landing-page/first-card/stack.png";
@@ -21,6 +20,7 @@ import blurFlameLeft from ".././assets/landing-page/blur-flame.png";
 import blurFlameRight from ".././assets/landing-page/blur-flame2.png";
 import mic from ".././assets/landing-page/mic.png";
 import singer from ".././assets/landing-page/image1.png";
+
 import {
   ChevronRight,
   Headphones,
@@ -197,13 +197,14 @@ function Home() {
       />
       <InstallBanner show={isInstallable} onInstall={promptInstall} isIOS={isIOS} />
       <div className="relative overflow-hidden rounded-b-[2rem] bg-gradient-to-b from-black md:h-auto h-[100vh] via-[#1a1207] to-[#b27618]">
-        <img
+         
+        {/* <img
           src={linesGraphic}
           alt="Decorative waveform"
           className="hidden md:block animate-wave pointer-events-none select-none absolute inset-x-0 bottom-[-6rem] mx-auto w-[115%] max-w-none opacity-90"
-        />
+        /> */}
 
-
+       
         <motion.section
           id="home"
           initial="initial"
@@ -250,19 +251,18 @@ function Home() {
             All at the beat of your palm.
           </motion.p>
 
-          <motion.div
-            variants={fadeInUp}
-            className="mt-16 w-full max-w-7xl relative z-10 bottom-[-8rem]"
-          >
-            <div className="rounded-[2rem] bg-gradient-to-br from-black via-[#120b05] to-[#281b0c] p-6">
-              <img
-                src={previewScreen}
-                alt="Audora dashboard preview"
-                className="w-[2100px]"
-              />
-            </div>
-            <div className="pointer-events-none absolute inset-0 rounded-[2.5rem] ring-1 ring-white/5" />
-          </motion.div>
+          <div className="animate-fade-in-up delay-400 mt-16 w-full max-w-5xl">
+            {/* <div className="relative rounded-[2.5rem] border border-white/10 bg-black/80 p-4 shadow-[0_40px_120px_rgba(0,0,0,0.6)] backdrop-blur">
+              <div className="rounded-[2rem] bg-gradient-to-br from-black via-[#120b05] to-[#281b0c] p-6">
+                <img
+                  src={previewScreen}
+                  alt="Audora dashboard preview"
+                  className="w-full"
+                />
+              </div>
+              <div className="pointer-events-none absolute inset-0 rounded-[2.5rem] ring-1 ring-white/5" />
+            </div> */}
+          </div>
         </motion.section>
       </div>
       <section id="about-us" className="relative overflow-hidden py-0 md:py-28">
@@ -651,11 +651,6 @@ function Home() {
           </div>
         </div>
       </section>
-
-
-
-
-
     </div>
   );
 }
