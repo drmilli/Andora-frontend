@@ -5,80 +5,56 @@ import {
   Bell,
   BarChart2,
   Music,
-
+  Megaphone,
   Briefcase,
   Wallet,
   User,
-
   X,
-  Settings
+  Lock,
+  Scale,
+  LogOut,
 } from "lucide-react";
 import audoraLogo from "../assets/audora-logo.svg";
-import profilePic from "../assets/ProfilePic.png";
 import { AppContext } from "@/Context/AppContext";
 
-// type NavItem = {
-//   to: string;
-//   label: string;
-//   icon: React.ReactNode;
-// };
-
-// getting a dynamic route based on type dashboard
-export interface NavItemProps {
+type NavItem = {
   to: string;
   label: string;
   icon: React.ReactNode;
-}
-const NAV_ITEMS_BY_ROLE: Record<string, NavItemProps[]> = {
-  artist: [
-    { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
-    { to: "/dashboard/notifications", label: "Notification", icon: <Bell size={20} /> },
-    { to: "/dashboard/my-songs", label: "My songs", icon: <Music size={20} /> },
-    { to: "/dashboard/campaigns", label: "Campaigns", icon: <BarChart2 size={20} /> },
-    { to: "/dashboard/billings", label: "Billings", icon: <Wallet size={20} /> },
-    {to:"/dashboard/settings",label:"Settings",icon:<Settings size={20}/>},
-    // { to: "/dashboard/wallet", label: "Wallet", icon: <Wallet size={20} /> },
-    { to: "/dashboard/profile", label: "Profile", icon: <User size={20} /> },
-  ],
-
-  station: [
-    { to: "/dashboard/station-dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
-    { to: "/dashboard/station-notifications", label: "Notification", icon: <Bell size={20} /> },
-    { to: "/dashboard/station-jobs", label: "Jobs", icon: <Briefcase size={20} /> },
-    { to: "/dashboard/station-pricing", label: "Pricing", icon: <Wallet size={20} /> },
-    { to: "/dashboard/station-profile", label: "Profile", icon: <User size={20} /> },
-  ],
-
-  influencer: [
-    { to: "/dashboard/influencer-dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
-    { to: "/dashboard/influencer-notifications", label: "Notification", icon: <Bell size={20} /> },
-    { to: "/dashboard/influencer-jobs", label: "Jobs", icon: <Briefcase size={20} /> },
-    { to: "/dashboard/influencer-wallets", label: "Wallet", icon: <Wallet size={20} /> },
-    { to: "/dashboard/influencer-profile", label: "Profile", icon: <User size={20} /> },
-  ],
-
-  admin: [
-    { to: "/dashboard/admin-dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
-    { to: "/dashboard/admin-notification", label: "Notification", icon: <Bell size={20} /> },
-    { to: "/dashboard/admin-wallets", label: "Wallet", icon: <Wallet size={20} /> },
-    { to: "/dashboard/admin-profile", label: "Profile", icon: <User size={20} /> },
-    { to: "/dashboard/admin-influencers", label: "Influencers", icon: <User size={20} /> },
-    { to: "/dashboard/admin-radios", label: "Radios", icon: <Music size={20} /> },
-    { to: "/dashboard/admin-tv", label: "TV", icon: <Music size={20} /> },
-    { to: "/dashboard/admin-job", label: "Jobs", icon: <Briefcase size={20} /> },
-  ],
 };
 
-export type UserRole = "artist" | "station" | "influencer" | "admin";
-const user = {
-  role: "artist",
-};
-const navItems = NAV_ITEMS_BY_ROLE[user.role];
-export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void; }> = ({ isOpen = false, onClose }): React.ReactElement => {
-  const context = useContext(AppContext);
-  const user = context?.user;
-  console.log(user);
+const navItems: NavItem[] = [
+  { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
+  {
+    to: "/dashboard/notifications",
+    label: "Notification",
+    icon: <Bell size={20} />,
+  },
+  {
+    to: "/dashboard/statistics",
+    label: "Statistics",
+    icon: <BarChart2 size={20} />,
+  },
+  { to: "/dashboard/media", label: "Media", icon: <Music size={20} /> },
+  {
+    to: "/dashboard/promotion",
+    label: "Promotion",
+    icon: <Megaphone size={20} />,
+  },
+  { to: "/dashboard/jobs", label: "Jobs", icon: <Briefcase size={20} /> },
+  { to: "/dashboard/wallet", label: "Wallet", icon: <Wallet size={20} /> },
+  { to: "/dashboard/profile", label: "Profile", icon: <User size={20} /> },
+];
 
+export const Sidebar: React.FC<{
+  isOpen?: boolean;
+  onClose?: () => void;
+}> = ({ isOpen = false, onClose }): React.ReactElement => {
+
+    const context = useContext(AppContext);
+    const user = context?.user;
+    console.log(user);
+  
   return (
     <>
       {/* Mobile Overlay */}
@@ -136,27 +112,44 @@ export const Sidebar: React.FC<{ isOpen?: boolean; onClose?: () => void; }> = ({
 
           </div>
 
-          {/* Bottom-sticky settings */}
-          <div className="mt-auto pt-4">
-            <div className="">
-              <div className="flex gap-3 justify-between align-middle items-center mb-6 mt-4">
-                <div className="w-12 h-12 rounded-full bg-gray-700 overflow-hidden mb-3 border-2 border-gray-600">
-                  <img
-                    src={profilePic}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div>
-   <h3 className="text-white font-semibold">{user?.username}</h3>
-                <p className="text-xs text-gray-500 truncate w-40">{user?.email}</p>
-                </div>
-             
-              </div>
+        {/* Bottom-sticky settings */}
+        <div className="mt-auto pt-4">
+          <div className="px-2">
+            <p className="text-white font-medium mb-4">Settings</p>
+            <div className="flex items-center justify-start gap-6 text-gray-500 pb-4">
+              <button
+                type="button"
+                aria-label="Lock"
+                className="hover:text-white focus:outline-none"
+              >
+                <Lock size={18} />
+              </button>
+              <button
+                type="button"
+                aria-label="Scale"
+                className="hover:text-white focus:outline-none"
+              >
+                <Scale size={18} />
+              </button>
+              <button
+                type="button"
+                aria-label="User"
+                className="hover:text-white focus:outline-none"
+              >
+                <User size={18} />
+              </button>
+              <button
+                type="button"
+                aria-label="Logout"
+                className="hover:text-white focus:outline-none"
+              >
+                <LogOut size={18} />
+              </button>
             </div>
           </div>
         </div>
-      </aside>
+      </div>
+    </aside>
     </>
   );
 };

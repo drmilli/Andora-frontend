@@ -49,7 +49,6 @@ export const LoginPage: React.FC = () => {
           required
           name="email"
         />
-        {error && <p>{error}</p>}
         <AuthInput
           id="password"
           label="Password"

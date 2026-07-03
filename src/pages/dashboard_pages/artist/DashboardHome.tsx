@@ -1,10 +1,9 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { LayoutDashboard, BarChart2, Music, Megaphone, User, Clipboard, Banknote } from "lucide-react";
-import { FileText, } from "lucide-react";
-
+import { LayoutDashboard, BarChart2, Music, Megaphone, User, X, CheckCircle, Clipboard, Banknote, FileText} from "lucide-react";
 import { StatCard } from "@/components/artist/StatCard";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AppContext } from "@/Context/AppContext";
+import { useLocation } from "react-router-dom";
 
 type RecentUpload = {
   name: string;
@@ -13,23 +12,26 @@ type RecentUpload = {
   image: string;
 };
 
-// NEW: Active campaign card type
 type ActiveCampaign = {
   title: string;
   status: "Active" | "Pending" | "Ended";
   package: string;
   duration: string;
   type: string;
-  progress: number; // 0-100
+  progress: number;
   image: string;
 };
 
-// NEW: Recent campaign grid item type
 type RecentCampaign = {
   title: string;
   type: string;
   date: string;
   image: string;
+};
+
+type SignupState = {
+  signupSuccess?: boolean;
+  username?: string;
 };
 
 const chartData = [
@@ -47,7 +49,6 @@ const recentUploads: RecentUpload[] = [
   { name: "Love you always", days: 2, percentage: 45, image: "https://i.pravatar.cc/80?img=45" },
 ];
 
-// NEW: sample data for Active Campaigns
 const activeCampaigns: ActiveCampaign[] = [
   {
     title: "Smoke",
@@ -78,7 +79,6 @@ const activeCampaigns: ActiveCampaign[] = [
   },
 ];
 
-// NEW: sample data for Recent Campaigns grid
 const recentCampaigns: RecentCampaign[] = [
   { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=30" },
   { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=31" },
@@ -89,34 +89,56 @@ const recentCampaigns: RecentCampaign[] = [
 export const DashboardHome: React.FC = () => {
   const context = useContext(AppContext);
   const user = context?.user;
+  const location = useLocation();
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const state = (location.state as SignupState | null) ?? null;
+
+    if (state?.signupSuccess) {
+      setSuccessMessage(
+        `Welcome, ${state.username || user?.username || ""}! Your account has been created successfully.`
+      );
+      window.history.replaceState({}, document.title);
+      const timer = setTimeout(() => setSuccessMessage(null), 6000);
+      return () => clearTimeout(timer);
+    }
+
+    return undefined;
+  }, [location.state, user?.username]);
 
   return (
     <div className="w-full pb-28 md:pb-0">
-      {/* Header with title + Start Campaign button */}
-      <div className="flex justify-between items-center mb-6">
-        <div>
-  
-          <p className="text-gray-400 text-sm">Hello, {user?.username}</p>
+      {successMessage && (
+        <div className="mb-6 flex items-center gap-3 rounded-xl border border-[#A67102]/40 bg-[#A67102]/10 px-4 py-3 text-sm text-[#f5b640]">
+          <CheckCircle size={18} className="shrink-0" />
+          <span className="flex-1">{successMessage}</span>
+          <button
+            onClick={() => setSuccessMessage(null)}
+            className="shrink-0 rounded p-0.5 transition hover:bg-[#A67102]/20"
+          >
+            <X size={16} />
+          </button>
         </div>
+      )}
 
-      </div>
+      <p className="mb-6 text-lg text-gray-300">Hello, {user?.username}</p>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard icon={<FileText size={20} className="text-[#A67102]" />} title="Song Uploads" value="5" />
         <StatCard icon={<Clipboard size={20} className="text-[#A67102]" />} title="Active Campaigns" value="3" />
         <StatCard icon={<Banknote size={20} className="text-[#A67102]" />} title="Available Balance" value="$104,000.00" />
       </div>
-      {/* Existing Chart & Top Campaign sections kept below, or remove if not needed */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
-        <div className="bg-[#0D0B07] p-4 sm:p-6 rounded-2xl border border-gray-900">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-white font-semibold">Streams</h3>
-            <div className="bg-[#1A1A1A] text-xs px-3 py-1 rounded-md flex items-center text-[#A67102] cursor-pointer">
+
+      <div className="grid grid-cols-1 gap-6 pb-8 lg:grid-cols-2">
+        <div className="rounded-2xl border border-gray-900 bg-[#0D0B07] p-4 sm:p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="font-semibold text-white">Streams</h3>
+            <div className="flex cursor-pointer items-center rounded-md bg-[#1A1A1A] px-3 py-1 text-xs text-[#A67102]">
               Last 6months <span className="ml-2">▼</span>
             </div>
           </div>
-          <div className="h-56 sm:h-64 w-full">
+          <div className="h-56 w-full sm:h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} barSize={18}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
@@ -138,22 +160,23 @@ export const DashboardHome: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-[#0D0B07] p-4 sm:p-6 rounded-2xl border border-gray-900">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-white font-semibold">Top Campaign</h3>
+        <div className="rounded-2xl border border-gray-900 bg-[#0D0B07] p-4 sm:p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="font-semibold text-white">Top Campaign</h3>
           </div>
           <div className="overflow-x-auto">
             <div className="w-full text-left text-sm">
               <div className="text-xs">
                 {recentUploads.map((row, index) => (
-                  <div key={index} className="border-b flex justify-between border-gray-900 last:border-0 py-3 pl-3 text-gray-300">
-                    <div className="flex items-center gap-2 ju">
-                      <img src={row.image} alt="" className="w-[50px] h-[50px] rounded-full mr-3" />
+                  <div key={index} className="flex justify-between border-b border-gray-900 py-3 pl-3 text-gray-300 last:border-0">
+                    <div className="flex items-center gap-2">
+                      <img src={row.image} alt="" className="mr-3 h-[50px] w-[50px] rounded-full" />
                       <p className="text-white">{row.name}</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      <p className="text-white text-lg">{row.days}Days</p> <span className="text-[#A67102]">.</span>
-                      <p className="text-white text-xs font-medium">{row.percentage}%</p>
+                      <p className="text-lg text-white">{row.days}Days</p>
+                      <span className="text-[#A67102]">.</span>
+                      <p className="text-xs font-medium text-white">{row.percentage}%</p>
                     </div>
                   </div>
                 ))}
@@ -162,30 +185,27 @@ export const DashboardHome: React.FC = () => {
           </div>
         </div>
       </div>
-      {/* Active Campaigns */}
+
       <div className="mb-8">
-        <h3 className="text-white font-semibold mb-4">Active Campaigns</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <h3 className="mb-4 font-semibold text-white">Active Campaigns</h3>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {activeCampaigns.map((c, i) => (
-            <div key={i} className="bg-[#0D0B07] p-4 rounded-2xl border border-gray-900 flex gap-3">
-              <img src={c.image} alt={c.title} className="w-14 h-14 rounded-xl object-cover" />
+            <div key={i} className="flex gap-3 rounded-2xl border border-gray-900 bg-[#0D0B07] p-4">
+              <img src={c.image} alt={c.title} className="h-14 w-14 rounded-xl object-cover" />
               <div className="flex-1">
-                <div className="flex justify-between items-start mb-1">
-                  <p className="text-white font-medium">{c.title}</p>
-                  <span className="text-[10px] bg-[#A67102]/20 text-[#A67102] px-2 py-0.5 rounded-full font-medium">
+                <div className="mb-1 flex items-start justify-between">
+                  <p className="font-medium text-white">{c.title}</p>
+                  <span className="rounded-full bg-[#A67102]/20 px-2 py-0.5 text-[10px] font-medium text-[#A67102]">
                     {c.status}
                   </span>
                 </div>
-                <p className="text-gray-500 text-xs mb-3">{c.package} • {c.duration}</p>
-                <div className="flex items-center justify-between text-xs text-gray-300 mb-1">
+                <p className="mb-3 text-xs text-gray-500">{c.package} • {c.duration}</p>
+                <div className="mb-1 flex items-center justify-between text-xs text-gray-300">
                   <span>{c.type}</span>
                   <span className="text-[#A67102]">{c.progress}%</span>
                 </div>
-                <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-[#A67102] rounded-full"
-                    style={{ width: `${c.progress}%` }}
-                  />
+                <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-800">
+                  <div className="h-full rounded-full bg-[#A67102]" style={{ width: `${c.progress}%` }} />
                 </div>
               </div>
             </div>
@@ -193,16 +213,15 @@ export const DashboardHome: React.FC = () => {
         </div>
       </div>
 
-      {/* Recent Campaigns grid */}
       <div className="mb-8">
-        <h3 className="text-white font-semibold mb-4">Recent Campaigns</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <h3 className="mb-4 font-semibold text-white">Recent Campaigns</h3>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {recentCampaigns.map((c, i) => (
-            <div key={i} className="rounded-lg overflow-hidden  ">
-              <img src={c.image} alt={c.title} className="w-full h-50 object-cover" />
-              <div className="p-3 space-y-2">
-                <p className="text-white font-medium text-sm">{c.title}</p>
-                <p className="text-gray-500 text-xs uppercase tracking-wide">
+            <div key={i} className="overflow-hidden rounded-lg">
+              <img src={c.image} alt={c.title} className="h-50 w-full object-cover" />
+              <div className="space-y-2 p-3">
+                <p className="text-sm font-medium text-white">{c.title}</p>
+                <p className="text-xs uppercase tracking-wide text-gray-500">
                   {c.type} • {c.date}
                 </p>
               </div>
@@ -211,10 +230,7 @@ export const DashboardHome: React.FC = () => {
         </div>
       </div>
 
-
-
-      {/* Mobile bottom nav (unchanged) */}
-      <nav className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-[94%] max-w-3xl rounded-full bg-white/5 backdrop-blur-md border border-white/10 p-2 flex justify-between items-center px-3 md:hidden z-50">
+      <nav className="fixed bottom-4 left-1/2 z-50 flex w-[94%] max-w-3xl -translate-x-1/2 items-center justify-between rounded-full border border-white/10 bg-white/5 p-2 px-3 backdrop-blur-md md:hidden">
         <a href="/dashboard" className="flex flex-col items-center gap-1 text-[#A67102]">
           <LayoutDashboard size={22} />
           <span className="text-[11px]">Dashboard</span>

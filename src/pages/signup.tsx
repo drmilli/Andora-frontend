@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthLayout } from "../components/auth/AuthLayout";
 import { AuthInput } from "../components/auth/AuthInput";
 import { AuthButton } from "../components/auth/AuthButton";
@@ -9,11 +9,12 @@ import { useAuth } from "../hooks/auth/useAuth";
 
 export const SignupPage: React.FC = () => {
   const { register, error } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = new FormData(e.target);
-    await register({
+    const form = new FormData(e.currentTarget);
+    const data = await register({
       firstname: String(form.get("firstname")),
       surname: String(form.get("surname")),
       username: String(form.get("username")),
@@ -21,7 +22,12 @@ export const SignupPage: React.FC = () => {
       password: String(form.get("password")),
       password_confirmation: String(form.get("password_confirmation")),
     });
-
+    navigate("/dashboard", {
+      state: {
+        signupSuccess: true,
+        username: data.user?.username || String(form.get("username")),
+      },
+    });
   };
   return (
     <AuthLayout
