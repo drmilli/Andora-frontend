@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Bell,
@@ -54,7 +54,14 @@ export const Sidebar: React.FC<{
 
     const context = useContext(AppContext);
     const user = context?.user;
-    console.log(user);
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+      localStorage.removeItem("token");
+      context?.setToken(null);
+      context?.setUser(null);
+      navigate("/login");
+    };
   
   return (
     <>
@@ -155,6 +162,7 @@ export const Sidebar: React.FC<{
               <button
                 type="button"
                 aria-label="Logout"
+                onClick={handleLogout}
                 className="hover:text-white focus:outline-none"
               >
                 <LogOut size={18} />
