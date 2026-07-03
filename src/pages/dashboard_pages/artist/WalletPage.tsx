@@ -1,5 +1,5 @@
 import { useState, type FC } from "react";
-import { Search, X, Download, SquarePen, ChevronDown } from "lucide-react";
+import {  X, Download, SquarePen, ChevronDown } from "lucide-react";
 
 interface Transaction {
   id: string;
@@ -71,29 +71,32 @@ const WalletPage: FC = () => {
   return (
     <div className="w-full text-white bg-black min-h-screen px-4 sm:px-8 pb-16">
       {/* Header with Search */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10 pt-4">
-        <h1 className="text-xl font-bold uppercase tracking-wider">HISTORY</h1>
-        <div className="relative w-full max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#A67102]" />
-          <input
-            type="text"
-            placeholder="Search here"
-            className="w-full bg-[#111111] border border-gray-800 rounded-xl py-2.5 pl-10 pr-4 text-xs focus:outline-none focus:border-[#A67102] transition-colors placeholder-gray-500"
-          />
-        </div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10 pt-2 ">
+        <h1 className="text-sm font-medium text-white">Available Balance</h1>
+
       </div>
 
       {/* Balance Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 mb-12">
+      <div className=" sm:flex-row sm:items-center justify-between gap-4 sm:gap-6 mb-12">
         <div className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight">
           ₦104,000.00
         </div>
-        <button
-          onClick={() => setShowWithdrawModal(true)}
-          className="bg-[#E3EFFF] text-black px-10 sm:px-12 py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity whitespace-nowrap w-full sm:w-auto"
-        >
-          Withdraw
-        </button>
+        <div className="flex gap-3 mt-4 ">
+          <button
+
+            className="bg-[#A67102] text-white px-10 sm:px-12 py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity whitespace-nowrap w-full sm:w-auto"
+          >
+            Top up
+          </button>
+          <button
+            onClick={() => setShowWithdrawModal(true)}
+            className="border border-[#A67102] text-[#A67102] px-10 sm:px-12 py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity whitespace-nowrap w-full sm:w-auto"
+          >
+            Withdraw
+          </button>
+
+        </div>
+
       </div>
 
       {/* Transaction Groups */}

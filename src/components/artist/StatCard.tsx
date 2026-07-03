@@ -3,7 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 export const StatCard: React.FC<{
   icon: React.ReactNode;
   title: string;
-  value: string;
+  value?: string;
   subtext?: string;
 }> = ({ icon, title, value, subtext }) => {
   return (

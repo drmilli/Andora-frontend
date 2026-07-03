@@ -32,13 +32,20 @@ import { MediaPage } from "./artist/MediaPage";
 import { PromotionPage } from "./artist/PromotionPage";
 import { JobsPage } from "./artist/JobsPage";
 import { ProfilePage } from "./artist/ProfilePage";
-import WalletPage from "./artist/WalletPage";
+
+import Campaign from "./artist/Campaign";
+import MySongs from "./artist/MySongs";
+import SettingsPage from "./artist/SettingsPage";
+import BillingPage from "./artist/BillingPage";
 
 
 
 /* ---- Route table (used by index.tsx to mount nested routes) ----
    Each entry is a relative path from /dashboard */
 export const DASHBOARD_ROUTES = [
+
+  // select route based wether it is for artist ,staion,influencer or admin
+
   { path: "", element: <DashboardHome /> },
   { path: "notifications", element: <NotificationPage /> },
   { path: "notifications/:id", element: <NotificationDetails /> },
@@ -46,38 +53,43 @@ export const DASHBOARD_ROUTES = [
   { path: "media", element: <MediaPage /> },
   { path: "promotion", element: <PromotionPage /> },
   { path: "jobs", element: <JobsPage /> },
-  { path: "wallet", element: <WalletPage /> },
+  // { path: "wallet", element: <WalletPage /> },
   { path: "profile", element: <ProfilePage /> },
-  { path: "influencerboard", element: <InfluencerDashboard /> },
-  { path: "influencernotifications", element: <InfluencerNotifications /> },
-  { path: "influencerjobs", element: <InfluencerJobs /> },
-  { path: "influencerprofile", element: <InfluencerProfile /> },
-  { path: "influencerwallets", element: <InfluencerWallet /> },
+  { path: "campaigns", element: <Campaign /> },
+    {path:"billings", element:<BillingPage/>},
+      {path:'settings', element:<SettingsPage />},
+  {path:'my-songs', element:<MySongs/>},
+
+  { path: "influencer-dashboard", element: <InfluencerDashboard /> },
+  { path: "influencer-notifications", element: <InfluencerNotifications /> },
+  { path: "influencer-jobs", element: <InfluencerJobs /> },
+  { path: "influencer-profile", element: <InfluencerProfile /> },
+  { path: "influencer-wallets", element: <InfluencerWallet /> },
   //  notifcation page detail route
   {
     path: "influencernotifications/:id",
     element: <InfluencerNotificationsDetail />,
   },
   //station routes can be added here later
-  { path: "stationboard", element: <StationDashboard /> },
-  { path: "stationnotification", element: <StationNotifications /> },
-  { path: "stationnotification/:id", element: <StationNotificationsDetail /> },
-  { path: "stationprofile", element: <StationProfile /> },
-  { path: "stationjobs", element: <StationJobs /> },
-  { path: "stationpricing", element: <StationPricing /> },
+  { path: "station-dashboard", element: <StationDashboard /> },
+  { path: "station-notifications", element: <StationNotifications /> },
+  { path: "station-notification/:id", element: <StationNotificationsDetail /> },
+  { path: "station-profile", element: <StationProfile /> },
+  { path: "station-jobs", element: <StationJobs /> },
+  { path: "station-pricing", element: <StationPricing /> },
   //admin routes can be added here later
-  { path: "adminboard", element: <AdminDashboard /> },
-  { path: "adminnotification", element: <AdminNotifications /> },
-  { path: "adminnotification/:id", element: <AdminNotificationsDetails /> },
-  { path: "adminwallets", element: <AdminWallet /> },
-  { path: "adminprofile", element: <AdminProfile /> },
-  { path: "admininfluencers", element: <AdminInfluencers /> },
-  { path: "admininfluencers/:id", element: <AdminInfluencersDetail /> },
-  { path: "adminradios", element: <AdminRadio /> },
-  { path: "adminradios/:id", element: <AdminRadioDetails /> },
-  { path: "admintv", element: <AdminTv /> },
-  { path: "admintv/:id", element: <AdminTvDetails /> },
-  { path: "adminjob", element: <AdminJob /> },
+  { path: "admin-dashboard", element: <AdminDashboard /> },
+  { path: "admin-notification", element: <AdminNotifications /> },
+  { path: "admin-notification/:id", element: <AdminNotificationsDetails /> },
+  { path: "admin-wallets", element: <AdminWallet /> },
+  { path: "admin-profile", element: <AdminProfile /> },
+  { path: "admin-influencers", element: <AdminInfluencers /> },
+  { path: "admin-influencers/:id", element: <AdminInfluencersDetail /> },
+  { path: "admin-radios", element: <AdminRadio /> },
+  { path: "admin-radios/:id", element: <AdminRadioDetails /> },
+  { path: "admin-tv", element: <AdminTv /> },
+  { path: "admin-tv/:id", element: <AdminTvDetails /> },
+  { path: "admin-job", element: <AdminJob /> },
    { path: "admin/artist", element: <AdminArtist/> },
       { path: "admin/artist/:id", element: <AdminArtistDetails/> },
 ];
