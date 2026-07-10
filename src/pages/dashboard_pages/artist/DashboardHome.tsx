@@ -1,100 +1,21 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { LayoutDashboard, BarChart2, Music, Megaphone, User, X, CheckCircle, Clipboard, Banknote, FileText} from "lucide-react";
+import { LayoutDashboard, BarChart2, Music, Megaphone, User, X, CheckCircle, FileText, Wallet, Users, Music2 } from "lucide-react";
 import { StatCard } from "@/components/artist/StatCard";
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "@/Context/AppContext";
 import { useLocation } from "react-router-dom";
-
-type RecentUpload = {
-  name: string;
-  days: number;
-  percentage: number;
-  image: string;
-};
-
-type ActiveCampaign = {
-  title: string;
-  status: "Active" | "Pending" | "Ended";
-  package: string;
-  duration: string;
-  type: string;
-  progress: number;
-  image: string;
-};
-
-type RecentCampaign = {
-  title: string;
-  type: string;
-  date: string;
-  image: string;
-};
-
-type SignupState = {
-  signupSuccess?: boolean;
-  username?: string;
-};
-
-const chartData = [
-  { name: "Jan", streams: 40000 },
-  { name: "Feb", streams: 30000 },
-  { name: "Mar", streams: 20000 },
-  { name: "Apr", streams: 27800 },
-  { name: "May", streams: 18900 },
-  { name: "Jun", streams: 23900 },
-];
-
-const recentUploads: RecentUpload[] = [
-  { name: "Love you always", days: 30, percentage: 45, image: "https://i.pravatar.cc/80?img=10" },
-  { name: "Story Time", days: 10, percentage: 45, image: "https://i.pravatar.cc/80?img=2" },
-  { name: "Love you always", days: 2, percentage: 45, image: "https://i.pravatar.cc/80?img=45" },
-];
-
-const activeCampaigns: ActiveCampaign[] = [
-  {
-    title: "Smoke",
-    status: "Active",
-    package: "Starter Package",
-    duration: "30 days",
-    type: "Influencer",
-    progress: 70,
-    image: "https://i.pravatar.cc/80?img=20",
-  },
-  {
-    title: "Smoke",
-    status: "Active",
-    package: "Starter Package",
-    duration: "30 days",
-    type: "Influencer",
-    progress: 70,
-    image: "https://i.pravatar.cc/80?img=21",
-  },
-  {
-    title: "Smoke",
-    status: "Active",
-    package: "Starter Package",
-    duration: "30 days",
-    type: "Influencer",
-    progress: 70,
-    image: "https://i.pravatar.cc/80?img=22",
-  },
-];
-
-const recentCampaigns: RecentCampaign[] = [
-  { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=30" },
-  { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=31" },
-  { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=32" },
-  { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=33" },
-];
+import { getDashboardStats, type DashboardStats } from "@/services/dashboard";
 
 export const DashboardHome: React.FC = () => {
   const context = useContext(AppContext);
   const user = context?.user;
   const location = useLocation();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loadingStats, setLoadingStats] = useState(true);
 
   useEffect(() => {
-    const state = (location.state as SignupState | null) ?? null;
-
+    const state = location.state as { signupSuccess?: boolean; username?: string } | null;
     if (state?.signupSuccess) {
       setSuccessMessage(
         `Welcome, ${state.username || user?.username || ""}! Your account has been created successfully.`
@@ -103,9 +24,25 @@ export const DashboardHome: React.FC = () => {
       const timer = setTimeout(() => setSuccessMessage(null), 6000);
       return () => clearTimeout(timer);
     }
-
-    return undefined;
   }, [location.state, user?.username]);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await getDashboardStats();
+        setStats(data);
+      } catch {
+        // silently fail — dashboard will show 0s
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  const balance = stats
+    ? `$${Number(stats.walletBalance).toLocaleString("en-US", { minimumFractionDigits: 2 })}`
+    : "$0.00";
 
   return (
     <div className="w-full pb-28 md:pb-0">
@@ -125,9 +62,21 @@ export const DashboardHome: React.FC = () => {
       <p className="mb-6 text-lg text-gray-300">Hello, {user?.username}</p>
 
       <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <StatCard icon={<FileText size={20} className="text-[#A67102]" />} title="Song Uploads" value="5" />
-        <StatCard icon={<Clipboard size={20} className="text-[#A67102]" />} title="Active Campaigns" value="3" />
-        <StatCard icon={<Banknote size={20} className="text-[#A67102]" />} title="Available Balance" value="$104,000.00" />
+        <StatCard
+          icon={<Music2 size={20} className="text-[#A67102]" />}
+          title="Song Uploads"
+          value={loadingStats ? "..." : String(stats?.songUploads ?? 0)}
+        />
+        <StatCard
+          icon={<Users size={20} className="text-[#A67102]" />}
+          title="Followers"
+          value={loadingStats ? "..." : String(stats?.followers ?? 0)}
+        />
+        <StatCard
+          icon={<Wallet size={20} className="text-[#A67102]" />}
+          title="Available Balance"
+          value={loadingStats ? "..." : balance}
+        />
       </div>
 
       <div className="grid grid-cols-1 gap-6 pb-8 lg:grid-cols-2">
@@ -140,21 +89,20 @@ export const DashboardHome: React.FC = () => {
           </div>
           <div className="h-56 w-full sm:h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} barSize={18}>
+              <BarChart data={stats?.monthlyUploads || []} barSize={18}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#888", fontSize: 12 }} dy={10} />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
                   tick={{ fill: "#888", fontSize: 12 }}
-                  domain={[0, 50000]}
-                  tickFormatter={(value: number | string) => `${Number(value) / 1000}K`}
+                  allowDecimals={false}
                 />
                 <Tooltip
                   contentStyle={{ backgroundColor: "#111", border: "1px solid #333", color: "#fff" }}
                   cursor={{ fill: "rgba(255, 255, 255, 0.05)" }}
                 />
-                <Bar dataKey="streams" fill="#A67102" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="uploads" fill="#A67102" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -162,71 +110,34 @@ export const DashboardHome: React.FC = () => {
 
         <div className="rounded-2xl border border-gray-900 bg-[#0D0B07] p-4 sm:p-6">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="font-semibold text-white">Top Campaign</h3>
+            <h3 className="font-semibold text-white">Quick Stats</h3>
           </div>
-          <div className="overflow-x-auto">
-            <div className="w-full text-left text-sm">
-              <div className="text-xs">
-                {recentUploads.map((row, index) => (
-                  <div key={index} className="flex justify-between border-b border-gray-900 py-3 pl-3 text-gray-300 last:border-0">
-                    <div className="flex items-center gap-2">
-                      <img src={row.image} alt="" className="mr-3 h-[50px] w-[50px] rounded-full" />
-                      <p className="text-white">{row.name}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <p className="text-lg text-white">{row.days}Days</p>
-                      <span className="text-[#A67102]">.</span>
-                      <p className="text-xs font-medium text-white">{row.percentage}%</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between rounded-lg border border-gray-800 p-4">
+              <span className="text-sm text-gray-400">Total Uploads</span>
+              <span className="text-lg font-semibold text-white">
+                {loadingStats ? "..." : stats?.totalUploads ?? 0}
+              </span>
+            </div>
+            <div className="flex items-center justify-between rounded-lg border border-gray-800 p-4">
+              <span className="text-sm text-gray-400">Posts</span>
+              <span className="text-lg font-semibold text-white">
+                {loadingStats ? "..." : stats?.postCount ?? 0}
+              </span>
+            </div>
+            <div className="flex items-center justify-between rounded-lg border border-gray-800 p-4">
+              <span className="text-sm text-gray-400">Following</span>
+              <span className="text-lg font-semibold text-white">
+                {loadingStats ? "..." : stats?.following ?? 0}
+              </span>
+            </div>
+            <div className="flex items-center justify-between rounded-lg border border-gray-800 p-4">
+              <span className="text-sm text-gray-400">Transactions</span>
+              <span className="text-lg font-semibold text-white">
+                {loadingStats ? "..." : stats?.transactionCount ?? 0}
+              </span>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className="mb-8">
-        <h3 className="mb-4 font-semibold text-white">Active Campaigns</h3>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {activeCampaigns.map((c, i) => (
-            <div key={i} className="flex gap-3 rounded-2xl border border-gray-900 bg-[#0D0B07] p-4">
-              <img src={c.image} alt={c.title} className="h-14 w-14 rounded-xl object-cover" />
-              <div className="flex-1">
-                <div className="mb-1 flex items-start justify-between">
-                  <p className="font-medium text-white">{c.title}</p>
-                  <span className="rounded-full bg-[#A67102]/20 px-2 py-0.5 text-[10px] font-medium text-[#A67102]">
-                    {c.status}
-                  </span>
-                </div>
-                <p className="mb-3 text-xs text-gray-500">{c.package} • {c.duration}</p>
-                <div className="mb-1 flex items-center justify-between text-xs text-gray-300">
-                  <span>{c.type}</span>
-                  <span className="text-[#A67102]">{c.progress}%</span>
-                </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-800">
-                  <div className="h-full rounded-full bg-[#A67102]" style={{ width: `${c.progress}%` }} />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="mb-8">
-        <h3 className="mb-4 font-semibold text-white">Recent Campaigns</h3>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {recentCampaigns.map((c, i) => (
-            <div key={i} className="overflow-hidden rounded-lg">
-              <img src={c.image} alt={c.title} className="h-50 w-full object-cover" />
-              <div className="space-y-2 p-3">
-                <p className="text-sm font-medium text-white">{c.title}</p>
-                <p className="text-xs uppercase tracking-wide text-gray-500">
-                  {c.type} • {c.date}
-                </p>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
 

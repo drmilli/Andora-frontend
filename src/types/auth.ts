@@ -22,7 +22,14 @@ export interface User {
   firstname: string;
   surname: string;
   role: string;
+  bio?: string | null;
   profilePicture?: string | null;
+  coverPicture?: string | null;
+  instagram?: string | null;
+  twitter?: string | null;
+  tiktok?: string | null;
+  website?: string | null;
+  updatedAt?: string;
 }
 export interface AuthResponse {
   token: string;

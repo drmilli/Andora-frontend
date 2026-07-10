@@ -53,10 +53,10 @@ export const NotificationPage: React.FC = () => {
         <div className="space-y-1">
           {notifications.map((n) => (
             <Link
-              key={n.userId}
-              to={`/dashboard/notifications/${n.userId}`}
+              key={n.id}
+              to={`/dashboard/notifications/${n.id}`}
               className={`flex items-start justify-between gap-4 p-4 rounded-xl transition-shadow block hover:bg-white/5 ${
-                n.isread
+                n.isRead
                   ? "bg-[#0D0B07]  shadow-[0_8px_30px_rgba(0,0,0,0.6)]"
                   : "bg-transparent"
               }`}
