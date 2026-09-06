@@ -22,6 +22,8 @@ import { WorkWithUsPage } from "./pages/work-with-us";
 import { PrivacyPolicyPage } from "./pages/privacy-policy";
 import Home from "./pages/Home";
 import Layout from "./components/layouts/Layout";
+import { SelectRole } from "./pages/SelectRole";
+
 
 
 
@@ -57,6 +59,7 @@ if (loading) {
         <Route path="/verify-otp" element={<VerifyOtpPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/work-with-us" element={<WorkWithUsPage />} />
+        <Route path="/select-role" element={<SelectRole/>} />
       
         </Route>
 
