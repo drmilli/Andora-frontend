@@ -35,19 +35,19 @@ export const SelectRole: React.FC = () => {
             Artist
             </Link>
             <Link
-              to="/login"
+              to="/influncer-signup"
               className="text-[#f5b640] transition hover:text-white border border-[#f5b640]  rounded-md w-20 py-3 text-center hover:bg-[#f5b640]"
             >
             Influencer
             </Link>
             <Link
-              to="/login"
+              to=""
               className="text-[#f5b640] transition hover:text-white border border-[#f5b640] rounded-md w-20 py-3 text-center hover:bg-[#f5b640]"
             >
             Radio
             </Link>
             <Link
-              to="/login"
+              to=""
               className="text-[#f5b640] transition hover:text-white border border-[#f5b640] rounded-md w-20 py-3 text-center hover:bg-[#f5b640]"
             >
             Tv

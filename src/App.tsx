@@ -23,6 +23,8 @@ import { PrivacyPolicyPage } from "./pages/privacy-policy";
 import Home from "./pages/Home";
 import Layout from "./components/layouts/Layout";
 import { SelectRole } from "./pages/SelectRole";
+import { InfluencerLogin } from "./pages/dashboard_pages/influencer/auth/InfluencerLogin";
+import { InfluencerSignup } from "./pages/dashboard_pages/influencer/auth/InfluncerSignUp";
 
 
 
@@ -60,6 +62,8 @@ if (loading) {
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/work-with-us" element={<WorkWithUsPage />} />
         <Route path="/select-role" element={<SelectRole/>} />
+        <Route path="influncer-login" element={<InfluencerLogin />} />
+        <Route path="influncer-signup" element={<InfluencerSignup />} />
       
         </Route>
 

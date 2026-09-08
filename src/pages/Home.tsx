@@ -237,7 +237,7 @@ function Home() {
           </motion.p>
 
           <motion.div variants={fadeInUp}>
-            <Link to="/login">
+            <Link to="/select-role">
               <button className="mt-10  text-white inline-flex items-center rounded-lg bg-gradient-to-r from-[#FFAD00] to-[#BD8000] px-10 py-5 text-base font-semibold text-black transition duration-200 hover:bg-[#ffca52] focus:outline-none focus-visible:ring-2 focus-visible:ring-black/40">
                 <Headphones className="w-6 h-6 mr-2" /> Get Started for Free
               </button>

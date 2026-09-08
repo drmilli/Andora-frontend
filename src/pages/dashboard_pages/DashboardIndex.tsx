@@ -68,6 +68,7 @@ export const DASHBOARD_ROUTES = [
   { path: "influencer-jobs", element: <InfluencerJobs /> },
   { path: "influencer-profile", element: <InfluencerProfile /> },
   { path: "influencer-wallets", element: <InfluencerWallet /> },
+
   //  notifcation page detail route
   {
     path: "influencernotifications/:id",

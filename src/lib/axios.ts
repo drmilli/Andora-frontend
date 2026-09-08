@@ -24,3 +24,12 @@ api.interceptors.request.use(
 );
 
 export default api;
+
+// client axios for public third-party APIs (no credentials required)
+export const client = axios.create({
+  baseURL: import.meta.env.VITE_COUNTRY_API_URL,
+  withCredentials: false,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});

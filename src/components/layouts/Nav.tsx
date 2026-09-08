@@ -37,7 +37,7 @@ export const Nav: React.FC = () => {
             </ul>
 
             <div className="hidden md:block">
-              <Link to="/login">
+              <Link to="/select-role">
                 <button className="rounded-full bg-[#FFAD00] text-white px-4 py-2 text-sm font-semibold text-black">
                   Get Started
                 </button>

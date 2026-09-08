@@ -3,7 +3,8 @@ import { Footer } from './Footer';
 import { Nav } from './Nav';
 import ContactForm from '@/components/contact-us/ContactForm';
 
-const AUTH_ROUTES = ['/login', '/signup', '/forgot-password', '/verify-otp', '/reset-password'];
+const AUTH_ROUTES = ['/login', '/signup', '/forgot-password', '/verify-otp', '/reset-password','/influncer-login','/influncer-signup'];
+
 
 const Layout = () => {
   const location = useLocation();
