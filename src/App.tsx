@@ -61,9 +61,11 @@ if (loading) {
         <Route path="/verify-otp" element={<VerifyOtpPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/work-with-us" element={<WorkWithUsPage />} />
-        <Route path="/select-role" element={<SelectRole/>} />
+        <Route path="/select-role" element={<SelectRole />} />
         <Route path="influncer-login" element={<InfluencerLogin />} />
         <Route path="influncer-signup" element={<InfluencerSignup />} />
+        <Route path="influencer-login" element={<InfluencerLogin />} />
+        <Route path="influencer-signup" element={<InfluencerSignup />} />
       
         </Route>
 

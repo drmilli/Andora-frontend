@@ -1,22 +1,20 @@
-export interface LoginPayload {
+export interface LoginInfluencerPayload {
   email: string;
   password: string;
 }
 
 
-
-export interface SignupPayload {
+export interface SignupInfluencerPayload {
   firstname:string;
   surname:string;
   username:string;
   email: string;
   password: string;
-  password_confirmation:string;
-  role:string;
+  password_confirmation:string
+  role:string
 }
 
-
-export interface User {
+export interface InfluencerUser {
   id: string;
   email: string;
   username: string;
@@ -29,12 +27,15 @@ export interface User {
   instagram?: string | null;
   twitter?: string | null;
   tiktok?: string | null;
+  snapchat?: string | null;
+  facebook?: string | null;
+  youtube?: string | null;
   website?: string | null;
   updatedAt?: string;
 }
-export interface AuthResponse {
+export interface InfluencerAuthResponse {
   token: string;
-  user:User
+  user:InfluencerUser
 }
 
 

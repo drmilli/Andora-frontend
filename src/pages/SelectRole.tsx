@@ -4,7 +4,7 @@ import { AuthLayout } from "../components/auth/AuthLayout";
 import { AuthInput } from "../components/auth/AuthInput";
 import { AuthButton } from "../components/auth/AuthButton";
 import { SocialButton } from "../components/auth/SocialButton";
-import { useAuth } from "../hooks/auth/useAuth";
+import { useAuth } from "../hooks/auth/useArtistAuth";
 
 
 export const SelectRole: React.FC = () => {
@@ -28,30 +28,30 @@ export const SelectRole: React.FC = () => {
       maxWidth="md"
     >
       <div className="mt-8 grid grid-cols-4 gap-3 justify-items-center">
-       <Link
-              to="/login"
-              className="text-[#f5b640] transition hover:text-white border border-[#f5b640] rounded-md w-20 py-3 text-center hover:bg-[#f5b640] "
-            >   
-            Artist
-            </Link>
-            <Link
-              to="/influncer-signup"
-              className="text-[#f5b640] transition hover:text-white border border-[#f5b640]  rounded-md w-20 py-3 text-center hover:bg-[#f5b640]"
-            >
-            Influencer
-            </Link>
-            <Link
-              to=""
-              className="text-[#f5b640] transition hover:text-white border border-[#f5b640] rounded-md w-20 py-3 text-center hover:bg-[#f5b640]"
-            >
-            Radio
-            </Link>
-            <Link
-              to=""
-              className="text-[#f5b640] transition hover:text-white border border-[#f5b640] rounded-md w-20 py-3 text-center hover:bg-[#f5b640]"
-            >
-            Tv
-            </Link>
+        <Link
+          to="/login"
+          className="text-[#f5b640] transition hover:text-white border border-[#f5b640] rounded-md w-20 py-3 text-center hover:bg-[#f5b640] "
+        >
+          Artist
+        </Link>
+        <Link
+          to="/influncer-signup"
+          className="text-[#f5b640] transition hover:text-white border border-[#f5b640]  rounded-md w-20 py-3 text-center hover:bg-[#f5b640]"
+        >
+          Influencer
+        </Link>
+        <Link
+          to=""
+          className="text-[#f5b640] transition hover:text-white border border-[#f5b640] rounded-md w-20 py-3 text-center hover:bg-[#f5b640]"
+        >
+          Radio
+        </Link>
+        <Link
+          to=""
+          className="text-[#f5b640] transition hover:text-white border border-[#f5b640] rounded-md w-20 py-3 text-center hover:bg-[#f5b640]"
+        >
+          Tv
+        </Link>
       </div>
 
 

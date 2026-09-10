@@ -43,45 +43,125 @@ import BillingPage from "./artist/BillingPage";
 
 
 
+import { useContext } from "react";
+import { AppContext } from "@/Context/AppContext";
+
+export function RoleDashboardHome() {
+  const context = useContext(AppContext);
+  const role = context?.user?.role?.toLowerCase();
+
+  if (role === "influencer") {
+    return <InfluencerDashboard />;
+  }
+  if (role === "station") {
+    return <StationDashboard />;
+  }
+  if (role === "admin") {
+    return <AdminDashboard />;
+  }
+  return <DashboardHome />;
+}
+
+export function RoleNotifications() {
+  const context = useContext(AppContext);
+  const role = context?.user?.role?.toLowerCase();
+
+  if (role === "influencer") {
+    return <InfluencerNotifications />;
+  }
+  if (role === "station") {
+    return <StationNotifications />;
+  }
+  if (role === "admin") {
+    return <AdminNotifications />;
+  }
+  return <NotificationPage />;
+}
+
+export function RoleJobs() {
+  const context = useContext(AppContext);
+  const role = context?.user?.role?.toLowerCase();
+
+  if (role === "influencer") {
+    return <InfluencerJobs />;
+  }
+  if (role === "station") {
+    return <StationJobs />;
+  }
+  if (role === "admin") {
+    return <AdminJob />;
+  }
+  return <JobsPage />;
+}
+
+export function RoleProfile() {
+  const context = useContext(AppContext);
+  const role = context?.user?.role?.toLowerCase();
+
+  if (role === "influencer") {
+    return <InfluencerProfile />;
+  }
+  if (role === "station") {
+    return <StationProfile />;
+  }
+  if (role === "admin") {
+    return <AdminProfile />;
+  }
+  return <ProfilePage />;
+}
+
+export function RoleWallet() {
+  const context = useContext(AppContext);
+  const role = context?.user?.role?.toLowerCase();
+
+  if (role === "influencer") {
+    return <InfluencerWallet />;
+  }
+  if (role === "admin") {
+    return <AdminWallet />;
+  }
+  return <BillingPage />;
+}
+
 /* ---- Route table (used by index.tsx to mount nested routes) ----
    Each entry is a relative path from /dashboard */
 export const DASHBOARD_ROUTES = [
-
-  // select route based wether it is for artist ,staion,influencer or admin
-
-  { path: "", element: <DashboardHome /> },
-  { path: "notifications", element: <NotificationPage /> },
+  // Role-based main routes
+  { path: "", element: <RoleDashboardHome /> },
+  { path: "notifications", element: <RoleNotifications /> },
   { path: "notifications/:id", element: <NotificationDetails /> },
   { path: "statistics", element: <StatisticsPage /> },
   { path: "media", element: <MediaPage /> },
   { path: "promotion", element: <PromotionPage /> },
-  { path: "jobs", element: <JobsPage /> },
-  // { path: "wallet", element: <WalletPage /> },
-  { path: "profile", element: <ProfilePage /> },
+  { path: "jobs", element: <RoleJobs /> },
+  { path: "wallet", element: <RoleWallet /> },
+  { path: "profile", element: <RoleProfile /> },
   { path: "campaigns", element: <Campaign /> },
-    {path:"billings", element:<BillingPage/>},
-      {path:'settings', element:<SettingsPage />},
-  {path:'my-songs', element:<MySongs/>},
+  { path: "billings", element: <BillingPage /> },
+  { path: "settings", element: <SettingsPage /> },
+  { path: "my-songs", element: <MySongs /> },
 
+  // Influencer direct routes
   { path: "influencer-dashboard", element: <InfluencerDashboard /> },
   { path: "influencer-notifications", element: <InfluencerNotifications /> },
+  { path: "influencer-notifications/:id", element: <InfluencerNotificationsDetail /> },
   { path: "influencer-jobs", element: <InfluencerJobs /> },
   { path: "influencer-profile", element: <InfluencerProfile /> },
   { path: "influencer-wallets", element: <InfluencerWallet /> },
-
-  //  notifcation page detail route
   {
     path: "influencernotifications/:id",
     element: <InfluencerNotificationsDetail />,
   },
-  //station routes can be added here later
+
+  // Station routes
   { path: "station-dashboard", element: <StationDashboard /> },
   { path: "station-notifications", element: <StationNotifications /> },
   { path: "station-notification/:id", element: <StationNotificationsDetail /> },
   { path: "station-profile", element: <StationProfile /> },
   { path: "station-jobs", element: <StationJobs /> },
   { path: "station-pricing", element: <StationPricing /> },
-  //admin routes can be added here later
+
+  // Admin routes
   { path: "admin-dashboard", element: <AdminDashboard /> },
   { path: "admin-notification", element: <AdminNotifications /> },
   { path: "admin-notification/:id", element: <AdminNotificationsDetails /> },
@@ -94,8 +174,9 @@ export const DASHBOARD_ROUTES = [
   { path: "admin-tv", element: <AdminTv /> },
   { path: "admin-tv/:id", element: <AdminTvDetails /> },
   { path: "admin-job", element: <AdminJob /> },
-   { path: "admin/artist", element: <AdminArtist/> },
-      { path: "admin/artist/:id", element: <AdminArtistDetails/> },
+  { path: "admin/artist", element: <AdminArtist /> },
+  { path: "admin/artist/:id", element: <AdminArtistDetails /> },
 ];
 
-export default DashboardHome;
+export default RoleDashboardHome;
+

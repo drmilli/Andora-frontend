@@ -4,30 +4,41 @@ import { AuthLayout } from "../../../../components/auth/AuthLayout";
 import { AuthInput } from "../../../../components/auth/AuthInput";
 import { CountrySelect } from "../../../../components/auth/CountrySelect";
 import { AuthButton } from "../../../../components/auth/AuthButton";
-import { useAuth } from "../../../../hooks/auth/useAuth";
+import { useInfluencerAuth } from "../../../../hooks/auth/useInfluencerAuth";
 
 
 export const InfluencerSignup: React.FC = () => {
-  const { register, error } = useAuth();
+  const { register, error } = useInfluencerAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    const data = await register({
-      firstname: String(form.get("firstname")),
-      surname: String(form.get("surname")),
-      username: String(form.get("username")),
-      email: String(form.get("email")),
-      password: String(form.get("password")),
-      password_confirmation: String(form.get("password_confirmation")),
-    });
-    navigate("/dashboard/influncer-signup", {
-      state: {
-        signupSuccess: true,
-        username: data.user?.username || String(form.get("username")),
-      },
-    });
+    const password = String(form.get("password") || "");
+    const passwordConfirmation = String(
+      form.get("password_confirmation") || password
+    );
+
+    try {
+      const data = await register({
+        firstname: String(form.get("firstname") || ""),
+        surname: String(form.get("surname") || ""),
+        username: String(form.get("username") || ""),
+        email: String(form.get("email") || ""),
+        role: "influencer",
+        password,
+        password_confirmation: passwordConfirmation,
+      });
+
+      navigate("/dashboard", {
+        state: {
+          signupSuccess: true,
+          username: data.user?.username || String(form.get("username")),
+        },
+      });
+    } catch (err) {
+      console.error("Influencer signup error:", err);
+    }
   };
   return (
     <AuthLayout
@@ -74,11 +85,11 @@ export const InfluencerSignup: React.FC = () => {
             name="email"
           />
           <AuthInput
-            label="Phone Number"
-            type="number"
-            placeholder="09012345678"
+            label="Username"
+            type="text"
+            placeholder="Enter username"
             required
-            name="phonenumber"
+            name="username"
           />
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -96,7 +107,7 @@ export const InfluencerSignup: React.FC = () => {
             name="address"
           />
         </div>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
           <CountrySelect
             label="Platforms"
             name="platforms"
@@ -110,18 +121,18 @@ export const InfluencerSignup: React.FC = () => {
             required
           />
         </div>
-             <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
-        <AuthInput
-          label="Follower Count"
-          type="number"
-          placeholder="Enter follower count"
-        />
-        <AuthInput
-          label="Price Rate"
-          type="text"
-          placeholder="Enter price rate"
-        />
-        </div>   
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
+          <AuthInput
+            label="Follower Count"
+            type="number"
+            placeholder="Enter follower count"
+          />
+          <AuthInput
+            label="Price Rate"
+            type="text"
+            placeholder="Enter price rate"
+          />
+        </div>
 
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -165,7 +176,7 @@ export const InfluencerSignup: React.FC = () => {
       <p className="mt-5 text-center text-xs font-medium text-white/70">
         Already Have Account?{" "}
         <Link
-          to="/login"
+          to="/influncer-login"
           className="text-[#f5b640] transition hover:text-[#ffca52]"
         >
           Login

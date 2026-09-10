@@ -23,7 +23,7 @@ type NavItem = {
   icon: React.ReactNode;
 };
 
-const navItems: NavItem[] = [
+const artistNavItems: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
   {
     to: "/dashboard/notifications",
@@ -46,6 +46,98 @@ const navItems: NavItem[] = [
   { to: "/dashboard/profile", label: "Profile", icon: <User size={20} /> },
 ];
 
+const influencerNavItems: NavItem[] = [
+  { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
+  {
+    to: "/dashboard/influencer-notifications",
+    label: "Notification",
+    icon: <Bell size={20} />,
+  },
+  {
+    to: "/dashboard/influencer-jobs",
+    label: "Jobs",
+    icon: <Briefcase size={20} />,
+  },
+  {
+    to: "/dashboard/influencer-wallets",
+    label: "Wallet",
+    icon: <Wallet size={20} />,
+  },
+  {
+    to: "/dashboard/influencer-profile",
+    label: "Profile",
+    icon: <User size={20} />,
+  },
+];
+
+const stationNavItems: NavItem[] = [
+  { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
+  {
+    to: "/dashboard/station-notifications",
+    label: "Notification",
+    icon: <Bell size={20} />,
+  },
+  {
+    to: "/dashboard/station-jobs",
+    label: "Jobs",
+    icon: <Briefcase size={20} />,
+  },
+  {
+    to: "/dashboard/station-pricing",
+    label: "Pricing",
+    icon: <Wallet size={20} />,
+  },
+  {
+    to: "/dashboard/station-profile",
+    label: "Profile",
+    icon: <User size={20} />,
+  },
+];
+
+const adminNavItems: NavItem[] = [
+  { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
+  {
+    to: "/dashboard/admin-notification",
+    label: "Notification",
+    icon: <Bell size={20} />,
+  },
+  {
+    to: "/dashboard/admin-wallets",
+    label: "Wallet",
+    icon: <Wallet size={20} />,
+  },
+  {
+    to: "/dashboard/admin-influencers",
+    label: "Influencers",
+    icon: <User size={20} />,
+  },
+  {
+    to: "/dashboard/admin-radios",
+    label: "Radio",
+    icon: <Music size={20} />,
+  },
+  {
+    to: "/dashboard/admin-tv",
+    label: "TV",
+    icon: <Megaphone size={20} />,
+  },
+  {
+    to: "/dashboard/admin/artist",
+    label: "Artists",
+    icon: <User size={20} />,
+  },
+  {
+    to: "/dashboard/admin-job",
+    label: "Jobs",
+    icon: <Briefcase size={20} />,
+  },
+  {
+    to: "/dashboard/admin-profile",
+    label: "Profile",
+    icon: <User size={20} />,
+  },
+];
+
 export const Sidebar: React.FC<{
   isOpen?: boolean;
   onClose?: () => void;
@@ -53,7 +145,17 @@ export const Sidebar: React.FC<{
 
     const context = useContext(AppContext);
     const user = context?.user;
-    console.log(user);
+    const role = user?.role?.toLowerCase();
+
+    const navItems =
+      role === "influencer"
+        ? influencerNavItems
+        : role === "station"
+        ? stationNavItems
+        : role === "admin"
+        ? adminNavItems
+        : artistNavItems;
+
   
   return (
     <>
@@ -131,16 +233,22 @@ export const Sidebar: React.FC<{
               >
                 <Scale size={18} />
               </button>
-              <button
-                type="button"
+              <NavLink
+                to={role === "influencer" ? "/dashboard/influencer-profile" : "/dashboard/profile"}
                 aria-label="User"
                 className="hover:text-white focus:outline-none"
               >
                 <User size={18} />
-              </button>
+              </NavLink>
               <button
                 type="button"
                 aria-label="Logout"
+                onClick={() => {
+                  localStorage.removeItem("token");
+                  context?.setToken(null);
+                  context?.setUser(null);
+                  window.location.href = "/login";
+                }}
                 className="hover:text-white focus:outline-none"
               >
                 <LogOut size={18} />

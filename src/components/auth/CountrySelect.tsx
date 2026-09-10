@@ -70,44 +70,12 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
       try {
         setLoading(true);
         const data = await GetAllCountries();
-        
-        // Handle various response wrappers cleanly
-        const rawArray: any[] = Array.isArray(data)
-          ? data
-          : Array.isArray((data as any)?.countries)
-          ? (data as any).countries
-          : Array.isArray((data as any)?.data)
-          ? (data as any).data
-          : [];
-
-        const formattedData: SelectOption[] = rawArray
-          .map((item: any) => {
-            let nameStr = "";
-            if (typeof item.name === "string") {
-              nameStr = item.name;
-            } else if (item.name?.common) {
-              nameStr = item.name.common;
-            } else if (item.name?.name) {
-              nameStr = item.name.name;
-            } else if (item.common) {
-              nameStr = item.common;
-            }
-            return {
-              name: nameStr.trim(),
-              code: item.alpha2Code || item.cca2 || item.code || "",
-            };
-          })
-          .filter((item) => item.name && item.name !== "Unknown");
-
-        // Deduplicate countries by name
-        const uniqueData = Array.from(
-          new Map(formattedData.map((item) => [item.name, item])).values()
-        );
+        console.log("data",data)
 
         // Sort countries alphabetically
-        uniqueData.sort((a, b) => a.name.localeCompare(b.name));
+        data.sort((a:any, b:any) => a.name.localeCompare(b.name));
 
-        setCountries(uniqueData.length > 0 ? uniqueData : DEFAULT_COUNTRIES);
+        setCountries(data.length > 0 ? data : DEFAULT_COUNTRIES);
       } catch (error) {
         console.error("Error fetching countries via API service:", error);
         setCountries(DEFAULT_COUNTRIES);

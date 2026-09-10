@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Outlet, NavLink, useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
@@ -8,7 +8,11 @@ import {
   Music,
   Megaphone,
   User,
+  Bell,
+  Briefcase,
+  Wallet,
 } from "lucide-react";
+import { AppContext } from "../Context/AppContext";
 
 /**
  * Dashboard layout component
@@ -22,6 +26,8 @@ import {
  */
 export function DashboardPage(): React.ReactElement {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+  const context = useContext(AppContext);
+  const role = context?.user?.role?.toLowerCase();
 
   const navItemClass = (isActive: boolean) =>
     `flex flex-col items-center gap-1 ${isActive ? "text-[#A67102]" : "text-gray-200"}`;
@@ -33,12 +39,14 @@ export function DashboardPage(): React.ReactElement {
   const headerTitle = (() => {
     if (pathname === "/dashboard" || pathname === "/dashboard/")
       return "Dashboard";
-    if (pathname.startsWith("/dashboard/statistics")) return "Statistics";
-    if (pathname.startsWith("/dashboard/media")) return "Media";
-    if (pathname.startsWith("/dashboard/promotion")) return "Promotion";
-    if (pathname.startsWith("/dashboard/profile")) return "Profile";
-    if (pathname.startsWith("/dashboard/notifications")) return "Notifications";
-    if (pathname.startsWith("/dashboard/wallet")) return "Wallet";
+    if (pathname.includes("statistic")) return "Statistics";
+    if (pathname.includes("media") || pathname.includes("radio") || pathname.includes("tv")) return "Media";
+    if (pathname.includes("promotion") || pathname.includes("campaign")) return "Promotion";
+    if (pathname.includes("profile")) return "Profile";
+    if (pathname.includes("notification")) return "Notifications";
+    if (pathname.includes("wallet")) return "Wallet";
+    if (pathname.includes("job")) return "Jobs";
+    if (pathname.includes("pricing")) return "Pricing";
     return "Dashboard";
   })();
 
@@ -69,37 +77,75 @@ export function DashboardPage(): React.ReactElement {
           <span className="text-[11px]">Dashboard</span>
         </NavLink>
 
-        <NavLink
-          to="/dashboard/statistics"
-          className={({ isActive }) => navItemClass(isActive)}
-        >
-          <BarChart2 size={22} />
-          <span className="text-[11px]">Statistics</span>
-        </NavLink>
+        {role === "influencer" ? (
+          <>
+            <NavLink
+              to="/dashboard/influencer-notifications"
+              className={({ isActive }) => navItemClass(isActive)}
+            >
+              <Bell size={22} />
+              <span className="text-[11px]">Notification</span>
+            </NavLink>
 
-        <NavLink
-          to="/dashboard/media"
-          className={({ isActive }) => navItemClass(isActive)}
-        >
-          <Music size={22} />
-          <span className="text-[11px]">Media</span>
-        </NavLink>
+            <NavLink
+              to="/dashboard/influencer-jobs"
+              className={({ isActive }) => navItemClass(isActive)}
+            >
+              <Briefcase size={22} />
+              <span className="text-[11px]">Jobs</span>
+            </NavLink>
 
-        <NavLink
-          to="/dashboard/promotion"
-          className={({ isActive }) => navItemClass(isActive)}
-        >
-          <Megaphone size={22} />
-          <span className="text-[11px]">Promotion</span>
-        </NavLink>
+            <NavLink
+              to="/dashboard/influencer-wallets"
+              className={({ isActive }) => navItemClass(isActive)}
+            >
+              <Wallet size={22} />
+              <span className="text-[11px]">Wallet</span>
+            </NavLink>
 
-        <NavLink
-          to="/dashboard/profile"
-          className={({ isActive }) => navItemClass(isActive)}
-        >
-          <User size={22} />
-          <span className="text-[11px]">Profile</span>
-        </NavLink>
+            <NavLink
+              to="/dashboard/influencer-profile"
+              className={({ isActive }) => navItemClass(isActive)}
+            >
+              <User size={22} />
+              <span className="text-[11px]">Profile</span>
+            </NavLink>
+          </>
+        ) : (
+          <>
+            <NavLink
+              to="/dashboard/statistics"
+              className={({ isActive }) => navItemClass(isActive)}
+            >
+              <BarChart2 size={22} />
+              <span className="text-[11px]">Statistics</span>
+            </NavLink>
+
+            <NavLink
+              to="/dashboard/media"
+              className={({ isActive }) => navItemClass(isActive)}
+            >
+              <Music size={22} />
+              <span className="text-[11px]">Media</span>
+            </NavLink>
+
+            <NavLink
+              to="/dashboard/promotion"
+              className={({ isActive }) => navItemClass(isActive)}
+            >
+              <Megaphone size={22} />
+              <span className="text-[11px]">Promotion</span>
+            </NavLink>
+
+            <NavLink
+              to="/dashboard/profile"
+              className={({ isActive }) => navItemClass(isActive)}
+            >
+              <User size={22} />
+              <span className="text-[11px]">Profile</span>
+            </NavLink>
+          </>
+        )}
       </nav>
     </div>
   );

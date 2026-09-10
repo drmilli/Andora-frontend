@@ -4,7 +4,7 @@ import { AuthLayout } from "../components/auth/AuthLayout";
 import { AuthInput } from "../components/auth/AuthInput";
 import { AuthButton } from "../components/auth/AuthButton";
 import { SocialButton } from "../components/auth/SocialButton";
-import { useAuth } from "../hooks/auth/useAuth";
+import { useAuth } from "../hooks/auth/useArtistAuth";
 
 
 export const LoginPage: React.FC = () => {

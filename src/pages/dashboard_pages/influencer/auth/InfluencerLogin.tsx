@@ -4,11 +4,11 @@ import { AuthLayout } from "../../../../components/auth/AuthLayout";
 import { AuthInput } from "../../../../components/auth/AuthInput";
 import { AuthButton } from "../../../../components/auth/AuthButton";
 import { SocialButton } from "../../../../components/auth/SocialButton";
-import { useAuth } from "../../../../hooks/auth/useAuth";
+import { useInfluencerAuth } from "../../../../hooks/auth/useInfluencerAuth";
 
 
 export const InfluencerLogin: React.FC = () => {
-  const { login, error } = useAuth();
+  const { login, error } = useInfluencerAuth();
   const navigate = useNavigate();
 
 
@@ -19,7 +19,7 @@ export const InfluencerLogin: React.FC = () => {
       email: String(form.get("email")),
       password: String(form.get("password")),
     });
-    navigate("/dashboard/influencer-login");
+    navigate("/dashboard");
   };
   return (
     <AuthLayout
@@ -73,7 +73,7 @@ export const InfluencerLogin: React.FC = () => {
       <p className="mt-8 text-center text-sm text-white/70">
         Don&apos;t have an account?{" "}
         <Link
-          to="/signup"
+          to="/influncer-signup"
           className="text-[#f5b640] transition hover:text-[#ffca52]"
         >
           Sign Up

@@ -1,8 +1,9 @@
-import React, { useState, } from "react";
+import React, { useState, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { getPageTitle } from "../lib/pageTitles";
 import { Bell, Wallet, Menu, ChevronLeft, Music, Upload } from "lucide-react";
+import { AppContext } from "@/Context/AppContext";
 
 import {
   Dialog,
@@ -58,6 +59,9 @@ export const Header: React.FC<HeaderProps> = ({
 
   onMenuClick,
 }) => {
+  const context = useContext(AppContext);
+  const role = context?.user?.role?.toLowerCase();
+
 
   const { pathname } = useLocation();
 
@@ -116,7 +120,7 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       <div className="flex items-center gap-4">
-        {showSearch && (
+        {showSearch && role !== "influencer" && role !== "station" && (
           <div className="hidden sm:block">
             <button
               onClick={openCampaignModal}

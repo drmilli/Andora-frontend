@@ -15,7 +15,8 @@ export const signupUser = async (data: SignupPayload): Promise<AuthResponse> => 
 };
 
 //influencer
+export { influencerLogin, influencerSignup } from "./influencer/auth/authService";
 
 //radio station
 
-//tv
+//tv

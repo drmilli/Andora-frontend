@@ -31,28 +31,66 @@ export const getPageTitle = (pathname: string): string => {
   if (pathname.startsWith("/dashboard/profile")) return "Profile";
 
   // Influencer
-  if (pathname.startsWith("/dashboard/influencerboard")) return "Dashboard";
+  if (
+    pathname.startsWith("/dashboard/influencerboard") ||
+    pathname.startsWith("/dashboard/influencer-dashboard")
+  )
+    return "Dashboard";
 
-  if (pathname.startsWith("/dashboard/influencernotifications"))
+  if (
+    pathname.startsWith("/dashboard/influencernotifications") ||
+    pathname.startsWith("/dashboard/influencer-notifications")
+  )
     return "Notification";
 
-  if (pathname.startsWith("/dashboard/influencerjobs")) return "Jobs";
+  if (
+    pathname.startsWith("/dashboard/influencerjobs") ||
+    pathname.startsWith("/dashboard/influencer-jobs")
+  )
+    return "Jobs";
 
-  if (pathname.startsWith("/dashboard/influencerprofile")) return "Profile";
+  if (
+    pathname.startsWith("/dashboard/influencerprofile") ||
+    pathname.startsWith("/dashboard/influencer-profile")
+  )
+    return "Profile";
 
-  if (pathname.startsWith("/dashboard/influencerwallets")) return "Wallet";
+  if (
+    pathname.startsWith("/dashboard/influencerwallets") ||
+    pathname.startsWith("/dashboard/influencer-wallets")
+  )
+    return "Wallet";
 
   // Station
-  if (pathname.startsWith("/dashboard/stationboard")) return "Dashboard";
+  if (
+    pathname.startsWith("/dashboard/stationboard") ||
+    pathname.startsWith("/dashboard/station-dashboard")
+  )
+    return "Dashboard";
 
-  if (pathname.startsWith("/dashboard/stationnotification"))
+  if (
+    pathname.startsWith("/dashboard/stationnotification") ||
+    pathname.startsWith("/dashboard/station-notifications")
+  )
     return "Notification";
 
-  if (pathname.startsWith("/dashboard/stationjobs")) return "Jobs";
+  if (
+    pathname.startsWith("/dashboard/stationjobs") ||
+    pathname.startsWith("/dashboard/station-jobs")
+  )
+    return "Jobs";
 
-  if (pathname.startsWith("/dashboard/stationprofile")) return "Profile";
+  if (
+    pathname.startsWith("/dashboard/stationprofile") ||
+    pathname.startsWith("/dashboard/station-profile")
+  )
+    return "Profile";
 
-  if (pathname.startsWith("/dashboard/stationpricing")) return "Pricing";
+  if (
+    pathname.startsWith("/dashboard/stationpricing") ||
+    pathname.startsWith("/dashboard/station-pricing")
+  )
+    return "Pricing";
 
   return "Dashboard";
 };
