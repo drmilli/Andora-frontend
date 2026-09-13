@@ -24,20 +24,20 @@ export interface GetInfluencerProfileResponse {
 
 
 export interface UpdateInfluencerProfilePayload {
-  firstname: string;
-  surname: string;
-  username: string;
-  email: string;
-  role: string;
-  bio: string | null;
-  phone: string | null;
-  profilePicture: string | null;
-  coverPicture: string | null;
-  instagram: string | null;
-  twitter: string | null;
-  tiktok: string | null;
-  snapchat: string | null;
-  facebook: string | null;
-  youtube: string | null;
-  website: string | null;
+  firstname?: string;
+  surname?: string;
+  username?: string;
+  email?: string;
+  role?: string;
+  bio?: string | null;
+  phone?: string | null;
+  profilePicture?: string | null;
+  coverPicture?: string | null;
+  instagram?: string | null;
+  twitter?: string | null;
+  tiktok?: string | null;
+  snapchat?: string | null;
+  facebook?: string | null;
+  youtube?: string | null;
+  website?: string | null;
 }

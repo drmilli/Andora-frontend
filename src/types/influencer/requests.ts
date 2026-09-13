@@ -158,3 +158,12 @@ export interface GetInfluencerRequest {
   createdAt: string;
   updatedAt: string;
 }
+
+// The full paginated response from GET /influencer/me/requests
+export type PaginatedInfluencerRequests = {
+  data: GetInfluencerRequest[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}

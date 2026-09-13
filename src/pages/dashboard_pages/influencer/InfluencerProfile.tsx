@@ -1,18 +1,31 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Cover from "../../../assets/influencer/cover.png";
 import Nopic from "../../../assets/influencer/nopic.png";
 import { Plus } from "lucide-react";
+import { fetchProfile,updateProfile } from "@/services/influencer/profile/ProfileService";
+import type { GetInfluencerProfileResponse, UpdateInfluencerProfilePayload } from "@/types/influencer/profile";
+
 
 const tabs = [{ value: "Info" }, { value: "Edit" }];
 
 function InfluencerProfile() {
   const [banner, setBanner] = useState<string | null>(null);
-  const [profile, setProfile] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [profilePreview, setProfilePreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<GetInfluencerProfileResponse | null>(null);
+  const [formData, setFormData] = useState<UpdateInfluencerProfilePayload>({
+    phone: "",
+    email: "",
+    instagram: "",
+    tiktok: "",
+    snapchat: "",
+    twitter: "",
+  });
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -27,9 +40,50 @@ function InfluencerProfile() {
     if (!file) return;
 
     const url = URL.createObjectURL(file);
-    setProfile(url);
+    setProfilePreview(url);
   };
 
+  // Get existing profile 
+  useEffect(() => { 
+    const getProfile = async () => { 
+      try { 
+        setLoading(true);
+        const data = await fetchProfile(); 
+        setProfile(data);
+        setFormData({ 
+          phone: data.phone || "", 
+          email: data.email || "", 
+          instagram: data.instagram || "", 
+          tiktok: data.tiktok || "", 
+          snapchat: data.snapchat || "", 
+          twitter: data.twitter || "", 
+        }); 
+      } catch (error) { 
+        console.error("Failed to get profile:", error); 
+      } finally {
+        setLoading(false);
+      }
+    }; 
+    getProfile(); 
+  }, []);
+
+
+  //handle submit
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try { 
+      setLoading(true);
+      const updatedProfile = await updateProfile(formData);
+      setProfile(updatedProfile);
+      alert("Profile updated successfully!");
+    } catch (error) { 
+      console.error("Failed to update profile:", error); 
+    } finally {
+      setLoading(false);
+    }
+  };
+
+console.log("profile:",profile);
   return (
     <div>
       <div className="flex w-full max-w-full lg:max-w-sm flex-col gap-6 mt-10">
@@ -76,7 +130,7 @@ function InfluencerProfile() {
                 {/* Name badge */}
                 <div className="  px-4  mb-2 rounded shadow-lg">
                   <h2 className="text-white font-bold text-lg whitespace-nowrap">
-                    Abby Lincoln
+                    {profile?.username}
                   </h2>
                 </div>
               </div>
@@ -87,40 +141,40 @@ function InfluencerProfile() {
               <div>
                 <div className="mt-10">
                   <div>Phone Number</div>
-                  <div>+1234567890</div>
+                  <div>{profile?.phone}</div>
                 </div>
                 <div className="mt-10">
                   <div>Instagram link</div>
-                  <div>www.instagram.com/abbylincoln</div>
+                  <div>{profile?.instagram}</div>
                 </div>
                 <div className="mt-10">
                   <div>TikTok link</div>
-                  <div>www.youtube.com/abbylincoln</div>
+                  <div>{profile?.tiktok}</div>
                 </div>
               </div>
               <div>
                 <div className="mt-10">
                   <div>Email</div>
-                  <div>abbeylin@gmail.com</div>
+                  <div>{profile?.email}</div>
                 </div>
                 <div className="mt-10">
                   <div>Snapchat link</div>
-                  <div>www.snapchat.com/abbylincoln</div>
+                  <div>{profile?.snapchat}</div>
                 </div>
                 <div className="mt-10">
                   <div>Twitter link</div>
-                  <div>www.twitter.com/abbylincoln</div>
+                  <div>{profile?.twitter}</div>
                 </div>
               </div>
             </div>
           </TabsContent>
 
           <TabsContent value="Edit" className=" w-full sm:w-5xl">
-            <form action="">
+            <form onSubmit={handleSubmit}>
               <div className="relative w-full mt-10 flex justify-center">
                 <div className="relative    rounded-lg overflow-hidden shadow-2xl">
                   <img
-                    src={banner ?? Nopic}
+                    src={banner ?? profile?.coverPicture ?? Nopic}
                     alt=""
                     className="w-[400px] sm:w-[1032px] h-30 sm:h-90 object-cover"
                   />
@@ -131,7 +185,7 @@ function InfluencerProfile() {
                         type="file"
                         accept="image/*"
                         className="hidden"
-                         ref={fileInputRef}
+                        ref={fileInputRef}
                         onChange={handleBannerUpload}
                       />
                       <div className="text-center align-middle m-auto">
@@ -144,7 +198,6 @@ function InfluencerProfile() {
                           variant="outline"
                           className="sm:hidden block bg-[#B88D35] text-white sm:w-[297px] w-30 border-0 "
                           onClick={() => fileInputRef.current?.click()}
-                          defaultChecked
                         >
                           Upload Image
                         </Button>
@@ -159,9 +212,9 @@ function InfluencerProfile() {
                   <div className="relative">
                     <div className="w-20 h-20 sm:h-32 sm:w-32  rounded-full overflow-hidden border-4 border-gray-900 shadow-xl bg-gray-700">
                       <img
-                        src={profile ?? Nopic}
+                        src={profilePreview ?? profile?.profilePicture ?? Nopic}
                         alt="Profile"
-                        className="w-full  h-full object-cover"
+                        className="w-full  h-full  object-cover"
                       />
                     </div>
                   </div>
@@ -183,7 +236,7 @@ function InfluencerProfile() {
                   {/* Name badge */}
                   <div className="  px-4  mb-2 rounded shadow-lg">
                     <h2 className="text-white font-bold text-lg whitespace-nowrap">
-                      Abby Lincoln
+                      {profile?.username}
                     </h2>
                   </div>
                 </div>
@@ -197,7 +250,8 @@ function InfluencerProfile() {
                     <input
                       type="text"
                       className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
-                      defaultValue="+1234567890"
+                      value={formData.phone || ""}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
                     />
                   </div>
                   <div className="mt-10">
@@ -205,7 +259,8 @@ function InfluencerProfile() {
                     <input
                       type="text"
                       className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
-                      defaultValue="emmanwabugo@gamil.com"
+                      value={formData.email || ""}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                     />
                   </div>
                   <div className="mt-10">
@@ -213,16 +268,17 @@ function InfluencerProfile() {
                     <input
                       type="text"
                       className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
-                      defaultValue="www.instagram.com/abbylincoln"
+                      value={formData.instagram || ""}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, instagram: e.target.value }))}
                     />
                   </div>
                   <div className="mt-10">
                     <div className="mb-2">TikTok link</div>
                     <input
-
                       type="text"
                       className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
-                      defaultValue="www.youtube.com/abbylincoln"
+                      value={formData.tiktok || ""}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, tiktok: e.target.value }))}
                     />
                   </div>
                   <div className="mt-10">
@@ -230,7 +286,8 @@ function InfluencerProfile() {
                     <input
                       type="text"
                       className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
-                      defaultValue="www.snapchat.com/abbylincoln"
+                      value={formData.snapchat || ""}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, snapchat: e.target.value }))}
                     />
                   </div>
 
@@ -239,17 +296,22 @@ function InfluencerProfile() {
                     <input
                       type="text"
                       className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
-                      defaultValue="www.twitter.com/abbylincoln"
+                      value={formData.twitter || ""}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, twitter: e.target.value }))}
                     />
                   </div>
 
-                  <div className="mt-10 mb-10"></div>
+                  <div className="mt-10 mb-10">
                     <Button
+                      type="submit"
+                      disabled={loading}
                       variant="outline"
                       className="bg-[#B88D35] text-white w-70 border-0 sm:w-full  "
                     >
-                      Save Changes
+                      {loading ? "Saving..." : "Save Changes"}
                     </Button>
+                  </div>
+               
                 </div>
               </div>
             </form>

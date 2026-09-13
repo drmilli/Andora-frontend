@@ -47,7 +47,7 @@ const artistNavItems: NavItem[] = [
 ];
 
 const influencerNavItems: NavItem[] = [
-  { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
+  { to: "/dashboard/influencer-dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
   {
     to: "/dashboard/influencer-notifications",
     label: "Notification",

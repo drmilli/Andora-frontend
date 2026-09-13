@@ -14,10 +14,7 @@ export const InfluencerSignup: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    const password = String(form.get("password") || "");
-    const passwordConfirmation = String(
-      form.get("password_confirmation") || password
-    );
+
 
     try {
       const data = await register({
@@ -26,8 +23,8 @@ export const InfluencerSignup: React.FC = () => {
         username: String(form.get("username") || ""),
         email: String(form.get("email") || ""),
         role: "influencer",
-        password,
-        password_confirmation: passwordConfirmation,
+       password: String(form.get("password")),
+      password_confirmation: String(form.get("password_confirmation")),
       });
 
       navigate("/dashboard", {

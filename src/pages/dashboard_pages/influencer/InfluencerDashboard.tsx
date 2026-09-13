@@ -13,7 +13,10 @@ import Tiktok from "../../../assets/socials/Tiktok.png";
 import All from "../../../assets/socials/All.png";
 import Fm from "../../../assets/influencer/Fm.png";
 import ProfilePic from "../../../assets/influencer/ProfilePic.png";
-import { Copy } from "lucide-react";
+import { Copy, ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import type { GetInfluencerRequest } from "@/types/influencer/requests";
+import { fetchInfluencerRequests } from "@/services/influencer/requests/requestsService";
 
 const socials = [
   { icon: All, value: "all" },
@@ -25,77 +28,46 @@ const socials = [
   { icon: Tiktok, value: "tiktok" },
 ];
 
-const artists = [
-  {
-    name: "Burna Boy",
-    icon: Tiktok,
-    email: "burnaboy@gmail.com",
-    profilePic: "https://i.pravatar.cc/90?img=1",
-    message: "I want you to be able to push my music in your own creative way.",
-    song: {
-      title: "Song One",
-      duration: "3:24",
-      format: "mp3",
-      cover: "https://via.placeholder.com/50",
-    },
-  },
-  {
-    name: "Wizkid",
-    icon: Instagram,
-    email: "wizkid@gmail.com",
-    profilePic: "https://i.pravatar.cc/90?img=2",
-    message: "Check out my latest track!",
-    song: {
-      title: "Song Two",
-      duration: "4:12",
-      format: "mp3",
-      cover: "https://via.placeholder.com/50",
-    },
-  },
-  {
-    name: "Tiwa Savage",
-    icon: Facebook,
-    email: "tiwa@gmail.com",
-    profilePic: "https://i.pravatar.cc/90?img=3",
-    message: "Looking forward to collaborating.",
-    song: {
-      title: "Song Three",
-      duration: "2:58",
-      format: "mp3",
-      cover: "https://via.placeholder.com/50",
-    },
-  },
-  {
-    name: "Olamide",
-    icon: Snapchat,
-    email: "olamide@gmail.com",
-    profilePic: "https://i.pravatar.cc/90?img=4",
-    message: "New hit coming your way!",
-    song: {
-      title: "Song Four",
-      duration: "3:36",
-      format: "mp3",
-      cover: "https://via.placeholder.com/50",
-    },
-  },
-  {
-    name: "Rema",
-    icon: Instagram,
-    email: "rema@gmail.com",
-    profilePic: "https://i.pravatar.cc/90?img=5",
-    message: "Hope you enjoy my latest release.",
-    song: {
-      title: "Song Five",
-      duration: "3:15",
-      format: "mp3",
-      cover: "https://via.placeholder.com/50",
-    },
-  },
-];
-
 function InfluencerDashboard() {
+  const [requests, setRequests] = useState<GetInfluencerRequest[]>([]);
+  const [loading, setLoading] = useState(false);
+
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  // Fetch requests whenever the page changes
+  useEffect(() => {
+    const loadRequests = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchInfluencerRequests(currentPage, 10);
+        console.log("API response:", response);
+
+        setRequests(response.data); 
+        setTotalPages(response.totalPages); 
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRequests();
+  }, [currentPage]); // <-- re-runs when currentPage changes
+
+  // Simple helpers for Previous / Next
+  const goToPreviousPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+
   return (
-    <div className='  px-15 '>
+    <div className='px-1 '>
       <div>
         <h1>Hello,Issac</h1>
       </div>
@@ -128,76 +100,124 @@ function InfluencerDashboard() {
           </TabsList>
           {socials.map((social) => (
             <TabsContent value={social.value} key={social.value}>
-              {artists
+              {loading ? (
+                <p className="text-white mt-10">Loading requests...</p>
+              ) : requests
                 .filter(
-                  (artist) =>
-                    social.value === "all" || artist.icon === social.icon
+                  (req) =>
+                    social.value === "all" || req.platform.toLowerCase() === social.value
                 )
-                .map((artist, index) => (
-                  <Card
-                    key={index}
-                    className="bg-[#4040404D] border-0 w-full lg:w-[1032px] h-auto lg:h-[283px] mt-10"
-                  >
-                    <CardContent className="grid gap-6">
-                      <div className="grid grid-cols-1">
-                        <div className="flex justify-between flex-col md:flex-row md:justify-between gap-4">
-                          <div className="shrink-0">
-                            <img src={artist.icon} alt="" />
-                          </div>
-                          <div className="grid grid-cols-3 gap-2 md:gap-3">
-                            <Button className="bg-[#A67102] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px]">
-                              pend
-                            </Button>
-                            <Button className="bg-[#743636] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px]">
-                              Decline
-                            </Button>
-                            <Button className="bg-[#4D7522] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px]">
-                              Accept
-                            </Button>
-                          </div>
-                        </div>
-
-                        <div className="mt-6 lg:mt-15 grid grid-cols-1 lg:grid-cols-6 gap-3 p-1 text-white text-sm md:text-base">
-                          <div>
-                            <span>
+                .length === 0 ? (
+                <p className="text-white mt-10">No requests found.</p>
+              ) : (
+                requests
+                  .filter(
+                    (req) =>
+                      social.value === "all" || req.platform.toLowerCase() === social.value
+                  )
+                  .map((req) => (
+                    <Card
+                      key={req.id}
+                      className="bg-[#4040404D] border-0 w-full lg:w-[1032px] h-auto lg:h-[283px] mt-10"
+                    >
+                      <CardContent className="grid gap-6">
+                        <div className="grid grid-cols-1">
+                          <div className="flex justify-between flex-col md:flex-row md:justify-between gap-4">
+                            <div className="shrink-0">
                               <img
-                                src={ProfilePic}
-                                alt=""
-                                className="w-[60px] md:w-[90px] h-[60px] md:h-[90px]"
+                                src={
+                                  socials.find(
+                                    (s) => s.value === req.platform.toLowerCase()
+                                  )?.icon ?? All
+                                }
+                                alt={req.platform}
                               />
-                            </span>{" "}
-                            <p className="pt-1">Artist Name</p>{" "}
-                          </div>
-                          <div className="lg:col-span-3">
-                            <p className="flex justify-between items-center mb-3 w-full">
-                              <span>Email: {artist.email}</span>
-                              <Copy className="mr-4 lg:mr-15" />
-                            </p>
-
-                            <div className="border border-[#A67102] p-2 rounded-lg h-[98px] w-full lg:w-[429px]">
-                              {artist.message}
+                            </div>
+                            <div className="grid grid-cols-3 gap-2 md:gap-3">
+                              <Button className="bg-[#A67102] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px]">
+                                Pend
+                              </Button>
+                              <Button className="bg-[#743636] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px]">
+                                Decline
+                              </Button>
+                              <Button className="bg-[#4D7522] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px]">
+                                Accept
+                              </Button>
                             </div>
                           </div>
-                          <div className="lg:col-span-2">
-                            <span>
-                              <img src={Fm} alt="" />
-                            </span>
-                            <div className="flex justify-between">
-                              <div className="pt-1">
-                                <span className="pt-1">{artist.song.title}</span>
-                                <p>{artist.song.duration}</p>
+
+                          <div className="mt-6 lg:mt-15 grid grid-cols-1 lg:grid-cols-6 gap-3 p-1 text-white text-sm md:text-base">
+                            <div>
+                              <span>
+                                <img
+                                  src={req.artist.profilePicture || ProfilePic}
+                                  alt={req.artist.username}
+                                  className="w-[60px] md:w-[90px] h-[60px] md:h-[90px] rounded-full object-cover"
+                                />
+                              </span>{" "}
+                              <p className="pt-1">{req.artist.firstname} {req.artist.surname}</p>{" "}
+                            </div>
+                            <div className="lg:col-span-3">
+                              <p className="flex justify-between items-center mb-3 w-full">
+                                <span>Email: {req.artist.email}</span>
+                                <Copy className="mr-4 lg:mr-15" />
+                              </p>
+
+                              <div className="border border-[#A67102] p-2 rounded-lg h-[98px] w-full lg:w-[429px]">
+                                {req.message}
                               </div>
-                              <p className="pt-1">{artist.song.format}</p>
+                            </div>
+                            <div className="lg:col-span-2">
+                              <span>
+                                <img src={Fm} alt="" />
+                              </span>
+                              <div className="flex justify-between">
+                                <div className="pt-1">
+                                  <span className="pt-1">{req.media.title}</span>
+                                  <p>{Math.floor(req.media.duration / 60)}:{String(Math.floor(req.media.duration % 60)).padStart(2, '0')}</p>
+                                </div>
+                                <p className="pt-1">{req.media.type}</p>
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      </CardContent>
+                    </Card>
+                  ))
+              )}
             </TabsContent>
           ))}
         </Tabs>
+
+        {/* ===== PAGINATION BUTTONS ===== */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 mt-6">
+            {/* Previous button - disabled on first page */}
+            <Button
+              onClick={goToPreviousPage}
+              disabled={currentPage === 1}
+              className="bg-neutral-800 border border-neutral-700 disabled:opacity-40"
+            >
+              <ChevronLeft className="w-5 h-5" />
+              Previous
+            </Button>
+
+            {/* Page indicator */}
+            <span className="text-white text-sm">
+              Page {currentPage} of {totalPages}
+            </span>
+
+            {/* Next button - disabled on last page */}
+            <Button
+              onClick={goToNextPage}
+              disabled={currentPage === totalPages}
+              className="bg-neutral-800 border border-neutral-700 disabled:opacity-40"
+            >
+              Next
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
