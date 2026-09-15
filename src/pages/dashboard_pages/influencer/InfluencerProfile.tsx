@@ -251,6 +251,7 @@ console.log("profile:",profile);
                       type="text"
                       className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
                       value={formData.phone || ""}
+                      name="phone"
                       onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
                     />
                   </div>
@@ -260,6 +261,7 @@ console.log("profile:",profile);
                       type="text"
                       className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
                       value={formData.email || ""}
+                      name="email"
                       onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                     />
                   </div>
@@ -269,6 +271,7 @@ console.log("profile:",profile);
                       type="text"
                       className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
                       value={formData.instagram || ""}
+                      name="instagram"
                       onChange={(e) => setFormData((prev) => ({ ...prev, instagram: e.target.value }))}
                     />
                   </div>
@@ -278,6 +281,7 @@ console.log("profile:",profile);
                       type="text"
                       className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
                       value={formData.tiktok || ""}
+                      name="tiktok"
                       onChange={(e) => setFormData((prev) => ({ ...prev, tiktok: e.target.value }))}
                     />
                   </div>
@@ -287,6 +291,7 @@ console.log("profile:",profile);
                       type="text"
                       className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
                       value={formData.snapchat || ""}
+                      name="snapchat"
                       onChange={(e) => setFormData((prev) => ({ ...prev, snapchat: e.target.value }))}
                     />
                   </div>
@@ -297,6 +302,7 @@ console.log("profile:",profile);
                       type="text"
                       className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
                       value={formData.twitter || ""}
+                      name="twitter"
                       onChange={(e) => setFormData((prev) => ({ ...prev, twitter: e.target.value }))}
                     />
                   </div>

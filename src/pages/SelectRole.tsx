@@ -1,26 +1,12 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthLayout } from "../components/auth/AuthLayout";
-import { AuthInput } from "../components/auth/AuthInput";
-import { AuthButton } from "../components/auth/AuthButton";
-import { SocialButton } from "../components/auth/SocialButton";
-import { useAuth } from "../hooks/auth/useArtistAuth";
 
 
 export const SelectRole: React.FC = () => {
-  const { login, error } = useAuth();
-  const navigate = useNavigate();
 
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    const form = new FormData(e.target);
-    await login({
-      email: String(form.get("email")),
-      password: String(form.get("password")),
-    });
-    navigate("/dashboard");
-  };
+
   return (
     <AuthLayout
       title="Make a selection."

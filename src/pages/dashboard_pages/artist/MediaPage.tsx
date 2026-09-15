@@ -37,6 +37,8 @@ export const MediaPage: React.FC = () => {
   const { media: videos, loading: videosLoading, upload: uploadVideo, remove: removeVideo } = useMedia("video");
 
   const [uploadingFile, setUploadingFile] = useState(false);
+console.log(scheduleData)
+console.log(platformsData)
 
   const handleFilePick = () => {
     fileInputRef.current?.click();
@@ -84,8 +86,8 @@ export const MediaPage: React.FC = () => {
     }
   };
 
-  const currentMedia = activeTab === "songs" ? songs : videos;
-  const loading = activeTab === "songs" ? songsLoading : videosLoading;
+  // const currentMedia = activeTab === "songs" ? songs : videos;
+  // const loading = activeTab === "songs" ? songsLoading : videosLoading;
 
   function Yearselection() {
     const curYear = new Date().getFullYear();

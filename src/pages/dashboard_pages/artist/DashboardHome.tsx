@@ -1,5 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { LayoutDashboard, BarChart2, Music, Megaphone, User, X, CheckCircle, FileText, Wallet, Users, Music2 } from "lucide-react";
+import { LayoutDashboard, BarChart2, Music, Megaphone, User, X, CheckCircle,  Wallet, Users, Music2 } from "lucide-react";
 import { StatCard } from "@/components/artist/StatCard";
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "@/Context/AppContext";
@@ -32,7 +32,7 @@ export const DashboardHome: React.FC = () => {
         const data = await getDashboardStats();
         setStats(data);
       } catch {
-        // silently fail — dashboard will show 0s
+      
       } finally {
         setLoadingStats(false);
       }

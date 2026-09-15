@@ -14,8 +14,6 @@ export const InfluencerSignup: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-
-
     try {
       const data = await register({
         firstname: String(form.get("firstname") || ""),

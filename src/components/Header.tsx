@@ -1,16 +1,17 @@
 import React, { useState, useContext } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { getPageTitle } from "../lib/pageTitles";
-import { Bell, Wallet, Menu, ChevronLeft, Music, Upload } from "lucide-react";
+import { Bell, Wallet, Menu, ChevronLeft, Music, Upload, Loader2 } from "lucide-react";
 import { AppContext } from "@/Context/AppContext";
-
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { uploadMedia } from "@/services/artist/media";
+
 
 type HeaderProps = {
   title?: string;
@@ -21,7 +22,7 @@ type HeaderProps = {
 };
 
 // ---- Campaign flow types ----
-type CampaignStep = "method" | "selectSong" | "package";
+type CampaignStep = "method" | "selectSong" | "package" | "uploadSong";
 
 type Song = {
   id: string;
@@ -47,29 +48,52 @@ const songs: Song[] = [
   { id: "5", title: "Smoke", genre: "Gospel", duration: "3:42", image: "https://i.pravatar.cc/80?img=14" },
 ];
 
+const genre = [
+  { name: "Rock" },
+  { name: "Pop" },
+  { name: "Hip-Hop" },
+  { name: "R&B" },
+  { name: "Country" },
+  { name: "Afrobeat" },
+  { name: "Electronic" },
+  { name: "Gospel" },
+  { name: "Amapiano" },
+  { name: "House" },
+  { name: "Hiphop" },
+  { name: "Reggae" },
+  { name: "Soul" },
+  { name: "Folk" },
+  { name: "Blues" },
+  { name: "Jazz" },
+  { name: "Classical" },
+  { name: "Country" },
+  { name: "Dancehall" }
+];
 const packages: PackageOption[] = [
   { id: "starter", name: "Starter Push", duration: "14 days", influencers: 2, price: "₦ 32,000.00" },
   { id: "medium", name: "Medium Push", duration: "30 days", influencers: 4, price: "₦ 50,000.00" },
   { id: "pro", name: "Pro Push", duration: "60 days", influencers: 6, price: "₦ 100,000.00" },
 ];
 
-export const Header: React.FC<HeaderProps> = ({
-
-  showSearch = true,
-
-  onMenuClick,
-}) => {
+export const Header: React.FC<HeaderProps> = ({ showSearch = true, onMenuClick, }) => {
   const context = useContext(AppContext);
   const role = context?.user?.role?.toLowerCase();
-
+  const navigate = useNavigate();
 
   const { pathname } = useLocation();
-
   // Campaign modal state
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<CampaignStep>("method");
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [selectedPackage, setSelectedPackage] = useState<PackageOption | null>(null);
+  const [formData, setFormData] = useState({
+    title: "",
+    artist_name: "",
+    genre: "",
+    file: null as File | null,
+    description: "",
+
+  });
 
 
 
@@ -96,6 +120,18 @@ export const Header: React.FC<HeaderProps> = ({
     setOpen(false);
   }
 
+
+  const handleUploadMedia = async (e: any) => {
+    e.preventDefault();
+    try{
+    const res = await uploadMedia(formData);
+    console.log("res:", res);
+    navigate("/dashboard");
+    }catch(err){
+      console.log(err);
+      
+    }
+  };
   return (
     <header
       className="flex items-center justify-between p-6 pb-3 border-b border-gray-900 bg-black"
@@ -167,29 +203,120 @@ export const Header: React.FC<HeaderProps> = ({
 
             <DialogHeader className="mb-1">
               <DialogTitle className="text-white text-xl font-semibold">
-                Start a new campaign
+                {step === "uploadSong" ? "Upload a new song" : "Start a new campaign"}
               </DialogTitle>
             </DialogHeader>
             <p className="text-gray-500 text-xs uppercase tracking-wide mb-6">
-              Audora auto-assigns influencers based on your package.
+              {step === "uploadSong" ? "Please fill the form below " : "Audora auto-assigns influencers based on your package."}
             </p>
+
+            {/* upload a new song */}
+            {step === "uploadSong" && (
+              <div className="flex flex-col gap-3  max-h-80 overflow-y-auto pr-1">
+                <form action="" className="flex flex-col gap-3" onSubmit={handleUploadMedia}>
+                  <div className="space-y-2">
+                    <label htmlFor="artist_name">Artist Name</label>
+                    <input type="text" id="artist_name" name="artist_name" className="w-full mt-2  bg-transparent border border-gray-700 rounded-lg px-4 py-3 text-gray-400 focus:outline-none focus:border-[#A67102]" onChange={(e) => setFormData((prev) => ({ ...prev, artist_name: e.target.value }))} />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label htmlFor="song_name">Song Title</label>
+                    <input type="text" id="song_title" name="title" className="w-full  mt-2 bg-transparent border border-gray-700 rounded-lg px-4 py-3 text-gray-400 focus:outline-none focus:border-[#A67102]" onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))} />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label htmlFor="artist_name">Genre</label>
+                    <select
+                      name="genre"
+                      defaultValue={""}
+                      className="w-full bg-transparent mt-2 border border-gray-700 rounded-lg px-4 py-3 text-gray-400 focus:outline-none focus:border-[#A67102]"
+                      onChange={(e) => setFormData((prev) => ({ ...prev, genre: e.target.value }))}
+                    >
+                      {genre.map((item, idx) => (
+                        <option key={idx} value={item.name} className="bg-[#12131e] font-normal text-white/40">
+                          {item.name}
+                        </option>
+                      ))}
+
+                    </select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label htmlFor="artist_name">Description</label>
+                    <input type="text" id="song_title" name="description" className="w-full mt-2  bg-transparent border border-gray-700 rounded-lg px-4 py-3 text-gray-400 focus:outline-none focus:border-[#A67102]" onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))} />
+                  </div>
+
+
+                  <div className="space-y-2">
+                    <label className="text-white text-sm mb-1 ">Upload Song
+                      <div className="relative border-2 border-dashed border-gray-600 mt-2 rounded-lg p-6 text-center hover:border-[#A67102] transition-colors">
+                        {/* Hidden file input */}
+                        <input
+                          type="file"
+                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                          accept="audio/*,video/*"
+                          name="file"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              setFormData((prev) => ({ ...prev, file: file }));
+                              console.log("Selected file:", file);
+                            }
+                          }}
+                        />
+
+                        {/* Visual upload area */}
+                        <div className="space-y-3">
+                          <div className="w-12 h-12 bg-[#1A1A1A] rounded-full flex items-center justify-center mx-auto">
+                            <Upload size={24} className="text-[#A67102]" />
+                          </div>
+
+                          <p className="text-sm text-white font-medium">
+                            Click to upload your song
+                          </p>
+
+                          <p className="text-xs text-gray-500">
+                            MP3 or WAV (Max 200MB)
+                          </p>
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+
+                  <button className="w-full bg-[#A67102] hover:bg-[#8B6001] transition-colors text-white font-semibold rounded-lg py-3 mt-4">
+                    Continue
+                  </button>
+
+                </form>
+
+              </div>
+            )}
 
             {/* ---- STEP 1: Choose method ---- */}
             {step === "method" && (
               <div className="grid grid-cols-2 gap-4">
+
+                {/* Select existing song */}
                 <button
                   onClick={() => setStep("selectSong")}
                   className="border border-gray-800 hover:border-[#A67102] rounded-xl p-4 text-left transition-colors"
                 >
                   <Music size={20} className="text-[#A67102] mb-3" />
-                  <p className="text-white font-medium text-sm mb-1">Select from my songs</p>
-                  <p className="text-gray-500 text-xs">Promote a track you've already uploaded.</p>
+
+                  <p className="text-white font-medium text-sm mb-1">
+                    Select from my songs
+                  </p>
+
+                  <p className="text-gray-500 text-xs">
+                    Promote a track you've already uploaded.
+                  </p>
                 </button>
 
+                {/* Upload new song */}
                 <button
                   onClick={() => {
                     // TODO: open upload flow instead
-                    setStep("selectSong");
+                    setStep("uploadSong");
                   }}
                   className="border border-gray-800 hover:border-[#A67102] rounded-xl p-4 text-left transition-colors"
                 >
@@ -232,11 +359,10 @@ export const Header: React.FC<HeaderProps> = ({
                   <button
                     key={pkg.id}
                     onClick={() => setSelectedPackage(pkg)}
-                    className={`flex items-center justify-between border rounded-xl p-4 text-left transition-colors ${
-                      selectedPackage?.id === pkg.id
-                        ? "border-[#A67102] bg-[#A67102]/10"
-                        : "border-gray-800 hover:border-[#A67102]"
-                    }`}
+                    className={`flex items-center justify-between border rounded-xl p-4 text-left transition-colors ${selectedPackage?.id === pkg.id
+                      ? "border-[#A67102] bg-[#A67102]/10"
+                      : "border-gray-800 hover:border-[#A67102]"
+                      }`}
                   >
                     <div>
                       <p className="text-white text-sm font-medium">

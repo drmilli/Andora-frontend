@@ -14,9 +14,7 @@ export const influencerLogin = async (
   return res.data;
 };
 
-export const influencerSignup = async (
-  data: SignupInfluencerPayload
-): Promise<InfluencerAuthResponse> => {
+export const influencerSignup = async (data: SignupInfluencerPayload): Promise<InfluencerAuthResponse> => {
   const res = await api.post("/auth/register", data);
   console.log("response data", res.data);
   return res.data;

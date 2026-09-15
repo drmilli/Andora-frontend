@@ -7,6 +7,6 @@ export const fetchProfile = async (): Promise<GetInfluencerProfileResponse> => {
   return res.data; 
 };
 export const updateProfile = async (payload: UpdateInfluencerProfilePayload): Promise<GetInfluencerProfileResponse> => {
-  const res = await api.patch("/influencer/me/profile", payload);
+  const res = await api.put("/influencer/me/profile", payload);
   return res.data; 
 };

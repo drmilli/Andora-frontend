@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
+
 import { GetAllCountries } from "@/services/clients/country";
-import type { Country } from "@/types/client/country";
+import { cn } from "@/lib/utils";
 
 export interface SelectOption {
   name: string;
