@@ -2,8 +2,9 @@ import React, { useState, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { getPageTitle } from "../lib/pageTitles";
-import { Bell, Wallet, Menu, ChevronLeft, Music, Upload, Loader2 } from "lucide-react";
+import { Bell, Wallet, Menu, ChevronLeft, Music, Upload, Search } from "lucide-react";
 import { AppContext } from "@/Context/AppContext";
+import { isCampaignStrategist } from "@/lib/roles";
 import {
   Dialog,
   DialogContent,
@@ -156,15 +157,28 @@ export const Header: React.FC<HeaderProps> = ({ showSearch = true, onMenuClick, 
       </div>
 
       <div className="flex items-center gap-4">
-        {showSearch && role !== "influencer" && role !== "station" && (
-          <div className="hidden sm:block">
-            <button
-              onClick={openCampaignModal}
-              className="bg-[#A67102] hover:bg-[#8a5e02] transition-colors text-white px-5 py-2 rounded-lg text-sm font-medium"
-            >
-              Start Campaign
-            </button>
+        {isCampaignStrategist(role) ? (
+          <div className="relative hidden sm:block">
+            <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <input
+              type="search"
+              placeholder="Search here"
+              className="w-56 rounded-lg border border-gray-800 bg-[#0D0B07] py-2 pl-9 pr-3 text-sm text-gray-200 placeholder:text-gray-500 focus:border-[#A67102] focus:outline-none"
+            />
           </div>
+        ) : (
+          showSearch &&
+          role !== "influencer" &&
+          role !== "station" && (
+            <div className="hidden sm:block">
+              <button
+                onClick={openCampaignModal}
+                className="bg-[#A67102] hover:bg-[#8a5e02] transition-colors text-white px-5 py-2 rounded-lg text-sm font-medium"
+              >
+                Start Campaign
+              </button>
+            </div>
+          )
         )}
 
         <Link
@@ -175,13 +189,15 @@ export const Header: React.FC<HeaderProps> = ({ showSearch = true, onMenuClick, 
           <Bell size={18} />
         </Link>
 
-        <Link
-          to="/dashboard/wallet"
-          aria-label="Wallet"
-          className="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-900 focus:outline-none md:hidden"
-        >
-          <Wallet size={18} />
-        </Link>
+        {!isCampaignStrategist(role) && (
+          <Link
+            to="/dashboard/wallet"
+            aria-label="Wallet"
+            className="p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-900 focus:outline-none md:hidden"
+          >
+            <Wallet size={18} />
+          </Link>
+        )}
       </div>
 
       {/* ----------- START CAMPAIGN MODAL ----------- */}

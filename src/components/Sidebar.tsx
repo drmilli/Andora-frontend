@@ -9,6 +9,8 @@ import {
   Briefcase,
   Wallet,
   User,
+  Users,
+  Mail,
   X,
   Lock,
   Scale,
@@ -16,6 +18,7 @@ import {
 } from "lucide-react";
 import audoraLogo from "../assets/audora-logo.svg";
 import { AppContext } from "@/Context/AppContext";
+import { isCampaignStrategist } from "@/lib/roles";
 
 type NavItem = {
   to: string;
@@ -94,6 +97,40 @@ const stationNavItems: NavItem[] = [
   },
 ];
 
+const strategistNavItems: NavItem[] = [
+  { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
+  {
+    to: "/dashboard/notifications",
+    label: "Notification",
+    icon: <Bell size={20} />,
+  },
+  {
+    to: "/dashboard/song-submissions",
+    label: "Song Submissions",
+    icon: <Music size={20} />,
+  },
+  {
+    to: "/dashboard/campaign",
+    label: "Campaign",
+    icon: <Megaphone size={20} />,
+  },
+  {
+    to: "/dashboard/influencer-directory",
+    label: "Influencer Directory",
+    icon: <Users size={20} />,
+  },
+  {
+    to: "/dashboard/invitations",
+    label: "Invitations",
+    icon: <Mail size={20} />,
+  },
+  {
+    to: "/dashboard/reports",
+    label: "Reports",
+    icon: <BarChart2 size={20} />,
+  },
+];
+
 const adminNavItems: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
   {
@@ -143,20 +180,24 @@ export const Sidebar: React.FC<{
   onClose?: () => void;
 }> = ({ isOpen = false, onClose }): React.ReactElement => {
 
-    const context = useContext(AppContext);
-    const user = context?.user;
-    const role = user?.role?.toLowerCase();
+  const context = useContext(AppContext);
+  const user = context?.user;
+  const role = user?.role?.toLowerCase();
 
-    const navItems =
-      role === "influencer"
-        ? influencerNavItems
-        : role === "station"
+  const navItems =
+    role === "influencer"
+      ? influencerNavItems
+      : role === "station"
         ? stationNavItems
         : role === "admin"
-        ? adminNavItems
-        : artistNavItems;
+          ? adminNavItems
+          : isCampaignStrategist(role)
+            ? strategistNavItems
+            : artistNavItems;
 
-  
+  const displayName = [user?.firstname, user?.surname].filter(Boolean).join(" ") || user?.username || "Campaign Strategist";
+
+
   return (
     <>
       {/* Mobile Overlay */}
@@ -184,7 +225,7 @@ export const Sidebar: React.FC<{
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="overflow-y-auto pr-2">
             {/* Profile */}
-             {/* Centered logo (kept inside scroll area so it stays visually with nav on small screens) */}
+            {/* Centered logo (kept inside scroll area so it stays visually with nav on small screens) */}
             <div className="flex  justify-start my-6 px-2">
               <img src={audoraLogo} alt="Audora logo" className="w-30" />
             </div>
@@ -214,50 +255,63 @@ export const Sidebar: React.FC<{
 
           </div>
 
-        {/* Bottom-sticky settings */}
-        <div className="mt-auto pt-4">
-          <div className="px-2">
-            <p className="text-white font-medium mb-4">Settings</p>
-            <div className="flex items-center justify-start gap-6 text-gray-500 pb-4">
-              <button
-                type="button"
-                aria-label="Lock"
-                className="hover:text-white focus:outline-none"
-              >
-                <Lock size={18} />
-              </button>
-              <button
-                type="button"
-                aria-label="Scale"
-                className="hover:text-white focus:outline-none"
-              >
-                <Scale size={18} />
-              </button>
-              <NavLink
-                to={role === "influencer" ? "/dashboard/influencer-profile" : "/dashboard/profile"}
-                aria-label="User"
-                className="hover:text-white focus:outline-none"
-              >
-                <User size={18} />
-              </NavLink>
-              <button
-                type="button"
-                aria-label="Logout"
-                onClick={() => {
-                  localStorage.removeItem("token");
-                  context?.setToken(null);
-                  context?.setUser(null);
-                  window.location.href = "/login";
-                }}
-                className="hover:text-white focus:outline-none"
-              >
-                <LogOut size={18} />
-              </button>
+          {/* Bottom-sticky settings */}
+          <div className="mt-auto pt-4">
+            {isCampaignStrategist(role) && (
+              <div className="mb-4 flex items-center gap-3 px-2">
+                <img
+                  src={user?.profilePicture || "https://i.pravatar.cc/80?img=5"}
+                  alt={displayName}
+                  className="h-10 w-10 rounded-full object-cover"
+                />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-white">{displayName}</p>
+                  <p className="text-xs text-gray-500">Campaign Strategist</p>
+                </div>
+              </div>
+            )}
+            <div className="px-2">
+              <p className="text-white font-medium mb-4">Settings</p>
+              <div className="flex items-center justify-start gap-6 text-gray-500 pb-4">
+                <button
+                  type="button"
+                  aria-label="Lock"
+                  className="hover:text-white focus:outline-none"
+                >
+                  <Lock size={18} />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Scale"
+                  className="hover:text-white focus:outline-none"
+                >
+                  <Scale size={18} />
+                </button>
+                <NavLink
+                  to={role === "influencer" ? "/dashboard/influencer-profile" : "/dashboard/profile"}
+                  aria-label="User"
+                  className="hover:text-white focus:outline-none"
+                >
+                  <User size={18} />
+                </NavLink>
+                <button
+                  type="button"
+                  aria-label="Logout"
+                  onClick={() => {
+                    localStorage.removeItem("token");
+                    context?.setToken(null);
+                    context?.setUser(null);
+                    window.location.href = "/login";
+                  }}
+                  className="hover:text-white focus:outline-none"
+                >
+                  <LogOut size={18} />
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </aside>
+      </aside>
     </>
   );
 };

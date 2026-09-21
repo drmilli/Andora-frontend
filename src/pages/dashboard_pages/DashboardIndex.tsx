@@ -45,6 +45,14 @@ import BillingPage from "./artist/BillingPage";
 
 import { useContext } from "react";
 import { AppContext } from "@/Context/AppContext";
+import { isCampaignStrategist } from "@/lib/roles";
+import StrategistDashboard from "./strategist/StrategistDashboard";
+import StrategistNotifications from "./strategist/StrategistNotifications";
+import StrategistSongSubmissions from "./strategist/StrategistSongSubmissions";
+import StrategistCampaigns from "./strategist/StrategistCampaigns";
+import StrategistInfluencerDirectory from "./strategist/StrategistInfluencerDirectory";
+import StrategistInvitations from "./strategist/StrategistInvitations";
+import StrategistReports from "./strategist/StrategistReports";
 
 export function RoleDashboardHome() {
   const context = useContext(AppContext);
@@ -58,6 +66,9 @@ export function RoleDashboardHome() {
   }
   if (role === "admin") {
     return <AdminDashboard />;
+  }
+  if (isCampaignStrategist(role)) {
+    return <StrategistDashboard />;
   }
   return <DashboardHome />;
 }
@@ -74,6 +85,9 @@ export function RoleNotifications() {
   }
   if (role === "admin") {
     return <AdminNotifications />;
+  }
+  if (isCampaignStrategist(role)) {
+    return <StrategistNotifications />;
   }
   return <NotificationPage />;
 }
@@ -140,6 +154,14 @@ export const DASHBOARD_ROUTES = [
   { path: "billings", element: <BillingPage /> },
   { path: "settings", element: <SettingsPage /> },
   { path: "my-songs", element: <MySongs /> },
+
+  // Campaign strategist
+  { path: "strategist-dashboard", element: <StrategistDashboard /> },
+  { path: "song-submissions", element: <StrategistSongSubmissions /> },
+  { path: "campaign", element: <StrategistCampaigns /> },
+  { path: "influencer-directory", element: <StrategistInfluencerDirectory /> },
+  { path: "invitations", element: <StrategistInvitations /> },
+  { path: "reports", element: <StrategistReports /> },
 
   // Influencer direct routes
   { path: "influencer-dashboard", element: <InfluencerDashboard /> },
