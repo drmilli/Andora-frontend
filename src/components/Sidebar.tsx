@@ -30,19 +30,23 @@ const artistNavItems: NavItem[] = [
     label: "Notification",
     icon: <Bell size={20} />,
   },
-  {
-    to: "/dashboard/statistics",
-    label: "Statistics",
-    icon: <BarChart2 size={20} />,
-  },
-  { to: "/dashboard/media", label: "Media", icon: <Music size={20} /> },
-  {
-    to: "/dashboard/promotion",
-    label: "Promotion",
-    icon: <Megaphone size={20} />,
-  },
-  { to: "/dashboard/jobs", label: "Jobs", icon: <Briefcase size={20} /> },
-  { to: "/dashboard/wallet", label: "Wallet", icon: <Wallet size={20} /> },
+  // {
+  //   to: "/dashboard/statistics",
+  //   label: "Statistics",
+  //   icon: <BarChart2 size={20} />,
+  // },
+  // { to: "/dashboard/media", label: "Media", icon: <Music size={20} /> },
+  // {
+  //   to: "/dashboard/promotion",
+  //   label: "Promotion",
+  //   icon: <Megaphone size={20} />,
+  // },
+  // { to: "/dashboard/jobs", label: "Jobs", icon: <Briefcase size={20} /> },
+  // { to: "/dashboard/wallet", label: "Wallet", icon: <Wallet size={20} /> },
+
+      { to: "/dashboard/my-songs", label: "My Songs", icon: <Music size={20} />  },
+    { to: "/dashboard/campaigns", label: "Campaigns", icon: <BarChart2 size={20} /> },
+  { to: "/dashboard/billings", label: "Billing", icon: <Wallet size={20} /> },
   { to: "/dashboard/profile", label: "Profile", icon: <User size={20} /> },
 ];
 

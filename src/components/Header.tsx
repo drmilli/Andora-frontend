@@ -1,8 +1,8 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { getPageTitle } from "../lib/pageTitles";
-import { Bell, Wallet, Menu, ChevronLeft, Music, Upload, Loader2 } from "lucide-react";
+import { Bell, Wallet, Menu, ChevronLeft, Music, Upload } from "lucide-react";
 import { AppContext } from "@/Context/AppContext";
 import {
   Dialog,
@@ -10,7 +10,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { uploadMedia } from "@/services/artist/media";
+import { GetMedia, uploadMedia } from "@/services/artist/media";
+import type { GetMediaResponse } from "@/types/artist/media";
 
 
 type HeaderProps = {
@@ -24,13 +25,7 @@ type HeaderProps = {
 // ---- Campaign flow types ----
 type CampaignStep = "method" | "selectSong" | "package" | "uploadSong";
 
-type Song = {
-  id: string;
-  title: string;
-  genre: string;
-  duration: string;
-  image: string;
-};
+
 
 type PackageOption = {
   id: string;
@@ -40,13 +35,7 @@ type PackageOption = {
   price: string;
 };
 
-const songs: Song[] = [
-  { id: "1", title: "Smoke", genre: "Gospel", duration: "3:42", image: "https://i.pravatar.cc/80?img=10" },
-  { id: "2", title: "Smoke", genre: "Gospel", duration: "3:42", image: "https://i.pravatar.cc/80?img=11" },
-  { id: "3", title: "Smoke", genre: "Gospel", duration: "3:42", image: "https://i.pravatar.cc/80?img=12" },
-  { id: "4", title: "Smoke", genre: "Gospel", duration: "3:42", image: "https://i.pravatar.cc/80?img=13" },
-  { id: "5", title: "Smoke", genre: "Gospel", duration: "3:42", image: "https://i.pravatar.cc/80?img=14" },
-];
+
 
 const genre = [
   { name: "Rock" },
@@ -84,7 +73,9 @@ export const Header: React.FC<HeaderProps> = ({ showSearch = true, onMenuClick, 
   // Campaign modal state
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<CampaignStep>("method");
-  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [medias, setMedia] = useState<GetMediaResponse[]>([]);
+  const [selectedSong, setSelectedSong] = useState<GetMediaResponse | null>(null);
   const [selectedPackage, setSelectedPackage] = useState<PackageOption | null>(null);
   const [formData, setFormData] = useState({
     title: "",
@@ -96,7 +87,7 @@ export const Header: React.FC<HeaderProps> = ({ showSearch = true, onMenuClick, 
   });
 
 
-
+console.log(loading)
   function openCampaignModal() {
     setStep("method");
     setSelectedSong(null);
@@ -109,8 +100,8 @@ export const Header: React.FC<HeaderProps> = ({ showSearch = true, onMenuClick, 
     else if (step === "package") setStep("selectSong");
   }
 
-  function handleSelectSong(song: Song) {
-    setSelectedSong(song);
+  function handleSelectSong(media: GetMediaResponse) {
+    setSelectedSong(media);
     setStep("package");
   }
 
@@ -120,6 +111,22 @@ export const Header: React.FC<HeaderProps> = ({ showSearch = true, onMenuClick, 
     setOpen(false);
   }
 
+  useEffect(() => {
+    const loadMedia = async () => {
+      try {
+        setLoading(true);
+        const response = await GetMedia();
+        console.log("Media API response:", response);
+        setMedia(response);
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMedia();
+  }, []);
 
   const handleUploadMedia = async (e: any) => {
     e.preventDefault();
@@ -129,7 +136,7 @@ export const Header: React.FC<HeaderProps> = ({ showSearch = true, onMenuClick, 
     navigate("/dashboard");
     }catch(err){
       console.log(err);
-      
+
     }
   };
   return (
@@ -330,22 +337,22 @@ export const Header: React.FC<HeaderProps> = ({ showSearch = true, onMenuClick, 
             {/* ---- STEP 2: Select a song ---- */}
             {step === "selectSong" && (
               <div className="flex flex-col gap-3 max-h-80 overflow-y-auto pr-1">
-                {songs.map((song) => (
+                {medias.map((media) => (
                   <button
-                    key={song.id}
-                    onClick={() => handleSelectSong(song)}
+                    key={media.id}
+                    onClick={() => handleSelectSong(media)}
                     className="flex items-center gap-3 border border-gray-800 hover:border-[#A67102] rounded-xl p-3 text-left transition-colors"
                   >
-                    <img
-                      src={song.image}
-                      alt={song.title}
+                    {/* <img
+                      src={media.image}
+                      alt={media.title}
                       className="w-10 h-10 rounded-lg object-cover"
-                    />
+                    /> */}
                     <div>
-                      <p className="text-white text-sm font-medium">{song.title}</p>
-                      <p className="text-gray-500 text-xs">
-                        {song.genre} • {song.duration}
-                      </p>
+                      <p className="text-white text-sm font-medium">{media.title}</p>
+                      {/* <p className="text-gray-500 text-xs">
+                        {media.genre} • {media.duration}
+                      </p> */}
                     </div>
                   </button>
                 ))}

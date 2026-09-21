@@ -33,11 +33,5 @@ export interface GetMediaResponse {
     approvedById: string
     createdAt: string
     updatedAt: string
-    uploadedBy: {
-        id: string
-        username: string
-        firstname: string
-        surname: string
-        profilePicture: string
-    }
+
 }

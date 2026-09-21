@@ -26,7 +26,8 @@ export const uploadMedia = async (
   return res.data;
 };
 
-export const GetMedia = async (): Promise<GetMediaResponse> => {
-  const res = await api.get("/media");
+export const GetMedia = async (): Promise<GetMediaResponse[]> => {
+  const res = await api.get("/media/mine");
+  console.log("media mine api response: ",res.data);
   return res.data;
 };

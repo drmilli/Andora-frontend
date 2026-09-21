@@ -9,7 +9,7 @@ export const getPageTitle = (pathname: string): string => {
   if (pathname.startsWith("/dashboard/orders")) return "Orders";
   if (pathname.startsWith("/dashboard/reviews")) return "Reviews";
   if (pathname.startsWith("/dashboard/settings")) return "Settings";
-  if (pathname === "/dashboard_pages") return "Dashboard";
+  if (pathname.startsWith("/dashboard/my-songs/")) return "Song Details";
   if (pathname.startsWith("/dashboard/my-songs")) return "My Songs";
 
       if (pathname.startsWith("/dashboard/campaigns")) return "Campaigns";
