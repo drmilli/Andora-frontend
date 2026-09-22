@@ -38,6 +38,7 @@ import { ProfilePage } from "./artist/ProfilePage";
 
 import Campaign from "./artist/Campaign";
 import MySongs from "./artist/MySongs";
+import SongDetails from "./artist/SongDetails";
 import SettingsPage from "./artist/SettingsPage";
 import BillingPage from "./artist/BillingPage";
 
@@ -154,6 +155,7 @@ export const DASHBOARD_ROUTES = [
   { path: "billings", element: <BillingPage /> },
   { path: "settings", element: <SettingsPage /> },
   { path: "my-songs", element: <MySongs /> },
+  { path: "my-songs/:id", element: <SongDetails /> },
 
   // Campaign strategist
   { path: "strategist-dashboard", element: <StrategistDashboard /> },

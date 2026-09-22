@@ -105,7 +105,9 @@ function InfluencerWallet() {
   const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+console.log(setCurrentPage)
+console.log(transactions)
+console.log(loading)
 
 
   useEffect(() => {

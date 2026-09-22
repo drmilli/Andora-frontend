@@ -10,8 +10,8 @@ export interface DashboardStats {
   videoUploads: number;
   totalUploads: number;
   walletBalance: number;
-  followers: number;
-  following: number;
+  activeCampaigns: number;
+  completedCampaigns: number;
   postCount: number;
   transactionCount: number;
   monthlyUploads: MonthlyDataPoint[];

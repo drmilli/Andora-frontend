@@ -54,8 +54,7 @@ function InfluencerDashboard() {
     };
 
     loadRequests();
-  }, [currentPage]); // <-- re-runs when currentPage changes
-
+  }, [currentPage]); 
   // Simple helpers for Previous / Next
   const goToPreviousPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -189,10 +188,9 @@ function InfluencerDashboard() {
           ))}
         </Tabs>
 
-        {/* ===== PAGINATION BUTTONS ===== */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-4 mt-6">
-            {/* Previous button - disabled on first page */}
+           
             <Button
               onClick={goToPreviousPage}
               disabled={currentPage === 1}

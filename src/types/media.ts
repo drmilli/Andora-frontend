@@ -3,7 +3,7 @@ export interface Media {
   title?: string | null;
   fileUrl: string;
   publicId?: string | null;
-  type?: string | null;
+  type: string | null;
   description?: string | null;
   isApproved: boolean;
   createdAt: string;

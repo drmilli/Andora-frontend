@@ -1,10 +1,25 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { LayoutDashboard, BarChart2, Music, Megaphone, User, X, CheckCircle,  Wallet, Users, Music2 } from "lucide-react";
+import { LayoutDashboard, BarChart2, Music, Megaphone, User, X, CheckCircle,  Wallet,  Music2, Notebook } from "lucide-react";
 import { StatCard } from "@/components/artist/StatCard";
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "@/Context/AppContext";
 import { useLocation } from "react-router-dom";
 import { getDashboardStats, type DashboardStats } from "@/services/dashboard";
+
+type CompletedCampaign = {
+  title: string;
+  type: string;
+  date: string;
+  image: string;
+};
+
+const completedCampaigns: CompletedCampaign[] = [
+  { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=30" },
+  { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=31" },
+  { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=32" },
+  { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=33" },
+];
+
 
 export const DashboardHome: React.FC = () => {
   const context = useContext(AppContext);
@@ -68,9 +83,9 @@ export const DashboardHome: React.FC = () => {
           value={loadingStats ? "..." : String(stats?.songUploads ?? 0)}
         />
         <StatCard
-          icon={<Users size={20} className="text-[#A67102]" />}
-          title="Followers"
-          value={loadingStats ? "..." : String(stats?.followers ?? 0)}
+          icon={<Notebook size={20} className="text-[#A67102]" />}
+          title="Active Campaigns"
+          value={loadingStats ? "..." : String(stats?.activeCampaigns ?? 0)}
         />
         <StatCard
           icon={<Wallet size={20} className="text-[#A67102]" />}
@@ -110,34 +125,50 @@ export const DashboardHome: React.FC = () => {
 
         <div className="rounded-2xl border border-gray-900 bg-[#0D0B07] p-4 sm:p-6">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="font-semibold text-white">Quick Stats</h3>
+            <h3 className="font-semibold text-white">Top Campaign</h3>
           </div>
           <div className="space-y-4">
-            <div className="flex items-center justify-between rounded-lg border border-gray-800 p-4">
-              <span className="text-sm text-gray-400">Total Uploads</span>
-              <span className="text-lg font-semibold text-white">
-                {loadingStats ? "..." : stats?.totalUploads ?? 0}
-              </span>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border border-gray-800 p-4">
-              <span className="text-sm text-gray-400">Posts</span>
-              <span className="text-lg font-semibold text-white">
-                {loadingStats ? "..." : stats?.postCount ?? 0}
-              </span>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border border-gray-800 p-4">
-              <span className="text-sm text-gray-400">Following</span>
-              <span className="text-lg font-semibold text-white">
-                {loadingStats ? "..." : stats?.following ?? 0}
-              </span>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border border-gray-800 p-4">
-              <span className="text-sm text-gray-400">Transactions</span>
-              <span className="text-lg font-semibold text-white">
-                {loadingStats ? "..." : stats?.transactionCount ?? 0}
-              </span>
-            </div>
+            {
+              Array.from({ length: 2}).map((_, i) => (
+
+                <div key={i} className="flex justify-between border-b border-gray-800 pb-2">
+                <div className="flex gap-4">
+                  <img src="https://i.pravatar.cc/200?img=30" alt="" className="rounded-full w-10 h-10"/>
+                  <p>smoke</p>
+                </div>
+                <div className="text-right flex items-center gap-2 ">
+                  <p className="text-gray-400">30 days</p>.
+                  <p className="text-white">60%</p>
+                </div>
+              </div>
+              ))
+            }
+
           </div>
+
+          <div className="mt-10 text-center bg-[#1A1A1A] rounded p-6">
+            <p className="text-white">Assign campaign to Adoura</p>
+          </div>
+        </div>
+
+
+      </div>
+                    {/* Completed Campaigns */}
+      <div>
+        <h3 className="text-white font-semibold mb-4">Recent Campaigns</h3>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          {completedCampaigns.map((c, i) => (
+            <div key={i} className="rounded-lg overflow-hidden">
+              <img src={c.image} alt={c.title} className="w-full h-50 object-cover" />
+              <div className="p-3 space-y-2">
+                <p className="text-white font-medium text-sm">{c.title}</p>
+                <p className="text-gray-500 text-xs uppercase tracking-wide">
+                  {c.type} &bull; {c.date}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
