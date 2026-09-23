@@ -1,20 +1,17 @@
 import React from "react";
 import {
-  Globe,
-  FileText,
-  Megaphone,
-  PieChart,
+  Wrench,
   Radio,
   MessageSquare,
   Inbox,
+  ClipboardList,
 } from "lucide-react";
 import type { StrategistMetric } from "@/pages/dashboard_pages/strategist/mockData";
 
 const icons = {
-  reach: Globe,
-  posts: FileText,
-  campaign: Megaphone,
-  building: PieChart,
+  jobs: ClipboardList,
+  approval: Wrench,
+  declines: Wrench,
   active: Radio,
   pending: MessageSquare,
   review: Inbox,

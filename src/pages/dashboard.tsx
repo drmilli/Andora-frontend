@@ -11,7 +11,6 @@ import {
   Bell,
   Briefcase,
   Wallet,
-  Mail,
 } from "lucide-react";
 import { AppContext } from "../Context/AppContext";
 import { isCampaignStrategist } from "../lib/roles";
@@ -134,22 +133,6 @@ export function DashboardPage(): React.ReactElement {
             >
               <Music size={22} />
               <span className="text-[11px]">Songs</span>
-            </NavLink>
-
-            <NavLink
-              to="/dashboard/campaign"
-              className={({ isActive }) => navItemClass(isActive)}
-            >
-              <Megaphone size={22} />
-              <span className="text-[11px]">Campaign</span>
-            </NavLink>
-
-            <NavLink
-              to="/dashboard/invitations"
-              className={({ isActive }) => navItemClass(isActive)}
-            >
-              <Mail size={22} />
-              <span className="text-[11px]">Invites</span>
             </NavLink>
           </>
         ) : (

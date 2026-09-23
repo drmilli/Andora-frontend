@@ -9,8 +9,6 @@ import {
   Briefcase,
   Wallet,
   User,
-  Users,
-  Mail,
   X,
   Lock,
   Scale,
@@ -101,7 +99,7 @@ const stationNavItems: NavItem[] = [
   },
 ];
 
-const strategistNavItems: NavItem[] = [
+const campaignStrategistNavItems: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard size={20} /> },
   {
     to: "/dashboard/notifications",
@@ -110,23 +108,8 @@ const strategistNavItems: NavItem[] = [
   },
   {
     to: "/dashboard/song-submissions",
-    label: "Song Submissions",
+    label: "Jobs",
     icon: <Music size={20} />,
-  },
-  {
-    to: "/dashboard/campaign",
-    label: "Campaign",
-    icon: <Megaphone size={20} />,
-  },
-  {
-    to: "/dashboard/influencer-directory",
-    label: "Influencer Directory",
-    icon: <Users size={20} />,
-  },
-  {
-    to: "/dashboard/invitations",
-    label: "Invitations",
-    icon: <Mail size={20} />,
   },
   {
     to: "/dashboard/reports",
@@ -196,7 +179,7 @@ export const Sidebar: React.FC<{
         : role === "admin"
           ? adminNavItems
           : isCampaignStrategist(role)
-            ? strategistNavItems
+            ? campaignStrategistNavItems
             : artistNavItems;
 
   const displayName = [user?.firstname, user?.surname].filter(Boolean).join(" ") || user?.username || "Campaign Strategist";

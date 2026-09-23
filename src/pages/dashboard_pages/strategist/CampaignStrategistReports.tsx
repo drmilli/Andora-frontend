@@ -3,7 +3,7 @@ import { ChartLineLinear } from "@/components/charts/ChartLineLinear";
 import { MetricCard } from "@/components/strategist/MetricCard";
 import { strategistMetrics } from "./mockData";
 
-export const StrategistReports: React.FC = () => {
+export const CampaignStrategistReports: React.FC = () => {
   return (
     <div className="w-full pb-28 md:pb-0">
       <div className="mb-6">
@@ -22,4 +22,4 @@ export const StrategistReports: React.FC = () => {
   );
 };
 
-export default StrategistReports;
+export default CampaignStrategistReports;

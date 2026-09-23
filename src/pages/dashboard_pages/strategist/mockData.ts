@@ -7,72 +7,49 @@ export type SongSubmission = {
   budget: string;
   uploaded: string;
   artwork: string;
+  cover?: string;
+  audioUrl?: string;
+  status: "Pending" | "Approved" | "Declined";
 };
+
+export const DEFAULT_SUBMISSION_COVER =
+  "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1600&q=80";
+
+export const DEFAULT_SUBMISSION_AUDIO =
+  "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3";
 
 export type StrategistMetric = {
   id: string;
   label: string;
   value: string;
   status: string;
-  icon: "reach" | "posts" | "campaign" | "building" | "active" | "pending" | "review";
+  icon: "jobs" | "approval" | "declines";
   span?: "full" | "third";
 };
 
 export const strategistMetrics: StrategistMetric[] = [
   {
-    id: "reach",
-    label: "Total Reach",
-    value: "200M",
-    status: "Today",
-    icon: "reach",
-    span: "full",
-  },
-  {
-    id: "posts",
-    label: "Total Influencers Post",
+    id: "jobs",
+    label: "Total Jobs",
     value: "20",
     status: "Today",
-    icon: "posts",
+    icon: "jobs",
     span: "third",
   },
   {
-    id: "campaigns",
-    label: "Total Campaign",
+    id: "approved",
+    label: "Total Approved",
     value: "10",
     status: "Today",
-    icon: "campaign",
+    icon: "approval",
     span: "third",
   },
   {
-    id: "building",
-    label: "Campaign being built",
+    id: "declined",
+    label: "Total Declined",
     value: "4",
-    status: "In progress",
-    icon: "building",
-    span: "third",
-  },
-  {
-    id: "active",
-    label: "Active Campaigns",
-    value: "2",
-    status: "Live",
-    icon: "active",
-    span: "third",
-  },
-  {
-    id: "pending",
-    label: "Pending Influencer Responses",
-    value: "4",
-    status: "In progress",
-    icon: "pending",
-    span: "third",
-  },
-  {
-    id: "review",
-    label: "Awaiting Review",
-    value: "6",
-    status: "Queue",
-    icon: "review",
+    status: "Declined",
+    icon: "declines",
     span: "third",
   },
 ];
@@ -87,6 +64,7 @@ export const songSubmissions: SongSubmission[] = [
     budget: "50,000",
     uploaded: "2026-05-10",
     artwork: "https://i.pravatar.cc/80?img=12",
+    status: "Pending",
   },
   {
     id: "2",
@@ -97,26 +75,51 @@ export const songSubmissions: SongSubmission[] = [
     budget: "50,000",
     uploaded: "2026-05-10",
     artwork: "https://i.pravatar.cc/80?img=32",
+    status: "Pending",
   },
   {
     id: "3",
-    track: "Golden Hour",
-    artist: "Abbey",
-    genre: "Afrobeat",
-    goal: "Playlist seeding",
-    budget: "75,000",
-    uploaded: "2026-05-08",
+    track: "Midnight Protocol",
+    artist: "Runty",
+    genre: "Gospel",
+    goal: "Influencers create a challenge",
+    budget: "50,000",
+    uploaded: "2026-05-10",
     artwork: "https://i.pravatar.cc/80?img=20",
+    status: "Declined",
   },
   {
     id: "4",
-    track: "Soft Light",
-    artist: "Mira",
-    genre: "R&B",
-    goal: "Story mentions",
-    budget: "32,000",
-    uploaded: "2026-05-04",
+    track: "Midnight Protocol",
+    artist: "Runty",
+    genre: "Gospel",
+    goal: "Influencers create a challenge",
+    budget: "50,000",
+    uploaded: "2026-05-10",
     artwork: "https://i.pravatar.cc/80?img=47",
+    status: "Pending",
+  },
+  {
+    id: "5",
+    track: "Midnight Protocol",
+    artist: "Runty",
+    genre: "Gospel",
+    goal: "Influencers create a challenge",
+    budget: "50,000",
+    uploaded: "2026-05-10",
+    artwork: "https://i.pravatar.cc/80?img=14",
+    status: "Approved",
+  },
+  {
+    id: "6",
+    track: "Midnight Protocol",
+    artist: "Runty",
+    genre: "Gospel",
+    goal: "Influencers create a challenge",
+    budget: "50,000",
+    uploaded: "2026-05-10",
+    artwork: "https://i.pravatar.cc/80?img=25",
+    status: "Declined",
   },
 ];
 
