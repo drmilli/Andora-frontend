@@ -1,0 +1,86 @@
+diff --git a/src/lib/devAuth.ts b/src/lib/devAuth.ts
+new file mode 100644
+index 0000000..fcd03e5
+--- /dev/null
++++ b/src/lib/devAuth.ts
+@@ -0,0 +1,62 @@
++import type { User } from "../types/auth";
++
++/**
++ * Local-only auth bypass so the dashboard can be worked on without a backend.
++ *
++ * It is off unless BOTH hold:
++ *   - the bundle is not a production build (`import.meta.env.PROD` is false)
++ *   - `VITE_DEV_AUTH=true` is set in the local .env
++ *
++ * The production check is deliberate and not configurable: a deployed build
++ * must never accept a fabricated session, whatever the env says.
++ */
++const STORAGE_KEY = "audora.devUser";
++
++export const isDevAuthEnabled = (): boolean =>
++  !import.meta.env.PROD && import.meta.env.VITE_DEV_AUTH === "true";
++
++/** The fake signed-in user, or null when dev auth is off or none was started. */
++export const getDevUser = (): User | null => {
++  if (!isDevAuthEnabled()) return null;
++  try {
++    const raw = localStorage.getItem(STORAGE_KEY);
++    return raw ? (JSON.parse(raw) as User) : null;
++  } catch {
++    // private window, blocked storage, or malformed JSON
++    return null;
++  }
++};
++
++/** Begin a fake session as `role`. Returns the stored user. */
++export const startDevSession = (
++  role: string,
++  overrides: Partial<User> = {}
++): User | null => {
++  if (!isDevAuthEnabled()) return null;
++
++  const user: User = {
++    id: `dev-${role}`,
++    email: `${role}@dev.local`,
++    username: `dev_${role}`,
++    firstname: "Dev",
++    surname: role,
++    role,
++    ...overrides,
++  };
++
++  try {
++    localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
++  } catch {
++    // storage unavailable — the caller still gets the user for this page load
++  }
++  return user;
++};
++
++/** Drop any fake session. Safe to call unconditionally on a real login/logout. */
++export const clearDevSession = (): void => {
++  try {
++    localStorage.removeItem(STORAGE_KEY);
++  } catch {
++    // nothing to clean up if storage is unavailable
++  }
++};
+diff --git a/src/pages/login.tsx b/src/pages/login.tsx
+index f4e10b3..914a06b 100644
+--- a/src/pages/login.tsx
++++ b/src/pages/login.tsx
+@@ -1,12 +1,10 @@
+-import React, { useContext } from "react";
++import React from "react";
+ import { Link, useNavigate } from "react-router-dom";
+ import { AuthLayout } from "../components/auth/AuthLayout";
+ import { AuthInput } from "../components/auth/AuthInput";
+ import { AuthButton } from "../components/auth/AuthButton";
+ import { SocialButton } from "../components/auth/SocialButton";
+ import { useAuth } from "../hooks/auth/useArtistAuth";
+-import { AppContext } from "../Context/AppContext";
+-import { isDevAuthEnabled, startDevSession } from "../lib/devAuth";
+ 
+ 
+ export const LoginPage: React.FC = () => {
