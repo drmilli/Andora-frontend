@@ -10,3 +10,18 @@ export const updateProfile = async (payload: UpdateInfluencerProfilePayload): Pr
   const res = await api.put("/influencer/me/profile", payload);
   return res.data; 
 };
+
+/** Multipart upload for the banner and/or avatar on the profile Edit tab. */
+export const uploadProfileImages = async (files: {
+  profilePicture?: File;
+  coverPicture?: File;
+}): Promise<GetInfluencerProfileResponse> => {
+  const formData = new FormData();
+  if (files.profilePicture) formData.append("profilePicture", files.profilePicture);
+  if (files.coverPicture) formData.append("coverPicture", files.coverPicture);
+
+  const res = await api.post("/influencer/me/images", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return res.data;
+};

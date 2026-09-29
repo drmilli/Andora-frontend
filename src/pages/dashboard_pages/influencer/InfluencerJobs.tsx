@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -6,114 +6,151 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Facebook from '../../../assets/socials/Facebook.png';
-import Instagram from '../../../assets/socials/Instagram.png';
-import Snapchat from '../../../assets/socials/Snapchat.png';
-import Twitter from '../../../assets/socials/X.png';
-import Tiktok from '../../../assets/socials/Tiktok.png';
-import All from '../../../assets/socials/All.png';
-import Fm from '../../../assets/influencer/Fm.png';
-import ProfilePic from '../../../assets/influencer/ProfilePic.png';
-import { Copy, Download, MessageSquareReply } from 'lucide-react';
-import { ChartRadialText } from '@/components/charts/ChartRadialText';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Fm from "../../../assets/influencer/Fm.png";
+import ProfilePic from "../../../assets/influencer/ProfilePic.png";
+import { Copy, Check, Download, MessageSquareReply, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChartRadialText } from "@/components/charts/ChartRadialText";
+import type { GetInfluencerRequest } from "@/types/influencer/requests";
+import {
+  disputeRequest,
+  fetchInfluencerRequests,
+  updateRequestProgress,
+  updateRequestStatus,
+} from "@/services/influencer/requests/requestsService";
+import {
+  apiErrorMessage,
+  formatDuration,
+  formatNaira,
+  platformIcon,
+} from "@/lib/influencer";
 
+// Tab label -> the status filter the API expects
+const TABS = [
+  { label: "Accepted", status: "ACCEPTED" },
+  { label: "Pending", status: "PENDING,PENDED" },
+  { label: "Completed", status: "COMPLETED,DISPUTED" },
+] as const;
 
-const tabs = [
-  { icon: All, value: 'Accepted' },
-  { icon: Twitter, value: 'Pending' },
-  { icon: Instagram, value: 'Completed' },
-];
-
-const artists = [
-  {
-    name: 'Burna Boy',
-    icon: Tiktok,
-    status: 'Accepted',
-    email: 'burnaboy@gmail.com',
-    profilePic: 'https://i.pravatar.cc/90?img=1',
-    message: 'I want you to be able to push my music in your own creative way.',
-    song: {
-      title: 'Song One',
-      duration: '3:24',
-      format: 'mp3',
-      cover: 'https://via.placeholder.com/50',
-    },
-  },
-  {
-    name: 'Wizkid',
-    icon: Instagram,
-    status: 'Completed',
-    email: 'wizkid@gmail.com',
-    profilePic: 'https://i.pravatar.cc/90?img=2',
-    message: 'Check out my latest track!',
-    song: {
-      title: 'Song Two',
-      duration: '4:12',
-      format: 'mp3',
-      cover: 'https://via.placeholder.com/50',
-    },
-  },
-  {
-    name: 'Tiwa Savage',
-    icon: Facebook,
-    status: 'Pending',
-    email: 'tiwa@gmail.com',
-    profilePic: 'https://i.pravatar.cc/90?img=3',
-    message: 'Looking forward to collaborating.',
-    song: {
-      title: 'Song Three',
-      duration: '2:58',
-      format: 'mp3',
-      cover: 'https://via.placeholder.com/50',
-    },
-  },
-  {
-    name: 'Olamide',
-    icon: Snapchat,
-    status: 'Completed',
-    email: 'olamide@gmail.com',
-    profilePic: 'https://i.pravatar.cc/90?img=4',
-    message: 'New hit coming your way!',
-    song: {
-      title: 'Song Four',
-      duration: '3:36',
-      format: 'mp3',
-      cover: 'https://via.placeholder.com/50',
-    },
-  },
-  {
-    name: 'Rema',
-    icon: Instagram,
-    status: 'Pending',
-    email: 'rema@gmail.com',
-    profilePic: 'https://i.pravatar.cc/90?img=5',
-    message: 'Hope you enjoy my latest release.',
-    song: {
-      title: 'Song Five',
-      duration: '3:15',
-      format: 'mp3',
-      cover: 'https://via.placeholder.com/50',
-    },
-  },
-];
-
-const percentages = [25, 50, 70, 100]
+const PERCENTAGES = [25, 50, 70, 100];
 
 function InfluencerJobs() {
-   const [progress, setProgress] = useState< number>(50)
+  const [tab, setTab] = useState<string>("Accepted");
+  const [jobs, setJobs] = useState<GetInfluencerRequest[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [actingOn, setActingOn] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  // Progress chosen in the Review dialog, per job
+  const [draftProgress, setDraftProgress] = useState<Record<string, number>>({});
+  const [disputeReason, setDisputeReason] = useState<Record<string, string>>({});
+
+  const activeStatus =
+    TABS.find((t) => t.label === tab)?.status ?? "ACCEPTED";
+
+  const loadJobs = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await fetchInfluencerRequests(page, 10, { status: activeStatus });
+      setJobs(res.data);
+      setTotalPages(res.totalPages);
+    } catch (err) {
+      setError(apiErrorMessage(err, "Could not load your jobs"));
+    } finally {
+      setLoading(false);
+    }
+  }, [page, activeStatus]);
+
+  useEffect(() => {
+    loadJobs();
+  }, [loadJobs]);
+
+  const changeTab = (value: string) => {
+    setTab(value);
+    setPage(1);
+  };
+
+  const handleStatus = async (
+    id: string,
+    status: "ACCEPTED" | "DECLINED" | "PENDED"
+  ) => {
+    try {
+      setActingOn(id);
+      setError(null);
+      await updateRequestStatus(id, { status });
+      await loadJobs();
+    } catch (err) {
+      setError(apiErrorMessage(err, "Could not update the job"));
+    } finally {
+      setActingOn(null);
+    }
+  };
+
+  const submitProgress = async (job: GetInfluencerRequest) => {
+    const progress = draftProgress[job.id] ?? job.progress;
+    try {
+      setActingOn(job.id);
+      setError(null);
+      await updateRequestProgress(job.id, { progress });
+      await loadJobs();
+    } catch (err) {
+      setError(apiErrorMessage(err, "Could not submit your progress"));
+    } finally {
+      setActingOn(null);
+    }
+  };
+
+  const submitDispute = async (job: GetInfluencerRequest) => {
+    const reason = (disputeReason[job.id] ?? "").trim();
+    if (!reason) {
+      setError("Please describe the problem before submitting a dispute.");
+      return;
+    }
+    try {
+      setActingOn(job.id);
+      setError(null);
+      await disputeRequest(job.id, { reason });
+      setDisputeReason((d) => ({ ...d, [job.id]: "" }));
+      await loadJobs();
+    } catch (err) {
+      setError(apiErrorMessage(err, "Could not submit the dispute"));
+    } finally {
+      setActingOn(null);
+    }
+  };
+
+  const copyEmail = async (id: string, email: string) => {
+    try {
+      await navigator.clipboard.writeText(email);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 1500);
+    } catch {
+      /* clipboard unavailable */
+    }
+  };
+
   return (
-    <div className='  px-10 '>
+    <div className="px-10">
+      {error && (
+        <p className="mt-4 text-red-400 text-sm" role="alert">
+          {error}
+        </p>
+      )}
+
       <div className="flex w-full max-w-full lg:max-w-sm flex-col gap-6 mt-10">
-        <Tabs defaultValue="Accepted" className="w-full">
+        <Tabs value={tab} onValueChange={changeTab} className="w-full">
           <TabsList className="flex bg-transparent p-2 gap-2 lg:gap-25">
-            {tabs.map((tab) => (
+            {TABS.map((t) => (
               <TabsTrigger
-                key={tab.value}
-                value={tab.value}
+                key={t.label}
+                value={t.label}
                 className="
         w-[80px] h-[80px]
         md:w-[50px] md:h-[50px]
@@ -124,29 +161,56 @@ function InfluencerJobs() {
            data-[state=active]:bg-transparent
         data-[state=active]:border-b-amber-500 "
               >
-                {tab.value}
+                {t.label}
               </TabsTrigger>
             ))}
           </TabsList>
-          {tabs.map((tab) => (
-            <TabsContent value={tab.value} key={tab.value}>
-              {artists
-                .filter((artist) => artist.status === tab.value)
-                .map((artist, index) => (
+
+          <TabsContent value={tab}>
+            {loading ? (
+              <p className="text-white mt-10">Loading jobs...</p>
+            ) : jobs.length === 0 ? (
+              <p className="text-white mt-10">Nothing here yet.</p>
+            ) : (
+              jobs.map((job) => {
+                const busy = actingOn === job.id;
+                const progress = draftProgress[job.id] ?? job.progress;
+                return (
                   <Card
-                    key={index}
+                    key={job.id}
                     className="bg-[#4040404D] border-0 w-full lg:w-[1032px] h-auto lg:h-[283px] mt-10"
                   >
                     <CardContent className="grid gap-6">
                       <div className="grid grid-cols-1">
                         <div className="flex justify-between flex-col md:flex-row md:justify-between gap-4">
-                          <div className="shrink-0">
-                            <img src={artist.icon} alt="" />
+                          <div className="shrink-0 flex items-center gap-3">
+                            <img src={platformIcon(job.platform)} alt={job.platform} />
+                            <span className="text-white text-sm">
+                              {formatNaira(job.amount)}
+                            </span>
                           </div>
-                          {artist.status === 'Accepted' ? (
+
+                          {job.status === "ACCEPTED" ? (
                             <div className="grid grid-cols-3 gap-2 md:gap-3">
-                              <Button className="bg-[#0D4787] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px text-xs sm:text-base">
-                                <Download /> Download
+                              <Button
+                                asChild={!!job.media}
+                                disabled={!job.media}
+                                className="bg-[#0D4787] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px] text-xs sm:text-base disabled:opacity-50"
+                              >
+                                {job.media ? (
+                                  <a
+                                    href={job.media.fileUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    download
+                                  >
+                                    <Download /> Download
+                                  </a>
+                                ) : (
+                                  <span>
+                                    <Download /> Download
+                                  </span>
+                                )}
                               </Button>
 
                               <Dialog>
@@ -156,71 +220,140 @@ function InfluencerJobs() {
                                   </Button>
                                 </DialogTrigger>
 
-                                <DialogContent className="relative  bottom-70 sm:relative sm:bottom-80 max-w-[600px] sm:max-w-[425px] border-0 bg-[#000000] overflow-y-auto w-full shadow-sm shadow-gray-400">
-                                  <DialogHeader className='pt-3'>
-                                    <h1 className='text-2xl text-white text-center'>Review</h1>
+                                <DialogContent className="max-w-[600px] sm:max-w-[425px] border-0 bg-[#000000] overflow-y-auto w-full shadow-sm shadow-gray-400">
+                                  <DialogHeader className="pt-3">
+                                    <h1 className="text-2xl text-white text-center">
+                                      Review
+                                    </h1>
                                   </DialogHeader>
-                                  <DialogDescription className="space-y-4 mt-4 text-white  text-sm md:text-base">
-                                    <ChartRadialText value={progress}/>
-                                    <span className='flex justify-center'>Hey! your job is {progress}% Complete</span>
+                                  <DialogDescription asChild>
+                                    <div className="space-y-4 mt-4 text-white text-sm md:text-base">
+                                      <ChartRadialText value={progress} />
+                                      <span className="flex justify-center">
+                                        Hey! your job is {progress}% Complete
+                                      </span>
+                                    </div>
                                   </DialogDescription>
 
                                   <DialogFooter className="text-white">
                                     <div className="relative w-full flex flex-col items-center mt-6">
-                                      {/* Horizontal progress line */}
-                                      <div className="absolute top-1/5 left-3 w-70 sm:w-80 h-[6px] bg-gray-700 rounded-full -translate-y-1/2"></div>
-
-                                      {/* Filled progress */}
-                                      <div
-                                        className="absolute top-1/5 left-2 h-[6px] bg-[#A67102] rounded-full -translate-y-1/2"
-                                        style={{ width: `${progress}%` }}
-                                      ></div>
-
-                                      {/* Buttons */}
-          <div className="w-full flex justify-between z-10 px-2 mt-2">
-            {percentages.map((p) => (
-              <Button
-                key={p}
-                onClick={() => setProgress(p)}
-                className={`w-[60px] h-[45px] border-2 
+                                      <div className="w-full flex justify-between z-10 px-2 mt-2">
+                                        {PERCENTAGES.map((p) => (
+                                          <Button
+                                            key={p}
+                                            type="button"
+                                            onClick={() =>
+                                              setDraftProgress((d) => ({
+                                                ...d,
+                                                [job.id]: p,
+                                              }))
+                                            }
+                                            disabled={p < job.progress}
+                                            title={
+                                              p < job.progress
+                                                ? "Progress cannot go backwards"
+                                                : undefined
+                                            }
+                                            className={`w-[60px] h-[45px] border-2 disabled:opacity-40
                   ${progress === p ? "bg-[#A67102] text-white border-0" : "border-[#A67102]"}
                 `}
-              >
-                {p}%
-              </Button>
-            ))}
-          </div>
-                                      {/* submit button with full in all sizes */}
-                                      <Button className="bg-[#A67102] w-full md:w-[150px] lg:w-full h-[48px] md:h-[50px] lg:h-[52px] mt-10 text-xs sm:text-base">
-                                        Submit Review
+                                          >
+                                            {p}%
+                                          </Button>
+                                        ))}
+                                      </div>
+
+                                      <Button
+                                        disabled={busy || progress === job.progress}
+                                        onClick={() => submitProgress(job)}
+                                        className="bg-[#A67102] w-full md:w-[150px] lg:w-full h-[48px] md:h-[50px] lg:h-[52px] mt-10 text-xs sm:text-base disabled:opacity-50"
+                                      >
+                                        {busy
+                                          ? "Submitting..."
+                                          : progress === 100
+                                          ? "Complete job & get paid"
+                                          : "Submit Review"}
                                       </Button>
-
-
                                     </div>
                                   </DialogFooter>
                                 </DialogContent>
                               </Dialog>
-                              <Button className="bg-[#A67102] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px] text-xs sm:text-base">
-                                Dispute
+
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Button className="bg-[#A67102] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px] text-xs sm:text-base">
+                                    Dispute
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="max-w-[600px] sm:max-w-[425px] border-0 bg-[#000000] w-full shadow-sm shadow-gray-400">
+                                  <DialogHeader className="pt-3">
+                                    <h1 className="text-2xl text-white text-center">
+                                      Raise a dispute
+                                    </h1>
+                                  </DialogHeader>
+                                  <DialogDescription asChild>
+                                    <div className="mt-4 text-white text-sm">
+                                      <label
+                                        htmlFor={`dispute-${job.id}`}
+                                        className="mb-2 block"
+                                      >
+                                        What went wrong?
+                                      </label>
+                                      <textarea
+                                        id={`dispute-${job.id}`}
+                                        rows={4}
+                                        value={disputeReason[job.id] ?? ""}
+                                        onChange={(e) =>
+                                          setDisputeReason((d) => ({
+                                            ...d,
+                                            [job.id]: e.target.value,
+                                          }))
+                                        }
+                                        className="w-full p-2 bg-zinc-900 border border-zinc-700 rounded-md text-white"
+                                        placeholder="Describe the problem for the review team"
+                                      />
+                                    </div>
+                                  </DialogDescription>
+                                  <DialogFooter>
+                                    <Button
+                                      disabled={busy}
+                                      onClick={() => submitDispute(job)}
+                                      className="bg-[#A67102] w-full h-[48px] disabled:opacity-50"
+                                    >
+                                      {busy ? "Submitting..." : "Submit dispute"}
+                                    </Button>
+                                  </DialogFooter>
+                                </DialogContent>
+                              </Dialog>
+                            </div>
+                          ) : job.status === "PENDING" || job.status === "PENDED" ? (
+                            <div className="grid grid-cols-3 gap-2 md:gap-3">
+                              <Button
+                                disabled={busy}
+                                onClick={() => handleStatus(job.id, "PENDED")}
+                                className="bg-[#A67102] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px] disabled:opacity-50"
+                              >
+                                Pend
+                              </Button>
+                              <Button
+                                disabled={busy}
+                                onClick={() => handleStatus(job.id, "DECLINED")}
+                                className="bg-[#743636] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px] disabled:opacity-50"
+                              >
+                                Decline
+                              </Button>
+                              <Button
+                                disabled={busy}
+                                onClick={() => handleStatus(job.id, "ACCEPTED")}
+                                className="bg-[#4D7522] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px] disabled:opacity-50"
+                              >
+                                Accept
                               </Button>
                             </div>
-                          ) : artist.status === 'Pending' ? (
-                            <p className="text-yellow-500">
-                              {' '}
-                              <div className="grid grid-cols-3 gap-2 md:gap-3">
-                                <Button className="bg-[#A67102] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px]">
-                                  pend
-                                </Button>
-                                <Button className="bg-[#743636] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px]">
-                                  Decline
-                                </Button>
-                                <Button className="bg-[#4D7522] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px]">
-                                  Accept
-                                </Button>
-                              </div>
-                            </p>
                           ) : (
-                            <p className="text-white">Completed</p>
+                            <p className="text-white self-center">
+                              {job.status === "DISPUTED" ? "Disputed" : "Completed"}
+                            </p>
                           )}
                         </div>
 
@@ -228,45 +361,87 @@ function InfluencerJobs() {
                           <div>
                             <span>
                               <img
-                                src={ProfilePic}
-                                alt=""
-                                className="w-[60px] md:w-[90px] h-[60px] md:h-[90px]"
+                                src={job.artist.profilePicture || ProfilePic}
+                                alt={job.artist.username}
+                                className="w-[60px] md:w-[90px] h-[60px] md:h-[90px] rounded-full object-cover"
                               />
-                            </span>{' '}
-                            <p className="pt-1">Artist Name</p>{' '}
+                            </span>{" "}
+                            <p className="pt-1">
+                              {job.artist.firstname} {job.artist.surname}
+                            </p>{" "}
                           </div>
                           <div className="lg:col-span-3">
                             <p className="flex justify-between items-center mb-3 w-full">
-                              <span>Email: {artist.email}</span>
-                              <Copy className="mr-4 lg:mr-15" />
+                              <span>Email: {job.artist.email}</span>
+                              <button
+                                type="button"
+                                aria-label="Copy artist email"
+                                onClick={() => copyEmail(job.id, job.artist.email)}
+                                className="mr-4 lg:mr-15 hover:opacity-70"
+                              >
+                                {copiedId === job.id ? (
+                                  <Check className="text-green-500" />
+                                ) : (
+                                  <Copy />
+                                )}
+                              </button>
                             </p>
 
-                            <div className="border border-[#A67102] p-2 rounded-lg h-[98px] w-full lg:w-[429px]">
-                              {artist.message}
+                            <div className="border border-[#A67102] p-2 rounded-lg h-[98px] w-full lg:w-[429px] overflow-y-auto">
+                              {job.message}
                             </div>
                           </div>
                           <div className="lg:col-span-2">
                             <span>
                               <img src={Fm} alt="" />
                             </span>
-                            <div className="flex justify-between">
-                              <div className="pt-1">
-                                <span className="pt-1">
-                                  {artist.song.title}
-                                </span>
-                                <p>{artist.song.duration}</p>
+                            {job.media ? (
+                              <div className="flex justify-between">
+                                <div className="pt-1">
+                                  <span className="pt-1">
+                                    {job.media.title ?? "Untitled"}
+                                  </span>
+                                  <p>{formatDuration(job.media.duration)}</p>
+                                </div>
+                                <p className="pt-1">{job.media.type ?? ""}</p>
                               </div>
-                              <p className="pt-1">{artist.song.format}</p>
-                            </div>
+                            ) : (
+                              <p className="pt-1 text-gray-400">No track attached</p>
+                            )}
                           </div>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
-                ))}
-            </TabsContent>
-          ))}
+                );
+              })
+            )}
+          </TabsContent>
         </Tabs>
+
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 mt-6">
+            <Button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="bg-neutral-800 border border-neutral-700 disabled:opacity-40"
+            >
+              <ChevronLeft className="w-5 h-5" />
+              Previous
+            </Button>
+            <span className="text-white text-sm">
+              Page {page} of {totalPages}
+            </span>
+            <Button
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+              className="bg-neutral-800 border border-neutral-700 disabled:opacity-40"
+            >
+              Next
+              <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

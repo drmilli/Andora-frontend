@@ -10,14 +10,14 @@ export type InfluencerRequestSent = {
     disputeReason: string | null;
     artistId: string;
     influencerId: string;
-    mediaId: string;
+    mediaId: string | null;
     artist: {
       id: string;
       firstname: string;
       surname: string;
       username: string;
       email: string;
-      profilePicture: string;
+      profilePicture: string | null;
     };
     influencer: {
       id: string;
@@ -25,17 +25,17 @@ export type InfluencerRequestSent = {
       surname: string;
       username: string;
       email: string;
-      profilePicture: string;
+      profilePicture: string | null;
     };
     media: {
       id: string;
-      title: string;
+      title: string | null;
       fileUrl: string;
-      publicId: string;
-      type: string;
-      duration: number;
-      description: string;
-    };
+      publicId: string | null;
+      type: string | null;
+      duration: number | null;
+      description: string | null;
+    } | null;
     respondedAt: string | null;
     completedAt: string | null;
     disputedAt: string | null;
@@ -58,14 +58,14 @@ export interface InfluencerPromotionRequestRespose {
   disputeReason: string | null;
   artistId: string;
   influencerId: string;
-  mediaId: string;
+  mediaId: string | null;
   artist: {
     id: string;
     firstname: string;
     surname: string;
     username: string;
     email: string;
-    profilePicture: string;
+    profilePicture: string | null;
   };
   influencer: {
     id: string;
@@ -73,17 +73,17 @@ export interface InfluencerPromotionRequestRespose {
     surname: string;
     username: string;
     email: string;
-    profilePicture: string;
+    profilePicture: string | null;
   };
   media: {
     id: string;
-    title: string;
+    title: string | null;
     fileUrl: string;
-    publicId: string;
-    type: string;
-    duration: number;
-    description: string;
-  };
+    publicId: string | null;
+    type: string | null;
+    duration: number | null;
+    description: string | null;
+  } | null;
   respondedAt: string | null;
   completedAt: string | null;
   disputedAt: string | null;
@@ -96,7 +96,7 @@ export type InfluencerRequestToPayPayload = {
   platform: string;
   message: string;
   amount: number;
-  mediaId: string;
+  mediaId: string | null;
 }
 
 
@@ -126,14 +126,14 @@ export interface GetInfluencerRequest {
   disputeReason: string | null;
   artistId: string;
   influencerId: string;
-  mediaId: string;
+  mediaId: string | null;
   artist: {
     id: string;
     firstname: string;
     surname: string;
     username: string;
     email: string;
-    profilePicture: string;
+    profilePicture: string | null;
   };
   influencer: {
     id: string;
@@ -141,17 +141,17 @@ export interface GetInfluencerRequest {
     surname: string;
     username: string;
     email: string;
-    profilePicture: string;
+    profilePicture: string | null;
   };
   media: {
     id: string;
-    title: string;
+    title: string | null;
     fileUrl: string;
-    publicId: string;
-    type: string;
-    duration: number;
-    description: string;
-  };
+    publicId: string | null;
+    type: string | null;
+    duration: number | null;
+    description: string | null;
+  } | null;
   respondedAt: string | null;
   completedAt: string | null;
   disputedAt: string | null;

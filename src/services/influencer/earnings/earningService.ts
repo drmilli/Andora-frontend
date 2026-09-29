@@ -19,11 +19,21 @@ export const fetchTransactions = async (
   return res.data; 
 };
 
-export const withdraw = async (
+export interface WithdrawPayload {
+  amount: number;
+  accountName: string;
+  accountNumber: string;
+  bankName: string;
+}
 
-): Promise<EarningsResponse> => {
-  const res = await api.post("/wallet/withdraw", {
-   
-  });
-  return res.data; 
+export interface WithdrawResponse {
+  message?: string;
+  withdrawalRequest?: unknown;
+}
+
+export const withdraw = async (
+  payload: WithdrawPayload
+): Promise<WithdrawResponse> => {
+  const res = await api.post("/wallet/withdraw", payload);
+  return res.data;
 };

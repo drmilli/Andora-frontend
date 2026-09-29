@@ -5,7 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Cover from "../../../assets/influencer/cover.png";
 import Nopic from "../../../assets/influencer/nopic.png";
 import { Plus } from "lucide-react";
-import { fetchProfile,updateProfile } from "@/services/influencer/profile/ProfileService";
+import { fetchProfile, updateProfile, uploadProfileImages } from "@/services/influencer/profile/ProfileService";
+import { apiErrorMessage } from "@/lib/influencer";
 import type { GetInfluencerProfileResponse, UpdateInfluencerProfilePayload } from "@/types/influencer/profile";
 
 
@@ -26,21 +27,26 @@ function InfluencerProfile() {
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Files picked but not yet uploaded — sent on Save alongside the text fields
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [profileFile, setProfileFile] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const handleBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const url = URL.createObjectURL(file); // creates a preview instantly
-    setBanner(url);
+    setBannerFile(file);
+    setBanner(URL.createObjectURL(file)); // instant preview
   };
 
   const handleProfileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const url = URL.createObjectURL(file);
-    setProfilePreview(url);
+    setProfileFile(file);
+    setProfilePreview(URL.createObjectURL(file));
   };
 
   // Get existing profile 
@@ -71,19 +77,33 @@ function InfluencerProfile() {
   //handle submit
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try { 
+    try {
       setLoading(true);
-      const updatedProfile = await updateProfile(formData);
+      setError(null);
+      setSuccess(null);
+
+      let updatedProfile = await updateProfile(formData);
+
+      // Images go to a separate multipart endpoint; only call it if one changed
+      if (bannerFile || profileFile) {
+        updatedProfile = await uploadProfileImages({
+          ...(profileFile ? { profilePicture: profileFile } : {}),
+          ...(bannerFile ? { coverPicture: bannerFile } : {}),
+        });
+        setBannerFile(null);
+        setProfileFile(null);
+      }
+
       setProfile(updatedProfile);
-      alert("Profile updated successfully!");
-    } catch (error) { 
-      console.error("Failed to update profile:", error); 
+      setSuccess("Profile updated successfully");
+    } catch (err) {
+      setError(apiErrorMessage(err, "Failed to update profile"));
     } finally {
       setLoading(false);
     }
   };
 
-console.log("profile:",profile);
+
   return (
     <div>
       <div className="flex w-full max-w-full lg:max-w-sm flex-col gap-6 mt-10">
@@ -308,6 +328,12 @@ console.log("profile:",profile);
                   </div>
 
                   <div className="mt-10 mb-10">
+                    {error && (
+                      <p className="text-red-400 text-sm mb-3" role="alert">{error}</p>
+                    )}
+                    {success && (
+                      <p className="text-green-500 text-sm mb-3">{success}</p>
+                    )}
                     <Button
                       type="submit"
                       disabled={loading}

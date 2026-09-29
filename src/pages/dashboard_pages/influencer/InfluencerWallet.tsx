@@ -18,7 +18,8 @@ import {
 import { Download, NotebookPen } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { EarningsResponse } from "@/types/influencer/earnings";
-import { fetchEarnings, fetchTransactions } from "@/services/influencer/earnings/earningService";
+import { fetchEarnings, fetchTransactions, withdraw } from "@/services/influencer/earnings/earningService";
+import { apiErrorMessage, formatNaira } from "@/lib/influencer";
 import type { TransactionResponse } from "@/types/transactions";
 function InfluencerWallet() {
   const summaries = [
@@ -102,6 +103,48 @@ function InfluencerWallet() {
     }
   };
   const [earnings, setEarnings] = useState<EarningsResponse>();
+  const [withdrawForm, setWithdrawForm] = useState({
+    bankName: "",
+    accountNumber: "",
+    accountName: "",
+    amount: "",
+  });
+  const [withdrawing, setWithdrawing] = useState(false);
+  const [withdrawError, setWithdrawError] = useState<string | null>(null);
+  const [withdrawSuccess, setWithdrawSuccess] = useState<string | null>(null);
+
+  const handleWithdraw = async () => {
+    const amount = Number(withdrawForm.amount);
+    setWithdrawError(null);
+    setWithdrawSuccess(null);
+
+    if (!withdrawForm.bankName) return setWithdrawError("Please select your bank.");
+    if (!withdrawForm.accountNumber.trim()) return setWithdrawError("Enter your account number.");
+    if (!withdrawForm.accountName.trim()) return setWithdrawError("Enter your account name.");
+    if (!amount || amount <= 0) return setWithdrawError("Enter a valid amount.");
+    if (earnings && amount > earnings.available) {
+      return setWithdrawError("Amount is more than your available balance.");
+    }
+
+    try {
+      setWithdrawing(true);
+      await withdraw({
+        amount,
+        accountName: withdrawForm.accountName.trim(),
+        accountNumber: withdrawForm.accountNumber.trim(),
+        bankName: withdrawForm.bankName,
+      });
+      setWithdrawSuccess("Withdrawal requested. It is now pending approval.");
+      setWithdrawForm({ bankName: "", accountNumber: "", accountName: "", amount: "" });
+      // Balance and transaction list both change after a withdrawal
+      const refreshed = await fetchEarnings();
+      setEarnings(refreshed);
+    } catch (err) {
+      setWithdrawError(apiErrorMessage(err, "Withdrawal failed"));
+    } finally {
+      setWithdrawing(false);
+    }
+  };
   const [transactions, setTransactions] = useState<TransactionResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -206,59 +249,92 @@ console.log(loading)
                           <h1>Withdrawal</h1>
                         </DialogHeader>
 
-                        <DialogDescription className="space-y-4 mt-4 text-white text-sm md:text-base">
-                          <form action="">
+                        <DialogDescription asChild>
+                          <div className="space-y-4 mt-4 text-white text-sm md:text-base">
                             <div className="flex flex-col space-y-4">
-
                               <div className="flex flex-col">
                                 <label htmlFor="bank">Select Bank</label>
                                 <select
                                   id="bank"
+                                  value={withdrawForm.bankName}
+                                  onChange={(e) =>
+                                    setWithdrawForm((f) => ({ ...f, bankName: e.target.value }))
+                                  }
                                   className="mt-1 p-2 bg-zinc-900 border border-zinc-700 rounded-md text-white"
                                 >
                                   <option value="">Select your bank</option>
-                                  <option value="zenith">Zenith Bank</option>
-                                  <option value="gtbank">GTBank</option>
-
-                                  <option value="firstbank">First Bank</option>
-                                  <option value="kuda">Kuda Bank</option>
+                                  <option value="Zenith Bank">Zenith Bank</option>
+                                  <option value="GTBank">GTBank</option>
+                                  <option value="Access Bank">Access Bank</option>
+                                  <option value="First Bank">First Bank</option>
+                                  <option value="Kuda Bank">Kuda Bank</option>
+                                  <option value="Opay">Opay</option>
                                 </select>
                               </div>
 
                               <div className="flex flex-col">
-                                <label htmlFor="amount">Account Number</label>
+                                <label htmlFor="accountNumber">Account Number</label>
                                 <input
                                   type="text"
-                                  id="amount"
+                                  id="accountNumber"
+                                  inputMode="numeric"
+                                  value={withdrawForm.accountNumber}
+                                  onChange={(e) =>
+                                    setWithdrawForm((f) => ({ ...f, accountNumber: e.target.value }))
+                                  }
                                   className="mt-1 p-2 bg-zinc-900 border border-zinc-700 rounded-md text-white"
-                                  placeholder="Enter amount"
+                                  placeholder="Enter account number"
                                 />
                               </div>
                               <div className="flex flex-col">
-                                <label htmlFor="amount">Account Name</label>
+                                <label htmlFor="accountName">Account Name</label>
                                 <input
                                   type="text"
-                                  id="amount"
+                                  id="accountName"
+                                  value={withdrawForm.accountName}
+                                  onChange={(e) =>
+                                    setWithdrawForm((f) => ({ ...f, accountName: e.target.value }))
+                                  }
                                   className="mt-1 p-2 bg-zinc-900 border border-zinc-700 rounded-md text-white"
-                                  placeholder="Enter amount"
+                                  placeholder="Enter account name"
                                 />
                               </div>
                               <div className="flex flex-col">
                                 <label htmlFor="amount">Amount</label>
                                 <input
-                                  type="text"
+                                  type="number"
                                   id="amount"
+                                  min={1}
+                                  max={earnings?.available ?? undefined}
+                                  value={withdrawForm.amount}
+                                  onChange={(e) =>
+                                    setWithdrawForm((f) => ({ ...f, amount: e.target.value }))
+                                  }
                                   className="mt-1 p-2 bg-zinc-900 border border-zinc-700 rounded-md text-white"
                                   placeholder="Enter amount"
                                 />
+                                <span className="text-xs text-gray-400 mt-1">
+                                  Available: {formatNaira(earnings?.available)}
+                                </span>
                               </div>
+                              {withdrawError && (
+                                <p className="text-red-400 text-sm" role="alert">{withdrawError}</p>
+                              )}
+                              {withdrawSuccess && (
+                                <p className="text-green-500 text-sm">{withdrawSuccess}</p>
+                              )}
                             </div>
-                          </form>
+                          </div>
                         </DialogDescription>
 
                         <DialogFooter className="text-white">
-                          <Button className="w-full bg-[#A67102] p-3 mt-6">
-                            Proceed
+                          <Button
+                            type="button"
+                            disabled={withdrawing}
+                            onClick={handleWithdraw}
+                            className="w-full bg-[#A67102] p-3 mt-6 disabled:opacity-50"
+                          >
+                            {withdrawing ? "Processing..." : "Proceed"}
                           </Button>
                         </DialogFooter>
                       </DialogContent>

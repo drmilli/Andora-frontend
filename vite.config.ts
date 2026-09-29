@@ -36,8 +36,11 @@ export default defineConfig({
   },
   server: {
     proxy: {
+      // Target is the ORIGIN only. The '/api' prefix stays on the request path,
+      // so /api/influencer -> https://server.audorasounds.com/api/influencer.
+      // Including '/api' in the target here would send /api/api/influencer.
       '/api': {
-        target: 'https://server.audorasounds.com/api',
+        target: 'https://server.audorasounds.com',
         changeOrigin: true,
         secure: true,
       }
