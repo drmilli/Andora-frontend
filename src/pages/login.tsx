@@ -1,16 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthLayout } from "../components/auth/AuthLayout";
 import { AuthInput } from "../components/auth/AuthInput";
 import { AuthButton } from "../components/auth/AuthButton";
 import { SocialButton } from "../components/auth/SocialButton";
 import { useAuth } from "../hooks/auth/useArtistAuth";
+import { AppContext } from "../Context/AppContext";
+import { isDevAuthEnabled, startDevSession } from "../lib/devAuth";
 
 
 export const LoginPage: React.FC = () => {
   const { login, error } = useAuth();
   const navigate = useNavigate();
-
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -21,6 +22,7 @@ export const LoginPage: React.FC = () => {
     });
     navigate("/dashboard");
   };
+
   return (
     <AuthLayout
       title="Login"

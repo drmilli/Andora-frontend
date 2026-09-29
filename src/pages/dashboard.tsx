@@ -13,6 +13,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { AppContext } from "../Context/AppContext";
+import { isCampaignStrategist } from "../lib/roles";
 
 /**
  * Dashboard layout component
@@ -41,7 +42,12 @@ export function DashboardPage(): React.ReactElement {
       return "Dashboard";
     if (pathname.includes("statistic")) return "Statistics";
     if (pathname.includes("media") || pathname.includes("radio") || pathname.includes("tv")) return "Media";
-    if (pathname.includes("promotion") || pathname.includes("campaign")) return "Promotion";
+    if (pathname.includes("song-submission")) return "Song Submissions";
+    if (pathname.includes("influencer-directory")) return "Influencer Directory";
+    if (pathname.includes("invitation")) return "Invitations";
+    if (pathname.includes("report")) return "Reports";
+    if (pathname.includes("promotion") || pathname.includes("campaigns")) return "Promotion";
+    if (pathname.includes("campaign")) return "Campaign";
     if (pathname.includes("profile")) return "Profile";
     if (pathname.includes("notification")) return "Notifications";
     if (pathname.includes("wallet")) return "Wallet";
@@ -109,6 +115,24 @@ export function DashboardPage(): React.ReactElement {
             >
               <User size={22} />
               <span className="text-[11px]">Profile</span>
+            </NavLink>
+          </>
+        ) : isCampaignStrategist(role) ? (
+          <>
+            <NavLink
+              to="/dashboard/notifications"
+              className={({ isActive }) => navItemClass(isActive)}
+            >
+              <Bell size={22} />
+              <span className="text-[11px]">Notification</span>
+            </NavLink>
+
+            <NavLink
+              to="/dashboard/song-submissions"
+              className={({ isActive }) => navItemClass(isActive)}
+            >
+              <Music size={22} />
+              <span className="text-[11px]">Songs</span>
             </NavLink>
           </>
         ) : (
