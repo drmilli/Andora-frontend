@@ -5,6 +5,8 @@ import { useContext, useEffect, useState } from "react";
 import { AppContext } from "@/Context/AppContext";
 import { useLocation } from "react-router-dom";
 import { getDashboardStats, type DashboardStats } from "@/services/dashboard";
+import { Progress, } from "@/components/ui/progress";
+
 
 type CompletedCampaign = {
   title: string;
@@ -58,7 +60,11 @@ export const DashboardHome: React.FC = () => {
   const balance = stats
     ? `$${Number(stats.walletBalance).toLocaleString("en-US", { minimumFractionDigits: 2 })}`
     : "$0.00";
-
+  const [progress, setProgress] = useState(13)
+  useEffect(() => {
+    const timer = setTimeout(() => setProgress(66), 500)
+    return () => clearTimeout(timer)
+  }, [])
   return (
     <div className="w-full pb-28 md:pb-0">
       {successMessage && (
@@ -168,6 +174,36 @@ export const DashboardHome: React.FC = () => {
                 </p>
               </div>
             </div>
+          ))}
+        </div>
+      </div>
+
+            <div className="mt-10">
+        <h3 className="text-white font-semibold mb-4">Active Campaigns</h3>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+          {completedCampaigns.map((c, i) => (
+            <div key={i} className="bg-[#0D0B07] border border-gray-900 hover:border-[#A67102]/30 p-3 rounded-xl">
+              <div className="flex  items-center">
+                <img src={c.image} alt={c.title} className="w-10 h-10 object-cover" />
+                <div className="p-2 space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+ <p className="text-white font-medium text-sm">{c.title}</p>
+ <span className="text-[#F7C946] bg-amber-600/20 rounded px-2 py-1 text-xs">Active</span>
+                  </div>
+                 
+                  <p className="text-gray-500 text-xs uppercase tracking-wide">
+                    Starter Package . 30 days
+                  </p>
+                </div>
+              </div>
+              <div className="">
+                <p className="text-white">Influncer</p>
+<Progress value={progress} className="w-[60%]" />
+         
+              </div>
+           </div>
+    
           ))}
         </div>
       </div>

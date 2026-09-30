@@ -7,7 +7,7 @@ export const StatCard: React.FC<{
   subtext?: string;
 }> = ({ icon, title, value, subtext }) => {
   return (
-    <div className="bg-[#0D0B07] p-6 rounded-2xl relative group hover:border-[#A67102]/30 transition-all border border-gray-900">
+    <div className="bg-[#0D0B07] border border-gray-900 hover:border-[#A67102]/30 p-6 rounded-2xl relative group  transition-all ">
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-[#A67102]/10 rounded-full">{icon}</div>
