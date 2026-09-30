@@ -232,8 +232,7 @@ function Home() {
             variants={fadeInUp}
             className="mt-6 max-w-2xl text-center text-base text-white/80 sm:text-lg"
           >
-            Upload your songs and videos once, and we'll deliver them to top
-            streaming platforms, radio stations, TV channels, and influencers.
+            Upload your songs and videos once, and we'll deliver them to top radio stations, TV channels, and influencers.
           </motion.p>
 
           <motion.div variants={fadeInUp}>
