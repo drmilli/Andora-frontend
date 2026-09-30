@@ -11,7 +11,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg", "robots.txt"],
+      includeAssets: ["favicon.svg", "robots.txt", "sitemap.xml"],
       manifest: {
         short_name: "Audora",
         name: "Audora - Your Sound, the World's Stage",

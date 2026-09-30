@@ -1,2 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /dashboard/
+Disallow: /verify-otp
+Disallow: /reset-password
+Disallow: /forgot-password
+
+Sitemap: https://audorasounds.com/sitemap.xml
