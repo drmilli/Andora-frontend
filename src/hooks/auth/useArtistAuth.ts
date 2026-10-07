@@ -2,7 +2,6 @@ import { useState, useContext } from "react";
 import { loginUser, signupUser } from "../../services/auth";
 import type { LoginPayload, SignupPayload } from "../../types/auth";
 import { AppContext } from "../../Context/AppContext";
-import { clearDevSession } from "../../lib/devAuth";
 
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);
@@ -22,7 +21,6 @@ export const useAuth = () => {
       setError(null);
 
       const data = await loginUser(payload);
-      clearDevSession();
       localStorage.setItem("token", data.token);
       setToken(data.token);
       setUser(data.user);
