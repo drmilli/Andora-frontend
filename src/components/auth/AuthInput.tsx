@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { cn } from "@/lib/utils";
+
 
 interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -9,9 +9,9 @@ interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 export const AuthInput: React.FC<AuthInputProps> = ({
   label,
   type,
-  className,
   id,
   name,
+  className = "",
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,13 +26,14 @@ export const AuthInput: React.FC<AuthInputProps> = ({
           id={id}
           name={name}
           type={inputType}
-          className={cn(
-            "w-full border-b border-white/15 bg-transparent pb-2 text-base font-semibold text-white placeholder-white/40 transition focus:border-[#f5b640] focus:outline-none",
-            isPassword && "pr-10",
-            className,
-          )}
+          className={`
+            w-full border-0 border-b border-white/15 bg-transparent pb-2 text-base font-semibold text-white placeholder-white/40 outline-none transition focus:border-[#f5b640] focus:bg-transparent focus:outline-none
+            ${isPassword ? "pr-10" : ""}
+            ${className}
+          `}
           {...props}
         />
+
         {isPassword && (
           <button
             type="button"

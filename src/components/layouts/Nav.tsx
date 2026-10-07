@@ -32,7 +32,7 @@ export const Nav: React.FC = () => {
                 <a href="#contact">Contact</a>
               </li>
               <li className="hover:text-white">
-                <a href="/work-with-us">Work With Us</a>
+                <Link to="/work-with-us">Work With Us</Link>
               </li>
             </ul>
 
@@ -77,11 +77,11 @@ export const Nav: React.FC = () => {
                   <a href="#contact" onClick={() => setIsMenuOpen(false)}>Contact</a>
                 </li>
                 <li className="hover:text-[#f5b640]">
-                  <a href="/work-with-us" onClick={() => setIsMenuOpen(false)}>Work With Us</a>
+                  <Link to="/work-with-us" onClick={() => setIsMenuOpen(false)}>Work With Us</Link>
                 </li>
                 <li className="pt-4">
-                  <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                    <button className="w-full rounded-full bg-[#f5b640] px-6 py-3 text-base font-semibold text-black">
+                  <Link to="/select-role" onClick={() => setIsMenuOpen(false)}>
+                    <button className="w-full rounded-lg bg-[#f5b640] hover:bg-[#f5b640]/90 transition-colors px-6 py-3 text-base font-semibold text-white">
                       Get Started
                     </button>
                   </Link>
