@@ -11,7 +11,6 @@ export const LoginPage: React.FC = () => {
   const { login, error } = useAuth();
   const navigate = useNavigate();
 
-
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     const form = new FormData(e.target);
@@ -21,6 +20,7 @@ export const LoginPage: React.FC = () => {
     });
     navigate("/dashboard");
   };
+
   return (
     <AuthLayout
       title="Login"

@@ -46,6 +46,11 @@ import BillingPage from "./artist/BillingPage";
 
 import { useContext } from "react";
 import { AppContext } from "@/Context/AppContext";
+import { isCampaignStrategist } from "@/lib/roles";
+import { CampaignStrategistDashboard } from "./strategist/CampaignStrategistDashboard";
+import CampaignStrategistNotifications from "./strategist/CampaignStrategistNotifications";
+import CampaignStrategistJobs from "./strategist/CampaignStrategistJobs";
+import CampaignStrategistReports from "./strategist/CampaignStrategistReports";
 
 export function RoleDashboardHome() {
   const context = useContext(AppContext);
@@ -59,6 +64,9 @@ export function RoleDashboardHome() {
   }
   if (role === "admin") {
     return <AdminDashboard />;
+  }
+  if (isCampaignStrategist(role)) {
+    return <CampaignStrategistDashboard />;
   }
   return <DashboardHome />;
 }
@@ -75,6 +83,9 @@ export function RoleNotifications() {
   }
   if (role === "admin") {
     return <AdminNotifications />;
+  }
+  if (isCampaignStrategist(role)) {
+    return <CampaignStrategistNotifications />;
   }
   return <NotificationPage />;
 }
@@ -142,6 +153,11 @@ export const DASHBOARD_ROUTES = [
   { path: "settings", element: <SettingsPage /> },
   { path: "my-songs", element: <MySongs /> },
   { path: "my-songs/:id", element: <SongDetails /> },
+
+  // Campaign strategist
+  { path: "strategist-dashboard", element: <CampaignStrategistDashboard /> },
+  { path: "song-submissions", element: <CampaignStrategistJobs /> },
+  { path: "reports", element: <CampaignStrategistReports /> },
 
   // Influencer direct routes
   { path: "influencer-dashboard", element: <InfluencerDashboard /> },
