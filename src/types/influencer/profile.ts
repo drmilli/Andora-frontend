@@ -8,6 +8,8 @@ export interface GetInfluencerProfileResponse {
   role: string;
   bio: string | null;
   phone: string | null;
+  followerCount: number | null;
+  rate: number | null;
   profilePicture: string | null;
   coverPicture: string | null;
   instagram: string | null;
@@ -31,6 +33,9 @@ export interface UpdateInfluencerProfilePayload {
   role?: string;
   bio?: string | null;
   phone?: string | null;
+  /** Sent as a string from the form; the API coerces it. "" clears the value. */
+  followerCount?: number | string | null;
+  rate?: number | string | null;
   profilePicture?: string | null;
   coverPicture?: string | null;
   instagram?: string | null;

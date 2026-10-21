@@ -1,5 +1,7 @@
 import { MoreVertical } from 'lucide-react';
 import React from 'react'
+import { fetchSentPromotionRequests } from '@/services/artist/promotions';
+import { apiErrorMessage, formatNaira } from '@/lib/influencer';
 
 
     type Billing = {
@@ -9,10 +11,6 @@ import React from 'react'
   date: string;
   amount: string;
 };
-    const billings: Billing[] = [
-  { id: "1", description: "Campaign - Smoke (Basic Package)", status: "Active", date:"2026-05-10",amount:"30,000"}
-
-];
 
 const statusStyles: Record<Billing["status"], string> = {
   Active: "bg-[#A67102]/20 text-[#A67102]",
@@ -22,6 +20,39 @@ const statusStyles: Record<Billing["status"], string> = {
 
 function BillingPage() {
   const [openMenuId, setOpenMenuId] = React.useState<string | null>(null);
+  const [billings, setBillings] = React.useState<Billing[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  // Billing lines are the promotions this artist has paid for
+  React.useEffect(() => {
+    const load = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await fetchSentPromotionRequests(1, 50);
+        setBillings(
+          res.data.map((r) => ({
+            id: r.id,
+            description: `${r.platform} promotion — ${r.influencer.username}`,
+            status:
+              r.status === 'COMPLETED'
+                ? 'Completed'
+                : r.status === 'ACCEPTED'
+                ? 'Active'
+                : 'Not Active',
+            date: new Date(r.createdAt).toISOString().slice(0, 10),
+            amount: formatNaira(r.amount).replace('₦', ''),
+          }))
+        );
+      } catch (err) {
+        setError(apiErrorMessage(err, 'Could not load your billing history'));
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
   return (
     <div>      {/* Table */}
       <div className="rounded-2xl border border-gray-900 overflow-hidden">
@@ -38,6 +69,15 @@ function BillingPage() {
               </tr>
             </thead>
             <tbody>
+              {loading && (
+                <tr><td colSpan={5} className="px-6 py-6 text-gray-400">Loading...</td></tr>
+              )}
+              {error && (
+                <tr><td colSpan={5} className="px-6 py-6 text-red-400">{error}</td></tr>
+              )}
+              {!loading && !error && billings.length === 0 && (
+                <tr><td colSpan={5} className="px-6 py-6 text-gray-400">No billing history yet.</td></tr>
+              )}
               {billings.map((billing) => (
                 <tr
                   key={billing.id}

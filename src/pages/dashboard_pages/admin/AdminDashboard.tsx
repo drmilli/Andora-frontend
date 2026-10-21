@@ -1,29 +1,69 @@
-
 import { Card, CardContent } from '@/components/ui/card';
 
-import {  Ellipsis, Triangle } from 'lucide-react';
+import { Ellipsis, Triangle } from 'lucide-react';
 import { AdminChartLineLinear } from '@/components/charts/admin/AdminChartLineLinear';
+import { useContext, useEffect, useState } from 'react';
+import { AppContext } from '@/Context/AppContext';
+import type { AdminOverview } from '@/types/admin/admin';
+import { fetchOverview } from '@/services/admin/adminService';
+import { apiErrorMessage } from '@/lib/influencer';
 
-
-const statistics = [
-  { label: 'Artists', value: '900,456,000', rate: '75%' },
-  { label: 'Influencers', value: '23,456', rate: '75%' },
-  { label: 'Radios', value: '34,456', rate: '75%' },
-  { label: 'TV Stations', value: '1,234', rate: '75%' },
-  { label: 'Audio Uploads', value: '12,123,456', rate: '75%' },
-  { label: ' Video Uploads', value: '1,123,456', rate: '75%' } 
-];
-const overalls = [
-  { label: 'Received Jobs', value: '123,456', rate: '75%' },
-  { label: 'Pending Jobs', value: '123,456', rate: '75%' },
-  { label: 'Completed Jobs', value: '123,456', rate: '75%' },
-   { label: 'Disputes', value: '3,456', rate: '75%' },
-];
 function AdminDashboard() {
+  const context = useContext(AppContext);
+  const [overview, setOverview] = useState<AdminOverview | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        setOverview(await fetchOverview());
+      } catch (err) {
+        setError(apiErrorMessage(err, 'Could not load platform stats'));
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  const n = (v?: number | null) => (v ?? 0).toLocaleString('en-NG');
+
+  // Radio / TV have no backend yet, so they are not shown as fabricated numbers
+  const statistics = [
+    { label: 'Artists', value: n(overview?.users.byRole.artist), rate: '' },
+    { label: 'Influencers', value: n(overview?.users.byRole.influencer), rate: '' },
+    { label: 'Producers', value: n(overview?.users.byRole.producer), rate: '' },
+    { label: 'Total Users', value: n(overview?.users.total), rate: '' },
+    { label: 'Media Approved', value: n(overview?.media.approved), rate: '' },
+    { label: 'Media Pending', value: n(overview?.media.pending), rate: '' },
+  ];
+
+  const overalls = [
+    { label: 'Received Jobs', value: n(Object.values(overview?.promotions ?? {}).reduce((a, b) => a + b, 0)), rate: '' },
+    { label: 'Pending Jobs', value: n((overview?.promotions?.PENDING ?? 0) + (overview?.promotions?.PENDED ?? 0)), rate: '' },
+    { label: 'Completed Jobs', value: n(overview?.promotions?.COMPLETED), rate: '' },
+    { label: 'Disputes', value: n(overview?.promotions?.DISPUTED), rate: '' },
+  ];
+
+  if (loading) {
+    return <p className="text-white mt-10">Loading platform stats...</p>;
+  }
+
+  if (error) {
+    return (
+      <p className="text-red-400 mt-10 text-sm" role="alert">
+        {error}
+      </p>
+    );
+  }
+
   return (
     <div>   <div>
         <div>
-          <h1>Hello,Issac</h1>
+          <h1>Hello, {context?.user?.firstname ?? 'Admin'}</h1>
         </div>
         <div className="flex w-full max-w-full lg:max-w-sm flex-col gap-6 mt-10">
           <div>

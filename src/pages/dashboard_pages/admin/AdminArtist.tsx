@@ -1,10 +1,13 @@
+import AdminUserTable from "@/components/admin/AdminUserTable";
 
 function AdminArtist() {
   return (
-    <div>
-      
-    </div>
-  )
+    <AdminUserTable
+      role="artist"
+      countField="uploadedMedia"
+      countLabel="Uploads"
+    />
+  );
 }
 
-export default AdminArtist
+export default AdminArtist;

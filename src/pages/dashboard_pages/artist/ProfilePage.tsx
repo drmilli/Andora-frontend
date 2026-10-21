@@ -3,24 +3,21 @@ import * as React from "react";
 import { useContext } from "react";
 import { AppContext } from "@/Context/AppContext";
 import EditProfileDialog from "@/components/profile/EditProfileDialog";
+import { useEffect, useState } from "react";
+import { fetchSentPromotionRequests } from "@/services/artist/promotions";
+import type { GetInfluencerRequest } from "@/types/influencer/requests";
 
-type CompletedCampaign = {
-  title: string;
-  type: string;
-  date: string;
-  image: string;
-};
-
-const completedCampaigns: CompletedCampaign[] = [
-  { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=30" },
-  { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=31" },
-  { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=32" },
-  { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=33" },
-];
 
 export const ProfilePage: React.FC = () => {
   const context = useContext(AppContext);
   const user = context?.user;
+  const [completedCampaigns, setCompletedCampaigns] = useState<GetInfluencerRequest[]>([]);
+
+  useEffect(() => {
+    fetchSentPromotionRequests(1, 8, "COMPLETED")
+      .then((res) => setCompletedCampaigns(res.data))
+      .catch(() => setCompletedCampaigns([]));
+  }, []);
 
   const fullName = user
     ? `${user.firstname || ""} ${user.surname || ""}`.trim()
@@ -110,17 +107,36 @@ export const ProfilePage: React.FC = () => {
         <h3 className="text-white font-semibold mb-4">Completed Campaigns</h3>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {completedCampaigns.map((c, i) => (
-            <div key={i} className="rounded-lg overflow-hidden">
-              <img src={c.image} alt={c.title} className="w-full h-50 object-cover" />
-              <div className="p-3 space-y-2">
-                <p className="text-white font-medium text-sm">{c.title}</p>
-                <p className="text-gray-500 text-xs uppercase tracking-wide">
-                  {c.type} &bull; {c.date}
-                </p>
+          {completedCampaigns.length === 0 ? (
+            <p className="text-gray-500 text-sm">No completed campaigns yet.</p>
+          ) : (
+            completedCampaigns.map((c) => (
+              <div key={c.id} className="rounded-lg overflow-hidden">
+                <img
+                  src={
+                    c.influencer.profilePicture ||
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                      c.influencer.username
+                    )}&background=A67102&color=fff&size=200`
+                  }
+                  alt={c.media?.title ?? c.influencer.username}
+                  className="w-full h-50 object-cover"
+                />
+                <div className="p-3 space-y-2">
+                  <p className="text-white font-medium text-sm">
+                    {c.media?.title ?? "Promotion"}
+                  </p>
+                  <p className="text-gray-500 text-xs uppercase tracking-wide">
+                    {c.platform} &bull;{" "}
+                    {new Date(c.completedAt ?? c.createdAt).toLocaleDateString("en-GB", {
+                      month: "2-digit",
+                      day: "2-digit",
+                    })}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>

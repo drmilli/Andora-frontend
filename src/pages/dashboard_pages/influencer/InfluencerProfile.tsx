@@ -59,6 +59,8 @@ function InfluencerProfile() {
         setFormData({ 
           phone: data.phone || "", 
           email: data.email || "", 
+          followerCount: data.followerCount ?? "", 
+          rate: data.rate ?? "", 
           instagram: data.instagram || "", 
           tiktok: data.tiktok || "", 
           snapchat: data.snapchat || "", 
@@ -159,6 +161,14 @@ function InfluencerProfile() {
             {/* profile info */}
             <div className="grid grid-cols-1 sm:grid-cols-2 w-[1032px] h-[328px] gap-10 mt-20 mb-10  p-4">
               <div>
+                <div className="mt-10">
+                  <div>Followers</div>
+                  <div>{profile?.followerCount?.toLocaleString("en-NG") ?? "Not set"}</div>
+                </div>
+                <div className="mt-10">
+                  <div>Rate per promotion</div>
+                  <div>{profile?.rate != null ? `₦${profile.rate.toLocaleString("en-NG")}` : "Negotiable"}</div>
+                </div>
                 <div className="mt-10">
                   <div>Phone Number</div>
                   <div>{profile?.phone}</div>
@@ -265,6 +275,30 @@ function InfluencerProfile() {
               {/* profile form for ful name,phone number and email intsagram link*/}
               <div className="grid grid-cols-1 sm:grid-cols-1 w-[1032px] h-[328px] gap-10 mt-20 mb-10  p-4">
                 <div>
+                  <div className="mt-10">
+                    <div className="mb-2">Followers</div>
+                    <input
+                      type="number"
+                      min={0}
+                      className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
+                      value={formData.followerCount ?? ""}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, followerCount: e.target.value }))}
+                      placeholder="e.g. 346000"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">Shown to artists browsing for promoters.</p>
+                  </div>
+                  <div className="mt-10">
+                    <div className="mb-2">Rate per promotion (₦)</div>
+                    <input
+                      type="number"
+                      min={0}
+                      className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
+                      value={formData.rate ?? ""}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, rate: e.target.value }))}
+                      placeholder="e.g. 20000"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">Leave blank to show "Negotiable".</p>
+                  </div>
                   <div className="mt-10">
                     <div className="mb-2">Phone Number</div>
                     <input

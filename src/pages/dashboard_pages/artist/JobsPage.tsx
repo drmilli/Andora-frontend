@@ -1,4 +1,10 @@
 import React from "react";
+import {
+  disputeSentRequest,
+  fetchSentPromotionRequests,
+} from "@/services/artist/promotions";
+import type { GetInfluencerRequest } from "@/types/influencer/requests";
+import { apiErrorMessage, formatDuration, formatNaira } from "@/lib/influencer";
 
 
 
@@ -11,140 +17,97 @@ export const JobsPage: React.FC = () => {
   >("all");
   const [confirmationModal, setConfirmationModal] = React.useState<{
     isOpen: boolean;
-    jobId: number | null;
+    jobId: string | null;
   }>({ isOpen: false, jobId: null });
   const [disputeModal, setDisputeModal] = React.useState<{
     isOpen: boolean;
-    jobId: number | null;
+    jobId: string | null;
   }>({ isOpen: false, jobId: null });
 
-  const pendingJobs = [
-    {
-      id: 1,
-      type: "influencer",
-      influencer: {
-        name: "Influencer",
-        avatar: "https://i.pravatar.cc/80?img=1",
-      },
-      description:
-        "I want you to be able to push my music in your own creative way.",
-      songs: [
-        { title: "Song Title", duration: "3:24", format: "mp3" },
-        { title: "Song Title", duration: "3:40", format: "mp4" },
-      ],
-      completion: 50,
-    },
-    {
-      id: 2,
-      type: "influencer",
-      influencer: {
-        name: "Influencer",
-        avatar: "https://i.pravatar.cc/80?img=2",
-      },
-      description:
-        "I want you to be able to push my music in your own creative way.",
-      songs: [
-        { title: "Song Title", duration: "3:24", format: "mp3" },
-        { title: "Song Title", duration: "3:40", format: "mp4" },
-      ],
-      completion: 70,
-    },
-    {
-      id: 3,
-      type: "influencer",
-      influencer: {
-        name: "Influencer",
-        avatar: "https://i.pravatar.cc/80?img=3",
-      },
-      description:
-        "I want you to be able to push my music in your own creative way.",
-      songs: [
-        { title: "Song Title", duration: "3:24", format: "mp3" },
-        { title: "Song Title", duration: "3:40", format: "mp4" },
-      ],
-      completion: 70,
-    },
-    {
-      id: 4,
-      type: "influencer",
-      influencer: {
-        name: "Influencer",
-        avatar: "https://i.pravatar.cc/80?img=4",
-      },
-      description:
-        "I want you to be able to push my music in your own creative way.",
-      songs: [
-        { title: "Song Title", duration: "3:24", format: "mp3" },
-        { title: "Song Title", duration: "3:40", format: "mp4" },
-      ],
-      completion: 50,
-    },
-    {
-      id: 5,
-      type: "radio",
-      station: { name: "95.6 FM", logo: "https://i.pravatar.cc/80?img=10" },
-      description:
-        "I want you to be able to push my music in your own creative way yeye syukefdvh hf...",
-      song: { title: "Song Title", duration: "3:24", format: "mp3" },
-      presenters: [
-        { avatar: "https://i.pravatar.cc/60?img=20", name: "Arayioba..." },
-      ],
-      date: "12/04/25 - 13/05/26",
-      time: "12:00AM - 6:00AM",
-    },
-    {
-      id: 6,
-      type: "tv",
-      station: { name: "MITV", logo: "https://i.pravatar.cc/80?img=11" },
-      description:
-        "I want you to be able to push my music in your own creative way yeye syukefdvh hf...",
-      song: { title: "Song Title", duration: "3:24", format: "mp3" },
-      presenters: [
-        { avatar: "https://i.pravatar.cc/60?img=21", name: "Arayioba..." },
-        { avatar: "https://i.pravatar.cc/60?img=22", name: "Arayioba..." },
-        { avatar: "https://i.pravatar.cc/60?img=23", name: "Arayioba..." },
-      ],
-      date: "Monday",
-      time: "12:00AM - 6:00AM",
-    },
-  ];
+  const [promotions, setPromotions] = React.useState<GetInfluencerRequest[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+  const [disputeReason, setDisputeReason] = React.useState("");
+  const [acting, setActing] = React.useState(false);
 
-  const completedJobs = [
-    {
-      id: 101,
-      type: "radio",
-      station: { name: "95.6 FM", logo: "https://i.pravatar.cc/80?img=10" },
-      description:
-        "I want you to be able to push my music in your own creative way yeye syukefdvh hf...",
-      song: { title: "Song Title", duration: "3:24", format: "mp3" },
-      presenters: [
-        { avatar: "https://i.pravatar.cc/60?img=20", name: "Arayioba..." },
-      ],
-      date: "Monday",
-      time: "12:00AM - 6:00AM",
-    },
-    {
-      id: 102,
-      type: "radio",
-      station: { name: "95.6 FM", logo: "https://i.pravatar.cc/80?img=10" },
-      description:
-        "I want you to be able to push my music in your own creative way yeye syukefdvh hf...",
-      song: { title: "Song Title", duration: "3:24", format: "mp3" },
-      presenters: [
-        { avatar: "https://i.pravatar.cc/60?img=20", name: "Arayioba..." },
-      ],
-      date: "Monday",
-      time: "12:00AM - 6:00AM",
-    },
-  ];
+  // The artist's "jobs" are the promotions they have paid for
+  const STATUS_BY_TAB: Record<string, string> = {
+    pending: "PENDING,PENDED,ACCEPTED",
+    completed: "COMPLETED",
+    disputes: "DISPUTED",
+  };
 
-  const filteredJobs = pendingJobs.filter((job) => {
-    if (activeFilterTab === "all") return true;
-    if (activeFilterTab === "influencers") return job.type === "influencer";
-    if (activeFilterTab === "radio") return job.type === "radio";
-    if (activeFilterTab === "tv") return job.type === "tv";
-    return true;
+  const load = React.useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await fetchSentPromotionRequests(1, 50, STATUS_BY_TAB[activeMainTab]);
+      setPromotions(res.data);
+    } catch (err) {
+      setError(apiErrorMessage(err, "Could not load your jobs"));
+    } finally {
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeMainTab]);
+
+  React.useEffect(() => {
+    load();
+  }, [load]);
+
+  // Shape each promotion into the card this page already renders
+  const toJob = (r: GetInfluencerRequest) => ({
+    id: r.id,
+    type: "influencer" as const,
+    influencer: {
+      name: `${r.influencer.firstname} ${r.influencer.surname}`.trim() || r.influencer.username,
+      avatar:
+        r.influencer.profilePicture ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(r.influencer.username)}&background=A67102&color=fff`,
+    },
+    description: r.message,
+    amount: r.amount,
+    platform: r.platform,
+    status: r.status,
+    songs: r.media
+      ? [
+          {
+            title: r.media.title ?? "Untitled",
+            duration: formatDuration(r.media.duration),
+            format: r.media.type ?? "",
+          },
+        ]
+      : [],
+    completion: r.progress,
   });
+
+  const pendingJobs = promotions.map(toJob);
+  const completedJobs = pendingJobs;
+
+  const submitDispute = async () => {
+    const id = disputeModal.jobId;
+    if (!id || !disputeReason.trim()) {
+      setError("Describe the problem before submitting a dispute.");
+      return;
+    }
+    try {
+      setActing(true);
+      setError(null);
+      await disputeSentRequest(String(id), { reason: disputeReason.trim() });
+      setDisputeModal({ isOpen: false, jobId: null });
+      setDisputeReason("");
+      await load();
+    } catch (err) {
+      setError(apiErrorMessage(err, "Could not submit the dispute"));
+    } finally {
+      setActing(false);
+    }
+  };
+
+  // Radio and TV promotions need the station backend, which does not exist yet,
+  // so those tabs are intentionally empty rather than showing influencer jobs.
+  const filteredJobs =
+    activeFilterTab === "radio" || activeFilterTab === "tv" ? [] : pendingJobs;
   const tabs = [
     { id: "pending", label: "Pending" },
     { id: "completed", label: "Completed" },
@@ -177,6 +140,9 @@ export const JobsPage: React.FC = () => {
             </button>
           ))}
         </div>
+
+        {loading && <p className="text-gray-400 mb-3">Loading your jobs...</p>}
+        {error && <p className="text-red-400 text-sm mb-3" role="alert">{error}</p>}
 
         {activeMainTab === "pending" && (
           <>
@@ -231,7 +197,7 @@ export const JobsPage: React.FC = () => {
                   key={job.id}
                   className="bg-[#1a1a1a] rounded-lg p-6 border border-gray-700"
                 >
-                  {job.type === "influencer" ? (
+                  {(
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                       {/* Influencer Info */}
                       <div className="flex flex-col items-center justify-center">
@@ -307,70 +273,6 @@ export const JobsPage: React.FC = () => {
                         ))}
                       </div>
                     </div>
-                  ) : (
-                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                      {/* Station Info */}
-                      <div className="flex flex-col items-center justify-center">
-                        <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-2">
-                          <div className="text-red-600 font-bold text-sm">
-                            fm 92.5
-                          </div>
-                        </div>
-                        <p className="text-white font-medium">
-                          {job.station?.name}
-                        </p>
-                      </div>
-
-                      {/* Song Info */}
-                      <div className="flex items-center gap-3">
-                        <div className="bg-white rounded-lg p-2 flex-shrink-0">
-                          <div className="w-16 h-16 flex items-center justify-center">
-                            <div className="text-red-600 font-bold text-xs">
-                              fm 92.5
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-white text-sm font-medium mb-1">
-                            {job.song?.title}
-                          </p>
-                          <div className="flex items-center gap-2 text-xs text-gray-400">
-                            <span>{job.song?.duration}</span>
-                            <span>{job.song?.format}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Presenters */}
-                      <div className="flex flex-col items-center justify-center">
-                        <div className="flex -space-x-2 mb-2">
-                          {job.presenters?.map((presenter, idx) => (
-                            <img
-                              key={idx}
-                              src={presenter.avatar}
-                              alt={presenter.name}
-                              className="w-12 h-12 rounded-full border-2 border-[#1a1a1a]"
-                            />
-                          ))}
-                        </div>
-                        <p className="text-xs text-gray-400">
-                          {job.presenters?.[0]?.name}
-                        </p>
-                      </div>
-
-                      {/* Date/Time and Description */}
-                      <div>
-                        <div className="text-right mb-3">
-                          <p className="text-white text-sm mb-1">{job.date}</p>
-                          <p className="text-gray-400 text-xs">{job.time}</p>
-                        </div>
-                        <div className="bg-[#2a2a2a] rounded-lg p-3 border border-[#A67102]">
-                          <p className="text-gray-300 text-xs">
-                            {job.description}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
                   )}
                 </div>
               ))}
@@ -380,73 +282,36 @@ export const JobsPage: React.FC = () => {
 
         {activeMainTab === "completed" && (
           <div className="space-y-4">
+            {completedJobs.length === 0 && (
+              <p className="text-gray-400">No completed jobs yet.</p>
+            )}
             {completedJobs.map((job) => (
               <div
                 key={job.id}
-                className="bg-[#1a1a1a] rounded-lg p-6 border border-gray-700"
+                className="bg-[#0D0B07] border border-gray-900 rounded-2xl p-5"
               >
-                <div className="text-center mb-4">
-                  <span className="inline-block bg-[#2a2a2a] text-white px-4 py-2 rounded-lg text-sm font-medium">
-                    Completed
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                  {/* Station Info */}
-                  <div className="flex flex-col items-center justify-center">
-                    <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-2">
-                      <div className="text-red-600 font-bold text-sm">
-                        fm 92.5
+                <div className="flex items-start gap-4 flex-wrap">
+                  <img
+                    src={job.influencer.avatar}
+                    alt={job.influencer.name}
+                    className="w-14 h-14 rounded-full object-cover"
+                  />
+                  <div className="flex-1 min-w-[220px]">
+                    <div className="flex justify-between items-start gap-3 flex-wrap">
+                      <div>
+                        <p className="text-white font-medium">{job.influencer.name}</p>
+                        <p className="text-gray-500 text-xs uppercase tracking-wide">
+                          {job.platform} &bull; {formatNaira(job.amount)}
+                        </p>
                       </div>
+                      <span className="text-xs text-gray-300">{job.status}</span>
                     </div>
-                    <p className="text-white font-medium">{job.station.name}</p>
-                  </div>
-
-                  {/* Song Info */}
-                  <div className="flex items-center gap-3">
-                    <div className="bg-white rounded-lg p-2 flex-shrink-0">
-                      <div className="w-16 h-16 flex items-center justify-center">
-                        <div className="text-red-600 font-bold text-xs">
-                          fm 92.5
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-white text-sm font-medium mb-1">
-                        {job.song.title}
+                    <p className="text-gray-400 text-sm mt-2">{job.description}</p>
+                    {job.songs.map((song, idx) => (
+                      <p key={idx} className="text-gray-500 text-xs mt-2">
+                        {song.title} &bull; {song.duration} &bull; {song.format}
                       </p>
-                      <div className="flex items-center gap-2 text-xs text-gray-400">
-                        <span>{job.song.duration}</span>
-                        <span>{job.song.format}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Presenters */}
-                  <div className="flex flex-col items-center justify-center">
-                    <div className="flex -space-x-2 mb-2">
-                      {job.presenters.map((presenter, idx) => (
-                        <img
-                          key={idx}
-                          src={presenter.avatar}
-                          alt={presenter.name}
-                          className="w-12 h-12 rounded-full border-2 border-[#1a1a1a]"
-                        />
-                      ))}
-                    </div>
-                    <p className="text-xs text-gray-400">
-                      {job.presenters[0].name}
-                    </p>
-                  </div>
-
-                  {/* Date/Time and Description */}
-                  <div>
-                    <div className="text-right mb-3">
-                      <p className="text-white text-sm mb-1">{job.date}</p>
-                      <p className="text-gray-400 text-xs">{job.time}</p>
-                    </div>
-                    <div className="bg-[#2a2a2a] rounded-lg p-3 border border-[#A67102]">
-                      <p className="text-gray-300 text-xs">{job.description}</p>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -456,7 +321,21 @@ export const JobsPage: React.FC = () => {
 
         {activeMainTab === "disputes" && (
           <div className="text-center py-12">
-            <p className="text-gray-400">No disputes at the moment</p>
+            {pendingJobs.length === 0 ? (
+              <p className="text-gray-400">No disputes at the moment</p>
+            ) : (
+              <div className="space-y-4">
+                {pendingJobs.map((job) => (
+                  <div key={job.id} className="bg-[#0D0B07] border border-gray-900 rounded-2xl p-5">
+                    <p className="text-white font-medium">{job.influencer.name}</p>
+                    <p className="text-gray-500 text-xs uppercase tracking-wide">
+                      {job.platform} &bull; {formatNaira(job.amount)}
+                    </p>
+                    <p className="text-gray-400 text-sm mt-2">{job.description}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
@@ -538,7 +417,11 @@ export const JobsPage: React.FC = () => {
                 communication and receipts
               </p>
               <div className="flex gap-4">
-                <button className="flex-1 px-6 py-3 bg-[#A67102] text-white rounded-lg hover:bg-[#8a5e02] transition-colors font-medium">
+                <button
+                  onClick={submitDispute}
+                  disabled={acting || !disputeReason.trim()}
+                  className="flex-1 px-6 py-3 bg-[#A67102] text-white rounded-lg hover:bg-[#8a5e02] transition-colors font-medium disabled:opacity-50"
+                >
                   Proceed to Email
                 </button>
                 <button

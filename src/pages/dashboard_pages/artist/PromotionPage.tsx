@@ -10,6 +10,21 @@ import {
   Trash2,
   Search,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import {
+  createPromotionRequest,
+  fetchInfluencers,
+} from "@/services/artist/promotions";
+import type { InfluencerListItem } from "@/types/artist/promotion";
+import { getUserMedia } from "@/services/media";
+import type { Media } from "@/types/media";
+import { apiErrorMessage, formatNaira } from "@/lib/influencer";
 
 
 export const PromotionPage: React.FC = () => {
@@ -17,7 +32,104 @@ export const PromotionPage: React.FC = () => {
     "audio" | "video" | "influencer"
   >("audio");
   const [selections, setSelections] = React.useState<number[]>([1]);
-  const [selectedSocials, setSelectedSocials] = React.useState<string[]>([]);
+  const [selectedPlatform, setSelectedPlatform] = React.useState<string>("");
+
+  // --- influencer directory ---
+  const [influencers, setInfluencers] = React.useState<InfluencerListItem[]>([]);
+  const [infLoading, setInfLoading] = React.useState(false);
+  const [infError, setInfError] = React.useState<string | null>(null);
+  const [search, setSearch] = React.useState("");
+  const [page, setPage] = React.useState(1);
+  const [totalPages, setTotalPages] = React.useState(1);
+
+  // --- the artist's own uploads, to attach to a request ---
+  const [media, setMedia] = React.useState<Media[]>([]);
+  const [selectedMediaId, setSelectedMediaId] = React.useState<string>("");
+
+  // --- hire dialog ---
+  const [hiring, setHiring] = React.useState<InfluencerListItem | null>(null);
+  const [amount, setAmount] = React.useState("");
+  const [message, setMessage] = React.useState("");
+  const [submitting, setSubmitting] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = React.useState<string | null>(null);
+
+  // Debounced so typing in the search box does not fire a request per keystroke
+  React.useEffect(() => {
+    if (activeTab !== "influencer") return;
+    const t = setTimeout(async () => {
+      try {
+        setInfLoading(true);
+        setInfError(null);
+        const res = await fetchInfluencers({
+          search: search.trim() || undefined,
+          platform: selectedPlatform || undefined,
+          page,
+          limit: 20,
+        });
+        setInfluencers(res.data);
+        setTotalPages(res.totalPages);
+      } catch (err) {
+        setInfError(apiErrorMessage(err, "Could not load influencers"));
+      } finally {
+        setInfLoading(false);
+      }
+    }, 350);
+    return () => clearTimeout(t);
+  }, [activeTab, search, selectedPlatform, page]);
+
+  // Changing the filters restarts paging
+  React.useEffect(() => {
+    setPage(1);
+  }, [search, selectedPlatform]);
+
+  React.useEffect(() => {
+    getUserMedia()
+      .then(setMedia)
+      .catch(() => setMedia([]));
+  }, []);
+
+  const openHire = (influencer: InfluencerListItem) => {
+    setHiring(influencer);
+    setAmount(influencer.rate ? String(influencer.rate) : "");
+    setMessage("");
+    setSubmitError(null);
+    setSubmitSuccess(null);
+  };
+
+  const submitHire = async () => {
+    if (!hiring) return;
+    const value = Number(amount);
+
+    if (!selectedPlatform) {
+      return setSubmitError("Pick a platform above before sending a request.");
+    }
+    if (!message.trim()) {
+      return setSubmitError("Tell the influencer what you want.");
+    }
+    if (!value || value <= 0) {
+      return setSubmitError("Enter a valid amount.");
+    }
+
+    try {
+      setSubmitting(true);
+      setSubmitError(null);
+      await createPromotionRequest(hiring.id, {
+        platform: selectedPlatform,
+        message: message.trim(),
+        amount: value,
+        mediaId: selectedMediaId || null,
+      });
+      setSubmitSuccess(
+        `Request sent to ${hiring.username}. ${formatNaira(value)} is held until the job completes.`
+      );
+      setHiring(null);
+    } catch (err) {
+      setSubmitError(apiErrorMessage(err, "Could not send the request"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const addSelection = () => {
     setSelections([...selections, selections.length + 1]);
@@ -27,12 +139,9 @@ export const PromotionPage: React.FC = () => {
     setSelections(selections.filter((s) => s !== id));
   };
 
-  const toggleSocial = (social: string) => {
-    if (selectedSocials.includes(social)) {
-      setSelectedSocials(selectedSocials.filter((s) => s !== social));
-    } else {
-      setSelectedSocials([...selectedSocials, social]);
-    }
+  // A promotion request targets exactly one platform, so this behaves as a radio
+  const selectPlatform = (platform: string) => {
+    setSelectedPlatform((current) => (current === platform ? "" : platform));
   };
 
   const socialPlatforms = [
@@ -44,43 +153,6 @@ export const PromotionPage: React.FC = () => {
     { id: "twitter", icon: "twitter", color: "#3a3a3a" },
   ];
 
-  const influencers = [
-    {
-      id: 1,
-      name: "Peter Nneamaka C.",
-      followers: "346K",
-      price: "₦20,000",
-      avatar: "https://i.pravatar.cc/60?img=1",
-    },
-    {
-      id: 2,
-      name: "Peter Nneamaka C.",
-      followers: "346K",
-      price: "₦20,000",
-      avatar: "https://i.pravatar.cc/60?img=2",
-    },
-    {
-      id: 3,
-      name: "Peter Nneamaka C.",
-      followers: "346K",
-      price: "₦20,000",
-      avatar: "https://i.pravatar.cc/60?img=3",
-    },
-    {
-      id: 4,
-      name: "Peter Nneamaka C.",
-      followers: "346K",
-      price: "₦20,000",
-      avatar: "https://i.pravatar.cc/60?img=4",
-    },
-    {
-      id: 5,
-      name: "Peter Nneamaka C.",
-      followers: "346K",
-      price: "₦20,000",
-      avatar: "https://i.pravatar.cc/60?img=5",
-    },
-  ];
 
   const tabs = [
     { id: "audio", label: "Audio" },
@@ -355,34 +427,36 @@ export const PromotionPage: React.FC = () => {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-semibold">Influencer Promotion</h2>
-              <p className="text-2xl font-semibold">₦630,000</p>
+              <p className="text-sm text-gray-400">
+                {influencers.length > 0 && `${influencers.length} available`}
+              </p>
             </div>
 
-            {/* Video and Music Selection */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">
-                  Video
-                </label>
-                <div className="relative">
-                  <Video className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <select className="w-full bg-transparent border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-gray-400 focus:outline-none focus:border-[#A67102]">
-                    <option>Select music video</option>
-                  </select>
-                </div>
+            {/* Track to promote — the artist's own approved uploads */}
+            <div className="mb-6">
+              <label className="block text-sm text-gray-400 mb-2">
+                Track (optional)
+              </label>
+              <div className="relative">
+                <Music className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+                <select
+                  value={selectedMediaId}
+                  onChange={(e) => setSelectedMediaId(e.target.value)}
+                  className="w-full bg-transparent border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-gray-400 focus:outline-none focus:border-[#A67102]"
+                >
+                  <option value="">No track attached</option>
+                  {media.map((m) => (
+                    <option key={m.id} value={m.id} className="bg-[#1a1a1a]">
+                      {m.title || "Untitled"} ({m.type})
+                    </option>
+                  ))}
+                </select>
               </div>
-
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">
-                  Music
-                </label>
-                <div className="relative">
-                  <Music className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <select className="w-full bg-transparent border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-gray-400 focus:outline-none focus:border-[#A67102]">
-                    <option>Select music audio</option>
-                  </select>
-                </div>
-              </div>
+              {media.length === 0 && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Upload a track on the Media page to attach one.
+                </p>
+              )}
             </div>
 
             {/* Social Media Icons */}
@@ -390,12 +464,13 @@ export const PromotionPage: React.FC = () => {
               {socialPlatforms.map((platform) => (
                 <button
                   key={platform.id}
-                  onClick={() => toggleSocial(platform.id)}
-                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${selectedSocials.includes(platform.id) ||
-                      platform.id === "instagram"
+                  onClick={() => selectPlatform(platform.id)}
+                  title={platform.id}
+                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${
+                    selectedPlatform === platform.id
                       ? "bg-[#A67102]"
                       : "bg-[#3a3a3a] hover:bg-[#4a4a4a]"
-                    }`}
+                  }`}
                 >
                   {platform.icon === "instagram" && (
                     <svg
@@ -460,6 +535,8 @@ export const PromotionPage: React.FC = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#A67102]" />
               <input
                 type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search promoter here"
                 className="w-full bg-[#2a2a2a] border border-gray-700 rounded-lg pl-10 pr-4 py-3 text-white placeholder-[#A67102] focus:outline-none focus:border-[#A67102]"
               />
@@ -477,29 +554,152 @@ export const PromotionPage: React.FC = () => {
             </div>
 
             {/* Influencer List */}
-            <div className="space-y-3">
-              {influencers.map((influencer) => (
-                <div
-                  key={influencer.id}
-                  className="grid grid-cols-3 gap-4 items-center bg-[#1a1a1a] rounded-lg p-4 border border-gray-700 hover:border-[#A67102] transition-colors cursor-pointer"
+            {infError && (
+              <p className="text-red-400 text-sm mb-3" role="alert">{infError}</p>
+            )}
+            {submitSuccess && (
+              <p className="text-green-500 text-sm mb-3">{submitSuccess}</p>
+            )}
+
+            {infLoading ? (
+              <p className="text-gray-400">Loading influencers...</p>
+            ) : influencers.length === 0 ? (
+              <p className="text-gray-400">
+                No influencers found{selectedPlatform ? ` on ${selectedPlatform}` : ""}.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {influencers.map((influencer) => (
+                  <button
+                    type="button"
+                    key={influencer.id}
+                    onClick={() => openHire(influencer)}
+                    className="w-full grid grid-cols-3 gap-4 items-center bg-[#1a1a1a] rounded-lg p-4 border border-gray-700 hover:border-[#A67102] transition-colors cursor-pointer text-left"
+                  >
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={
+                          influencer.profilePicture ||
+                          `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                            influencer.firstname + " " + influencer.surname
+                          )}&background=A67102&color=fff`
+                        }
+                        alt={influencer.username}
+                        className="w-12 h-12 rounded-full object-cover"
+                      />
+                      <div>
+                        <p className="text-white font-medium">
+                          {influencer.firstname} {influencer.surname}
+                        </p>
+                        <p className="text-gray-500 text-xs">@{influencer.username}</p>
+                      </div>
+                    </div>
+                    <p className="text-white text-center">
+                      {influencer.followerCount
+                        ? influencer.followerCount.toLocaleString("en-NG")
+                        : "—"}
+                    </p>
+                    <p className="text-white font-semibold text-right">
+                      {influencer.rate ? formatNaira(influencer.rate) : "Negotiable"}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-4 mt-6">
+                <Button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="bg-neutral-800 border border-neutral-700 disabled:opacity-40"
                 >
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={influencer.avatar}
-                      alt={influencer.name}
-                      className="w-12 h-12 rounded-full"
+                  Previous
+                </Button>
+                <span className="text-white text-sm">
+                  Page {page} of {totalPages}
+                </span>
+                <Button
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="bg-neutral-800 border border-neutral-700 disabled:opacity-40"
+                >
+                  Next
+                </Button>
+              </div>
+            )}
+
+            {/* Hire dialog */}
+            <Dialog open={!!hiring} onOpenChange={(open) => !open && setHiring(null)}>
+              <DialogContent className="max-w-[500px] border-0 bg-black text-white shadow-lg shadow-white/20">
+                <DialogHeader className="pt-4">
+                  <h2 className="text-xl">
+                    Hire {hiring?.firstname} {hiring?.surname}
+                  </h2>
+                  <p className="text-sm text-gray-400">
+                    Promoting on{" "}
+                    <span className="text-[#A67102]">
+                      {selectedPlatform || "— pick a platform above"}
+                    </span>
+                  </p>
+                </DialogHeader>
+
+                <div className="space-y-4 mt-2">
+                  <div className="flex flex-col">
+                    <label htmlFor="promo-amount" className="text-sm mb-1">
+                      Amount
+                    </label>
+                    <input
+                      id="promo-amount"
+                      type="number"
+                      min={1}
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                      className="p-2 bg-zinc-900 border border-zinc-700 rounded-md text-white"
+                      placeholder="Enter amount"
                     />
-                    <p className="text-white font-medium">{influencer.name}</p>
+                    {hiring?.rate ? (
+                      <span className="text-xs text-gray-400 mt-1">
+                        Their asking price is {formatNaira(hiring.rate)}
+                      </span>
+                    ) : null}
                   </div>
-                  <p className="text-white text-center">
-                    {influencer.followers}
+
+                  <div className="flex flex-col">
+                    <label htmlFor="promo-message" className="text-sm mb-1">
+                      Message
+                    </label>
+                    <textarea
+                      id="promo-message"
+                      rows={4}
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      className="p-2 bg-zinc-900 border border-zinc-700 rounded-md text-white resize-none"
+                      placeholder="Tell them what you want..."
+                    />
+                  </div>
+
+                  <p className="text-xs text-gray-400">
+                    The amount is taken from your wallet now and held until the job is
+                    completed. It is refunded if the influencer declines.
                   </p>
-                  <p className="text-white font-semibold text-right">
-                    {influencer.price}
-                  </p>
+
+                  {submitError && (
+                    <p className="text-red-400 text-sm" role="alert">{submitError}</p>
+                  )}
                 </div>
-              ))}
-            </div>
+
+                <DialogFooter>
+                  <Button
+                    disabled={submitting}
+                    onClick={submitHire}
+                    className="w-full bg-[#A67102] h-[48px] disabled:opacity-50"
+                  >
+                    {submitting ? "Sending..." : "Send request"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </div>
         )}
       </div>

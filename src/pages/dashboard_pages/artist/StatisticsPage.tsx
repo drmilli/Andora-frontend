@@ -9,6 +9,10 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Music, User, Download, ThumbsUp } from "lucide-react";
+import { useEffect, useState } from "react";
+import type { ArtistStatistics } from "@/types/artist/statistics";
+import { fetchArtistStatistics } from "@/services/artist/statistics";
+import { apiErrorMessage } from "@/lib/influencer";
 
 export const StatisticsPage: React.FC = () => {
   const [selectedLocation, setSelectedLocation] = React.useState<{
@@ -19,57 +23,61 @@ export const StatisticsPage: React.FC = () => {
     downloads: number;
   } | null>(null);
 
-  const audienceLocations = [
-    {
-      name: "Nigeria",
-      count: 20000,
-      streams: 10000,
-      likes: 5000,
-      downloads: 3000,
-    },
-    { name: "US", count: 5000, streams: 10000, likes: 5000, downloads: 3000 },
-    {
-      name: "Ghana",
-      count: 2000,
-      streams: 10000,
-      likes: 5000,
-      downloads: 3000,
-    },
-  ];
+  const [stats, setStats] = useState<ArtistStatistics | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const topSongs = [
-    { title: "Smoke by Runty", streams: 5000, likes: 500, downloads: 176 },
-    { title: "Smoke by Runty", streams: 5000, likes: 500, downloads: 176 },
-    { title: "Smoke by Runty", streams: 5000, likes: 500, downloads: 176 },
-    { title: "Smoke by Runty", streams: 5000, likes: 500, downloads: 176 },
-    { title: "Smoke by Runty", streams: 5000, likes: 500, downloads: 176 },
-  ];
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        setStats(await fetchArtistStatistics(12));
+      } catch (err) {
+        setError(apiErrorMessage(err, "Could not load your statistics"));
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
 
-  const platforms = [
-    { name: "Spotify", streams: 5000, likes: 500, downloads: 176 },
-    { name: "Apple Music", streams: 5000, likes: 500, downloads: 176 },
-    { name: "Boom Play", streams: 5000, likes: 500, downloads: 176 },
-    { name: "Play Music", streams: 5000, likes: 500, downloads: 176 },
-    { name: "Spotify", streams: 5000, likes: 500, downloads: 176 },
-    { name: "Spotify", streams: 5000, likes: 500, downloads: 176 },
-    { name: "Spotify", streams: 5000, likes: 500, downloads: 176 },
-    { name: "Spotify", streams: 5000, likes: 500, downloads: 176 },
-  ];
+  // Real per-track counters, highest streams first
+  const topSongs = (stats?.tracks ?? []).slice(0, 5).map((t) => ({
+    title: t.title ?? "Untitled",
+    streams: t.streams,
+    likes: t.likes,
+    downloads: t.downloads,
+  }));
 
-  const streamData = [
-    { month: "Jan", value: 400 },
-    { month: "Feb", value: 420 },
-    { month: "Mar", value: 410 },
-    { month: "Apr", value: 430 },
-    { month: "May", value: 450 },
-    { month: "Jun", value: 480 },
-    { month: "Jul", value: 500 },
-    { month: "Aug", value: 520 },
-    { month: "Sep", value: 540 },
-    { month: "Oct", value: 550 },
-    { month: "Nov", value: 570 },
-    { month: "Dec", value: 600 },
-  ];
+  const streamData = (stats?.monthly ?? []).map((m) => ({
+    month: m.month,
+    value: m.plays,
+  }));
+
+  // Audience geography and per-DSP figures need listener-location tracking and
+  // Spotify/Apple integrations, neither of which exists yet. Showing empty
+  // beats showing invented numbers.
+  const audienceLocations: {
+    name: string;
+    count: number;
+    streams: number;
+    likes: number;
+    downloads: number;
+  }[] = [];
+  const platforms: { name: string; streams: number; likes: number; downloads: number }[] = [];
+
+  if (loading) {
+    return <p className="text-white p-4">Loading your statistics...</p>;
+  }
+
+  if (error) {
+    return (
+      <p className="text-red-400 p-4 text-sm" role="alert">
+        {error}
+      </p>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white p-4">
@@ -162,7 +170,10 @@ export const StatisticsPage: React.FC = () => {
           <div className="bg-[#1a1a1a] rounded-lg p-4">
             <h2 className="text-lg font-semibold mb-4">Top Songs</h2>
             <div className="space-y-2">
-              {topSongs.map((song, index) => (
+              {topSongs.length === 0 && (
+              <p className="text-gray-500 text-sm">No plays recorded yet.</p>
+            )}
+            {topSongs.map((song, index) => (
                 <div
                   key={index}
                   className="bg-[#2a2a2a] rounded-lg p-3 flex items-center gap-3 border border-[#3a3a3a] hover:border-[#A67102] transition-colors"
@@ -188,7 +199,10 @@ export const StatisticsPage: React.FC = () => {
           <div className="bg-[#1a1a1a] rounded-lg p-4">
             <h2 className="text-lg font-semibold mb-4">Audience by Location</h2>
             <div className="space-y-2">
-              {audienceLocations.map((location, index) => (
+              {audienceLocations.length === 0 && (
+              <p className="text-gray-500 text-sm">Listener location tracking is not set up yet.</p>
+            )}
+            {audienceLocations.map((location, index) => (
                 <div
                   key={index}
                   onClick={() => setSelectedLocation(location)}
@@ -268,7 +282,10 @@ export const StatisticsPage: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                {platforms.map((platform, index) => (
+                {platforms.length === 0 && (
+              <p className="text-gray-500 text-sm">Streaming-platform figures need Spotify / Apple Music integrations.</p>
+            )}
+            {platforms.map((platform, index) => (
                   <div
                     key={index}
                     className="bg-[#1a1a1a] rounded-lg p-3 flex items-center gap-3 border border-[#2a2a2a]"

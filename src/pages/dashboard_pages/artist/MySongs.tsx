@@ -1,6 +1,6 @@
 import { CloudUpload, MoreVertical, Upload, Music, ChevronRight, Play } from "lucide-react";
 import * as React from "react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Dialog,
@@ -8,8 +8,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { initialTracks } from "@/data/mockTracks";
 import type { TrackDetail } from "@/types/artist/song";
+import { getUserMedia, uploadMedia } from "@/services/media";
+import { apiErrorMessage } from "@/lib/influencer";
 
 const statusStyles: Record<TrackDetail["status"], string> = {
   Active: "bg-[#A67102]/20 text-[#A67102] border border-[#A67102]/30",
@@ -19,7 +20,51 @@ const statusStyles: Record<TrackDetail["status"], string> = {
 
 export const MySongs: React.FC = () => {
   const navigate = useNavigate();
-  const [tracks, setTracks] = useState<TrackDetail[]>(initialTracks);
+  const [tracks, setTracks] = useState<TrackDetail[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [audioFile, setAudioFile] = useState<File | null>(null);
+
+  // Map a backend Media row onto the row shape this table renders.
+  // Fields the API does not store (bpm, isrc, label, ...) stay empty rather
+  // than being invented.
+  const toTrack = React.useCallback(
+    (m: Awaited<ReturnType<typeof getUserMedia>>[number]): TrackDetail =>
+      ({
+        id: m.id,
+        name: m.title || "Untitled",
+        artist: "",
+        status: m.isApproved ? "Active" : "Not Active",
+        campaigns: m._count?.promotionRequests ?? 0,
+        uploaded: new Date(m.createdAt).toISOString().slice(0, 10),
+        image: "",
+        genre: m.genre || (m.type ?? ""),
+        duration: m.duration
+          ? `${Math.floor(m.duration / 60)}:${String(Math.floor(m.duration % 60)).padStart(2, "0")}`
+          : "",
+        streams: m.plays ?? 0,
+        audioUrl: m.fileUrl,
+      } as unknown as TrackDetail),
+    []
+  );
+
+  const loadTracks = React.useCallback(async () => {
+    try {
+      setLoading(true);
+      setLoadError(null);
+      const media = await getUserMedia();
+      setTracks(media.map(toTrack));
+    } catch (err) {
+      setLoadError(apiErrorMessage(err, "Could not load your songs"));
+    } finally {
+      setLoading(false);
+    }
+  }, [toTrack]);
+
+  useEffect(() => {
+    loadTracks();
+  }, [loadTracks]);
   const [openMenuId, setOpenMenuId] = React.useState<string | null>(null);
   
   // Upload modal state
@@ -40,6 +85,7 @@ export const MySongs: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     setAudioFileName(file.name);
+    setAudioFile(file);
     if (!newSongTitle) {
       setNewSongTitle(file.name.replace(/\.[^/.]+$/, ""));
     }
@@ -59,54 +105,27 @@ export const MySongs: React.FC = () => {
     setOpen(true);
   }
 
-  const handleUploadSubmit = (e: React.FormEvent) => {
+  const handleUploadSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!newSongTitle) return;
+    if (!newSongTitle || !audioFile) return;
 
-    const newTrack: TrackDetail = {
-      id: String(Date.now()),
-      name: newSongTitle,
-      artist: "Runty",
-      status: "Active",
-      campaigns: 0,
-      uploaded: new Date().toISOString().split("T")[0],
-      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop&q=80",
-      genre: newSongGenre || "Afrobeats",
-      duration: "3:30",
-      bpm: 112,
-      musicalKey: "C Minor",
-      isrc: `NG-ADR-26-00${Math.floor(100 + Math.random() * 900)}`,
-      upc: `19871100${Math.floor(1000 + Math.random() * 9000)}`,
-      releaseDate: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-      album: "Singles & Unreleased",
-      label: "Audora Music Group",
-      explicit: false,
-      fileSize: "38.5 MB",
-      fileFormat: "WAV 24-bit / 48.0 kHz",
-      streams: 0,
-      radioPlays: 0,
-      tvPlays: 0,
-      influencerPosts: 0,
-      totalReach: "0",
-      revenue: "₦ 0.00",
-      description: "Freshly uploaded audio master ready for distribution and campaign push.",
-      credits: {
-        producers: ["Self-Produced"],
-        writers: ["Runty"],
-      },
-      platforms: [],
-      campaignsList: [],
-      radioSpins: [],
-      streamHistory: [{ date: "Today", streams: 0, radio: 0 }],
-      lyrics: "[Lyrics pending]",
-    };
-
-    setTracks([newTrack, ...tracks]);
-    setOpen(false);
-    setNewSongTitle("");
-    setNewSongGenre("");
-    setAudioFileName("");
-    setCoverFileName("");
+    try {
+      setUploading(true);
+      setLoadError(null);
+      await uploadMedia(audioFile, newSongTitle, undefined, newSongGenre || undefined);
+      // Re-read so the row carries the server's id, status and counters
+      await loadTracks();
+      setOpen(false);
+      setNewSongTitle("");
+      setNewSongGenre("");
+      setAudioFileName("");
+      setCoverFileName("");
+      setAudioFile(null);
+    } catch (err) {
+      setLoadError(apiErrorMessage(err, "Upload failed"));
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleRowClick = (trackId: string) => {
@@ -253,9 +272,10 @@ export const MySongs: React.FC = () => {
 
                 <button
                   type="submit"
-                  className="w-full bg-[#A67102] hover:bg-[#8a5e02] text-white font-semibold py-2.5 rounded-xl text-sm transition-colors mt-2"
+                  disabled={uploading || !newSongTitle || !audioFile}
+                  className="w-full bg-[#A67102] hover:bg-[#8a5e02] disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors mt-2"
                 >
-                  Save & Add Song
+                  {uploading ? "Uploading..." : "Save & Add Song"}
                 </button>
               </form>
             </div>
@@ -279,6 +299,15 @@ export const MySongs: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-900/60">
+              {loading && (
+                <tr><td colSpan={7} className="px-6 py-6 text-gray-400 text-sm">Loading your songs...</td></tr>
+              )}
+              {loadError && (
+                <tr><td colSpan={7} className="px-6 py-6 text-red-400 text-sm">{loadError}</td></tr>
+              )}
+              {!loading && !loadError && tracks.length === 0 && (
+                <tr><td colSpan={7} className="px-6 py-6 text-gray-400 text-sm">No songs uploaded yet.</td></tr>
+              )}
               {tracks.map((track) => (
                 <tr
                   key={track.id}

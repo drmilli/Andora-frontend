@@ -15,77 +15,52 @@ import {
 
 } from "@/components/ui/carousel";
 
-import { Download,  NotebookPen } from "lucide-react";
+import { Download, NotebookPen } from "lucide-react";
+import { useEffect, useState } from "react";
+import type { GetAllTransactionsResponse } from "@/types/transactions";
+import type { AdminOverview } from "@/types/admin/admin";
+import { fetchAllTransactions, fetchOverview } from "@/services/admin/adminService";
+import { apiErrorMessage, formatNaira } from "@/lib/influencer";
 
 function AdminWallet() {
-  const summaries = [
-    {
-      id: 1,
-      date: "03/06/24",
-      customerName: "Abbey Thompson",
-      bankName: "Coin Purchase",
-      amount: "50,000.00",
-      alert: "Debit",
-      time: "3:40 PM",
-      status: "Successful",
-      type: "Buy Coins",
-    },
-    {
-      id: 2,
-      date: "12/07/24",
-      customerName: "Michael Daniels",
-      bankName: "Zenith Bank",
-      amount: "15,200.00",
-      alert: "Credit",
-      time: "11:22 AM",
-      status: "Successful",
-      type: "Fund",
-    },
-    {
-      id: 3,
-      date: "25/08/24",
-      customerName: "Sarah Williams",
-      bankName: "GTBank",
-      amount: "120,000.00",
-      alert: "Debit",
-      time: "9:15 AM",
-      status: "Pending",
-      type: "Withdrawal",
-    },
-    {
-      id: 4,
-      date: "01/09/24",
-      customerName: "David Johnson",
-      bankName: "Kuda Bank",
-      amount: "8,500.00",
-      alert: "Credit",
-      time: "7:48 PM",
-      status: "Successful",
-      type: "Fund",
-    },
-    {
-      id: 5,
-      date: "18/10/24",
-      customerName: "Emily Roberts",
-      bankName: "Opay Transfer",
-      amount: "32,900.00",
-      alert: "Debit",
-      time: "2:03 PM",
-      status: "Failed",
-      type: "Withdrawal",
-    },
-    {
-      id: 6,
-      date: "29/11/24",
-      customerName: "Jason Carter",
-      bankName: "First Bank",
-      amount: "250,000.00",
-      alert: "Debit",
-      time: "10:56 AM",
-      status: "Successful",
-      type: "Withdrawal",
-    },
-  ];
+  const [transactions, setTransactions] = useState<GetAllTransactionsResponse[]>([]);
+  const [overview, setOverview] = useState<AdminOverview | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const [tx, ov] = await Promise.all([fetchAllTransactions(), fetchOverview()]);
+        setTransactions(Array.isArray(tx) ? (tx as GetAllTransactionsResponse[]) : []);
+        setOverview(ov);
+      } catch (err) {
+        setError(apiErrorMessage(err, "Could not load wallet data"));
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  // Shape each transaction into the row the table already renders
+  const summaries = transactions.map((t) => {
+    const d = new Date(t.createdAt);
+    return {
+      id: t.id,
+      date: d.toLocaleDateString("en-GB"),
+      time: d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }),
+      customerName: t.user?.username ?? "—",
+      bankName: t.reference ?? "—",
+      amount: t.amount.toLocaleString("en-NG", { minimumFractionDigits: 2 }),
+      alert: t.type === "withdrawal" || t.type === "purchase" ? "Debit" : "Credit",
+      status:
+        t.status === "success" ? "Successful" : t.status === "failed" ? "Failed" : "Pending",
+      type: t.type,
+    };
+  });
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Successful":
@@ -109,10 +84,10 @@ function AdminWallet() {
         <Card className="h-[164px] border-0 bg-[#497718]">
           <CardContent className="text-white">
             <div className="flex justify-between">
-              <p>Available Balance</p>
+              <p>Transaction Volume</p>
               <span>30%</span>
             </div>
-            <p className="mt-10 text-3xl">₦1,164,500</p>
+            <p className="mt-10 text-3xl">{formatNaira(overview?.transactions.volume)}</p>
           </CardContent>
         </Card>
       </CarouselItem>
@@ -121,10 +96,10 @@ function AdminWallet() {
         <Card className="h-[164px] border-0 bg-[#A67102]">
           <CardContent className="text-white">
             <div className="flex justify-between">
-              <p>Pending Balance</p>
+              <p>Pending Withdrawals</p>
               <span>30%</span>
             </div>
-            <p className="mt-10 text-3xl">₦104,500</p>
+            <p className="mt-10 text-3xl">{formatNaira(overview?.withdrawals.pending.amount)}</p>
           </CardContent>
         </Card>
       </CarouselItem>
@@ -134,8 +109,8 @@ function AdminWallet() {
           <CardContent className="text-white">
             <div className="block">
               <div className="float-right">
-                <p className="text-right text-sm mb-3">Total Made</p>
-                <span>₦22,004,500</span>
+                <p className="text-right text-sm mb-3">Approved Withdrawals</p>
+                <span>{formatNaira(overview?.withdrawals.approved.amount)}</span>
               </div>
   <Dialog>
                 <DialogTrigger asChild>
@@ -226,6 +201,11 @@ function AdminWallet() {
   <div className="min-w-[600px] md:min-w-full max-w-6xl mx-auto">
     <table className="w-full">
       <tbody>
+        {loading && <p className="text-white">Loading transactions...</p>}
+        {error && <p className="text-red-400 text-sm" role="alert">{error}</p>}
+        {!loading && !error && summaries.length === 0 && (
+          <p className="text-gray-400">No transactions yet.</p>
+        )}
         {summaries.map((summary, index) => (
           <tr
             key={summary.id}
