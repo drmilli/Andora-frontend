@@ -316,13 +316,11 @@ console.log(loading)
 
               </div>
             )}
-
-            {/* ---- STEP 1: Choose method ---- */}
             {step === "method" && (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
 
                 {/* Select existing song */}
-                <button
+                {/* <button
                   onClick={() => setStep("selectSong")}
                   className="border border-gray-800 hover:border-[#A67102] rounded-xl p-4 text-left transition-colors"
                 >
@@ -335,7 +333,7 @@ console.log(loading)
                   <p className="text-gray-500 text-xs">
                     Promote a track you've already uploaded.
                   </p>
-                </button>
+                </button> */}
 
                 {/* Upload new song */}
                 <button
@@ -352,7 +350,6 @@ console.log(loading)
               </div>
             )}
 
-            {/* ---- STEP 2: Select a song ---- */}
             {step === "selectSong" && (
               <div className="flex flex-col gap-3 max-h-80 overflow-y-auto pr-1">
                 {medias.map((media) => (
@@ -377,7 +374,7 @@ console.log(loading)
               </div>
             )}
 
-            {/* ---- STEP 3: Choose package ---- */}
+           
             {step === "package" && (
               <div className="flex flex-col gap-3">
                 {packages.map((pkg) => (

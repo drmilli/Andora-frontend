@@ -5,6 +5,7 @@ import { AuthInput } from "../components/auth/AuthInput";
 import { AuthButton } from "../components/auth/AuthButton";
 import { SocialButton } from "../components/auth/SocialButton";
 import { useAuth } from "../hooks/auth/useArtistAuth";
+import { CountrySelect } from "@/components/auth/CountrySelect";
 
 
 export const SignupPage: React.FC = () => {
@@ -107,7 +108,20 @@ export const SignupPage: React.FC = () => {
           type="text"
           placeholder="Enter promo code"
         />
-
+         <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
+           <CountrySelect
+             label="Budget"
+             name="budget"
+             placeholder="Select Budget"
+             required
+           />
+           <CountrySelect
+             label="Genre"
+             name="genre"
+             placeholder="Select Genre"
+             required
+           />
+         </div>
         <label className="flex items-start gap-3 text-xs font-medium text-white/70">
           <input
             type="checkbox"

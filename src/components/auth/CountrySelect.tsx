@@ -1,28 +1,47 @@
-import React, { useState, useEffect } from "react";
-
+import React, { useState, useEffect, useMemo } from "react";
 import { GetAllCountries } from "@/services/clients/country";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 export interface SelectOption {
   name: string;
   code?: string;
+  flag?: string;
 }
 
-interface CountrySelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+export interface CountrySelectProps {
   label?: string;
   name?: string;
   placeholder?: string;
   options?: SelectOption[];
+  defaultValue?: string;
+  value?: string;
+  required?: boolean;
+  disabled?: boolean;
+  className?: string;
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onValueChange?: (value: string) => void;
 }
 
+export const getFlagEmoji = (code?: string): string | undefined => {
+  if (!code || code.length !== 2) return undefined;
+  return String.fromCodePoint(...code.toUpperCase().split("").map((c) => 127397 + c.charCodeAt(0)));
+};
+
 const DEFAULT_COUNTRIES: SelectOption[] = [
-  { name: "Canada", code: "CA" },
-  { name: "Ghana", code: "GH" },
-  { name: "Kenya", code: "KE" },
-  { name: "Nigeria", code: "NG" },
-  { name: "South Africa", code: "ZA" },
-  { name: "United Kingdom", code: "GB" },
-  { name: "United States", code: "US" },
+  { name: "Canada", code: "CA", flag: "🇨🇦" },
+  { name: "Ghana", code: "GH", flag: "🇬🇭" },
+  { name: "Kenya", code: "KE", flag: "🇰🇪" },
+  { name: "Nigeria", code: "NG", flag: "🇳🇬" },
+  { name: "South Africa", code: "ZA", flag: "🇿🇦" },
+  { name: "United Kingdom", code: "GB", flag: "🇬🇧" },
+  { name: "United States", code: "US", flag: "🇺🇸" },
 ];
 
 const PLATFORM_LIST: SelectOption[] = [
@@ -34,6 +53,22 @@ const PLATFORM_LIST: SelectOption[] = [
   { name: "LinkedIn" },
   { name: "Snapchat" },
   { name: "WhatsApp" },
+];
+
+const BUDGETS: SelectOption[] = [
+  { name: "Less than N10,000" },
+  { name: "N10,000 - N50,000" },
+  { name: "N50,000 - N100,000" },
+  { name: "N100,000 - N500,000" },
+  { name: "More than N500,000" },
+];
+
+const GENRES: SelectOption[] = [
+  { name: "Pop" },
+  { name: "Hip-Hop" },
+  { name: "R&B" },
+  { name: "Rock" },
+  { name: "Electronic" },
 ];
 
 const ENGAGEMENT_RATES: SelectOption[] = [
@@ -49,94 +84,99 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
   name,
   placeholder,
   className,
-  defaultValue = "",
+  value,
+  defaultValue,
   options: customOptions,
-  onChange,
-  ...props
+
+  disabled,
+  required,
 }) => {
-  const [countries, setCountries] = useState<SelectOption[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [countries, setCountries] = useState<SelectOption[]>(DEFAULT_COUNTRIES);
+  const [internalValue, setInternalValue] = useState<string | undefined>(value ?? defaultValue);
 
   const isCountrySelect = label.toLowerCase().includes("country") && !customOptions;
 
-  // --- FETCH COUNTRIES FROM API VIA GetAllCountries SERVICE ---
   useEffect(() => {
-    if (!isCountrySelect) {
-      setLoading(false);
-      return;
-    }
+    if (value !== undefined) setInternalValue(value);
+  }, [value]);
 
-    const fetchCountries = async () => {
-      try {
-        setLoading(true);
-        const data = await GetAllCountries();
-        console.log("data",data)
+useEffect(() => {
+  if (!isCountrySelect) return;
 
-        // Sort countries alphabetically
-        data.sort((a:any, b:any) => a.name.localeCompare(b.name));
+  GetAllCountries()
+    .then((data) => {
+      if (!Array.isArray(data) || data.length === 0) return;
 
-        setCountries(data.length > 0 ? data : DEFAULT_COUNTRIES);
-      } catch (error) {
-        console.error("Error fetching countries via API service:", error);
-        setCountries(DEFAULT_COUNTRIES);
-      } finally {
-        setLoading(false);
-      }
-    };
+      const list = data.map((country: any) => ({
+        name: country.name?.common || country.name || "",
+        code: country.cca2 || country.alpha2Code || country.code,
+        flag: country.flag || getFlagEmoji(
+          country.cca2 || country.alpha2Code || country.code
+        ),
+      }));
 
-    fetchCountries();
-  }, [isCountrySelect]);
+      setCountries(list);
+    })
+    .catch(() => {
+      setCountries(DEFAULT_COUNTRIES);
+    });
+}, [isCountrySelect]);
 
-  // Determine active options list
-  const activeOptions: SelectOption[] = React.useMemo(() => {
+  const activeOptions = useMemo(() => {
     if (customOptions) return customOptions;
-    if (label.toLowerCase().includes("platform")) return PLATFORM_LIST;
-    if (label.toLowerCase().includes("engagement")) return ENGAGEMENT_RATES;
-    return countries.length > 0 ? countries : DEFAULT_COUNTRIES;
+    const l = label.toLowerCase();
+    if (l.includes("platform")) return PLATFORM_LIST;
+    if (l.includes("engagement")) return ENGAGEMENT_RATES;
+    if (l.includes("budget")) return BUDGETS;
+    if (l.includes("genre")) return GENRES;
+    return countries;
   }, [customOptions, label, countries]);
 
+  const handleValueChange = (val: string) => {
+    setInternalValue(val);
+
+  };
+
   return (
-    <label className="block">
-      {label && <span className="text-sm font-medium text-white/70">{label}</span>}
-      <div className="relative mt-2">
-        <select
-          name={name}
-          defaultValue={defaultValue}
-          onChange={onChange}
+    <div className="block text-left">
+      {label && <label className="block text-sm font-medium text-white/70 mb-2">{label}</label>}
+
+      <Select
+        name={name}
+        value={internalValue}
+        onValueChange={handleValueChange}
+        disabled={disabled}
+        required={required}
+      >
+        <SelectTrigger
           className={cn(
-            "w-full h-10 appearance-none cursor-pointer border-b border-white/15 bg-transparent pb-2 text-base font-semibold text-white pr-8 transition focus:border-[#f5b640] focus:outline-none",
+            "w-full h-10 border-0 border-b border-white/15 bg-transparent rounded-none px-0 pb-2 text-base font-semibold text-white shadow-none transition hover:border-white/30 focus-visible:border-[#f5b640] focus-visible:ring-0 dark:bg-transparent dark:hover:bg-transparent",
             className
           )}
-          {...props}
         >
-          <option value="" disabled className="bg-[#12131e] font-normal text-white/40">
-            {placeholder || `Select ${label}`}
-          </option>
-          {loading && isCountrySelect ? (
-            <option disabled className="bg-[#12131e] text-white/50">
-              Loading countries...
-            </option>
-          ) : (
-            activeOptions.map((item, idx) => (
-              <option
-                key={`${item.name}-${item.code || idx}`}
-                value={item.name}
-                className="bg-[#12131e] text-white py-1"
-              >
-                {item.name}
-              </option>
-            ))
-          )}
-        </select>
-        <div className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-white/60">
-          <svg className="h-5 w-5 fill-current" viewBox="0 0 20 20">
-            <path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
-          </svg>
-        </div>
-      </div>
-    </label>
+          <SelectValue placeholder={placeholder || `Select ${label}`} />
+        </SelectTrigger>
+
+        <SelectContent className="border-white/10 bg-[#0e101c]/95 text-white backdrop-blur-2xl">
+          {activeOptions.map((item, idx) => (
+            <SelectItem
+              key={`${item.name}-${item.code || idx}`}
+              value={item.name}
+              className="text-white/80 focus:bg-[#f5b640]/15 focus:text-[#f5b640] cursor-pointer"
+            >
+              <span className="flex items-center gap-2">
+                {item.flag && <span className="text-base">{item.flag}</span>}
+                {item.code && !item.flag && (
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/10 text-white/60">
+                    {item.code}
+                  </span>
+                )}
+                <span>{item.name}</span>
+              </span>
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 };
-
-
-

@@ -1,14 +1,16 @@
 import { Instagram, Twitter, Music2, Globe } from "lucide-react";
 import * as React from "react";
-import { useContext } from "react";
+import { useContext,useEffect,useState } from "react";
 import { AppContext } from "@/Context/AppContext";
 import EditProfileDialog from "@/components/profile/EditProfileDialog";
-import { useEffect, useState } from "react";
 import { fetchSentPromotionRequests } from "@/services/artist/promotions";
 import type { GetInfluencerRequest } from "@/types/influencer/requests";
+import { getDashboardStats, type DashboardStats } from "@/services/dashboard";
 
 
 export const ProfilePage: React.FC = () => {
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loadingStats, setLoadingStats] = useState<boolean>(true);
   const context = useContext(AppContext);
   const user = context?.user;
   const [completedCampaigns, setCompletedCampaigns] = useState<GetInfluencerRequest[]>([]);
@@ -28,6 +30,21 @@ export const ProfilePage: React.FC = () => {
   const profilePic = user?.profilePicture
     ? `${user.profilePicture}?t=${user.updatedAt || Date.now()}`
     : "https://i.pravatar.cc/150?img=12";
+
+//stats
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await getDashboardStats();
+        setStats(data);
+      } catch {
+      
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+    fetchStats();
+  }, []);
 
   return (
     <div className="w-full pb-28 md:pb-0">
@@ -82,23 +99,25 @@ export const ProfilePage: React.FC = () => {
         </div>
       </div>
 
+
       {/* Stats Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         <div className="bg-[#0D0B07] rounded-2xl border border-gray-900 p-5">
           <p className="text-gray-500 text-xs mb-2">Total Reach</p>
-          <p className="text-white text-2xl font-semibold">5.4 M</p>
+          <p className="text-white text-2xl font-semibold">{"0"}</p>
         </div>
         <div className="bg-[#0D0B07] rounded-2xl border border-gray-900 p-5">
           <p className="text-gray-500 text-xs mb-2">Total campaigns</p>
-          <p className="text-white text-2xl font-semibold">8</p>
+          {/* add both completed and active campaigns */}
+          <p className="text-white text-2xl font-semibold">{"0"}</p>
         </div>
         <div className="bg-[#0D0B07] rounded-2xl border border-gray-900 p-5">
           <p className="text-gray-500 text-xs mb-2">Active</p>
-          <p className="text-white text-2xl font-semibold">6</p>
+          <p className="text-white text-2xl font-semibold">{stats?.activeCampaigns==null ? "0" : stats?.activeCampaigns}</p>
         </div>
         <div className="bg-[#0D0B07] rounded-2xl border border-gray-900 p-5">
           <p className="text-gray-500 text-xs mb-2">Completed</p>
-          <p className="text-white text-2xl font-semibold">3</p>
+          <p className="text-white text-2xl font-semibold">{ stats?.completedCampaigns==null ? "0" : stats?.completedCampaigns}</p>
         </div>
       </div>
 
