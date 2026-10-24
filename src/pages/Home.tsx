@@ -389,7 +389,7 @@ function Home() {
                 <h3 className="hero-font text-2xl font-semibold">
                   Artist Dashboard
                 </h3>
-                <p className="mt-4 text-sm text-white/75 sm:text-base">
+                <p className="mt-4 text-sm text-white sm:text-base">
                   Manage your entire music journey in one place – track
                   performance, view insights, and stay updated on every release.
                 </p>
@@ -420,7 +420,7 @@ function Home() {
                 <h3 className="hero-font text-2xl font-semibold">
                   Global Music Distribution
                 </h3>
-                <p className="mt-4 text-sm text-white/75 sm:text-base">
+                <p className="mt-4 text-sm text-white sm:text-base">
                   Upload your songs and videos once – we&apos;ll deliver them to
                   top streaming platforms, radio stations, and TV channels
                   worldwide. No hassle, no middlemen. Just pure reach.
@@ -447,7 +447,7 @@ function Home() {
                 <h3 className="hero-font text-2xl font-semibold">
                   Promotion Tracking Dashboard
                 </h3>
-                <p className="mt-4 text-sm text-white/75 sm:text-base">
+                <p className="mt-4 text-sm text-white sm:text-base">
                   Monitor the progress of every job you assign to influencers,
                   radio, or TV — see real-time updates, performance reports, and
                   completed tasks all in one place.
@@ -479,7 +479,7 @@ function Home() {
                 <h3 className="hero-font text-2xl font-semibold">
                   Media Management
                 </h3>
-                <p className="mt-4 text-sm text-white/75 sm:text-base">
+                <p className="mt-4 text-sm text-white sm:text-base">
                   Organize and upload your singles, albums, and videos easily.
                   Keep your content ready for release or distribution — all from
                   your dashboard.
@@ -517,7 +517,7 @@ function Home() {
                 <h3 className="hero-font text-2xl font-semibold">
                   Influencer, Radio &amp; TV Promotions
                 </h3>
-                <p className="mt-4 text-sm text-white/75 sm:text-base">
+                <p className="mt-4 text-sm text-white sm:text-base">
                   Get your music promoted by trusted influencers, radio hosts,
                   and TV stations. With Audora, you can handpick promoters, set
                   your campaign goals, and reach the audience that truly
