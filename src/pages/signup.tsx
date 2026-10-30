@@ -130,12 +130,12 @@ export const SignupPage: React.FC = () => {
           />
           <span>
             I have read agree to the{" "}
-            <a
-              href="#terms"
+            <Link
+              to="/terms"
               className="text-[#f5b640] transition hover:text-[#ffca52]"
             >
               Terms &amp; Condition.
-            </a>
+            </Link>
           </span>
         </label>
 

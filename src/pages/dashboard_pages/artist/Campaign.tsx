@@ -31,8 +31,6 @@ export const Campaign: React.FC = () => {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [notice, setNotice] = React.useState<string | null>(null);
-
-  // Start Campaign dialog
   const [open, setOpen] = React.useState(false);
   const [tier, setTier] = React.useState<CampaignPackage["tier"] | "">("");
   const [mediaId, setMediaId] = React.useState("");
@@ -125,7 +123,7 @@ export const Campaign: React.FC = () => {
 
   return (
     <div className="w-full pb-28 md:pb-0">
-      {/* Start a new campaign */}
+     
       <div className="rounded-2xl p-6 mb-6">
         <div className="flex justify-between items-start mb-5 flex-wrap gap-3">
           <div>
@@ -134,13 +132,7 @@ export const Campaign: React.FC = () => {
               Audora auto-assigns influencers based on your package.
             </p>
           </div>
-          <Button
-            onClick={() => openDialog()}
-            disabled={packages.length === 0}
-            className="bg-[#A67102] disabled:opacity-50"
-          >
-            Start Campaign
-          </Button>
+
         </div>
 
         {notice && <p className="text-green-500 text-sm mb-3">{notice}</p>}

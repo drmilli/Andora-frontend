@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { getPageTitle } from "../lib/pageTitles";
 
-import { Bell, Wallet, Menu, ChevronLeft, Music, Upload, Search } from "lucide-react";
+import { Bell, Wallet, Menu, ChevronLeft,  Upload, Search } from "lucide-react";
 
 import { AppContext } from "@/Context/AppContext";
 import { isCampaignStrategist } from "@/lib/roles";

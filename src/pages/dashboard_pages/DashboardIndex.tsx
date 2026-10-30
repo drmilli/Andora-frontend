@@ -37,6 +37,7 @@ import { JobsPage } from "./artist/JobsPage";
 import { ProfilePage } from "./artist/ProfilePage";
 
 import Campaign from "./artist/Campaign";
+import CampaignDetails from "./artist/CampaignDetails";
 import MySongs from "./artist/MySongs";
 import SongDetails from "./artist/SongDetails";
 import SettingsPage from "./artist/SettingsPage";
@@ -149,6 +150,7 @@ export const DASHBOARD_ROUTES = [
   { path: "wallet", element: <RoleWallet /> },
   { path: "profile", element: <RoleProfile /> },
   { path: "campaigns", element: <Campaign /> },
+  { path: "campaigns/:id", element: <CampaignDetails /> },
   { path: "billings", element: <BillingPage /> },
   { path: "settings", element: <SettingsPage /> },
   { path: "my-songs", element: <MySongs /> },

@@ -25,6 +25,7 @@ import Layout from "./components/layouts/Layout";
 import { SelectRole } from "./pages/SelectRole";
 import { InfluencerLogin } from "./pages/dashboard_pages/influencer/auth/InfluencerLogin";
 import { InfluencerSignup } from "./pages/dashboard_pages/influencer/auth/InfluncerSignUp";
+import Terms from "./pages/Terms";
 
 
 
@@ -56,6 +57,7 @@ if (loading) {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/" element={<Layout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/terms" element={<Terms />} />
 
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/verify-otp" element={<VerifyOtpPage />} />

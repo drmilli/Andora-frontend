@@ -14,7 +14,7 @@ export const ProfilePage: React.FC = () => {
   const context = useContext(AppContext);
   const user = context?.user;
   const [completedCampaigns, setCompletedCampaigns] = useState<GetInfluencerRequest[]>([]);
-
+  console.log(loadingStats)
   useEffect(() => {
     fetchSentPromotionRequests(1, 8, "COMPLETED")
       .then((res) => setCompletedCampaigns(res.data))
@@ -31,7 +31,6 @@ export const ProfilePage: React.FC = () => {
     ? `${user.profilePicture}?t=${user.updatedAt || Date.now()}`
     : "https://i.pravatar.cc/150?img=12";
 
-//stats
   useEffect(() => {
     const fetchStats = async () => {
       try {
