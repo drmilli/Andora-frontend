@@ -550,9 +550,7 @@ export default function Terms() {
                 <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
                   Sections ({filteredSections.length})
                 </span>
-                <span className="text-[11px] text-amber-400/80 font-mono">
-                  Radix UI • Vertical
-                </span>
+            
               </div>
 
  

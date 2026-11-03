@@ -21,8 +21,8 @@ export const InfluencerSignup: React.FC = () => {
         username: String(form.get("username") || ""),
         email: String(form.get("email") || ""),
         role: "influencer",
-       password: String(form.get("password")),
-      password_confirmation: String(form.get("password_confirmation")),
+        password: String(form.get("password")),
+        password_confirmation: String(form.get("password_confirmation")),
       });
 
       navigate("/dashboard", {
@@ -38,19 +38,19 @@ export const InfluencerSignup: React.FC = () => {
   return (
     <AuthLayout
       title="Create an Account"
-      subtitle="Let's Get Started With Your 30 Day Free Trial"
+      subtitle="Create an account with audora..."
       maxWidth="xl"
       diskwaveSize="92vw"
     >
 
 
-      <div className="relative mt-6 flex items-center">
+      {/* <div className="relative mt-6 flex items-center">
         <div className="flex-grow border-t border-white/15" />
         <span className="mx-3 text-[0.7rem] uppercase tracking-[0.25em] text-white/50">
           Or
         </span>
         <div className="flex-grow border-t border-white/15" />
-      </div>
+      </div> */}
 
       <form className="mt-5 space-y-5" onSubmit={handleSubmit}>
         {error && <p className="text-red-500">{error}</p>}
@@ -109,12 +109,7 @@ export const InfluencerSignup: React.FC = () => {
             placeholder="Select Platforms"
             required
           />
-          <CountrySelect
-            label="Engagement Rate"
-            name="engagement_rate"
-            placeholder="Select Engagement Rate"
-            required
-          />
+
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
           <AuthInput
@@ -122,13 +117,38 @@ export const InfluencerSignup: React.FC = () => {
             type="number"
             placeholder="Enter follower count"
           />
-          <AuthInput
-            label="Price Rate"
-            type="text"
-            placeholder="Enter price rate"
-          />
-        </div>
 
+        </div>
+        {/* socila media */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-1">
+          {/* <AuthInput
+            label="Follower Count"
+            type="number"
+            placeholder="Enter follower count"
+          /> */}
+
+          <AuthInput
+            label="Instagram"
+            type="url"
+            placeholder="Enter your IG handle"
+          />
+
+           <AuthInput
+            label="TikTok"
+            type="url"
+            placeholder="Enter your TikTok handle"
+          />  
+                     <AuthInput
+            label="Twitter"
+            type="url"
+            placeholder="Enter you Twitter handle"
+          />       
+                     <AuthInput
+            label="Youtube"
+            type="url"
+            placeholder="Enter you Youtube handle"
+          />   
+        </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <AuthInput
@@ -156,12 +176,12 @@ export const InfluencerSignup: React.FC = () => {
           />
           <span>
             I have read agree to the{" "}
-            <a
-              href="#terms"
+            <Link
+              to={"/terms"}
               className="text-[#f5b640] transition hover:text-[#ffca52]"
             >
               Terms &amp; Condition.
-            </a>
+            </Link>
           </span>
         </label>
 
@@ -171,7 +191,7 @@ export const InfluencerSignup: React.FC = () => {
       <p className="mt-5 text-center text-xs font-medium text-white/70">
         Already Have Account?{" "}
         <Link
-          to="/influncer-login"
+          to="/influencer-login"
           className="text-[#f5b640] transition hover:text-[#ffca52]"
         >
           Login

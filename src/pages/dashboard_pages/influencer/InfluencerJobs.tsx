@@ -29,7 +29,7 @@ import {
 } from "@/lib/influencer";
 
 // Tab label -> the status filter the API expects
-const TABS = [
+const TABS = [ {label: "All Jobs", status: "ALL_JOBS" },
   { label: "Accepted", status: "ACCEPTED" },
   { label: "Pending", status: "PENDING,PENDED" },
   { label: "Completed", status: "COMPLETED,DISPUTED" },
@@ -79,7 +79,7 @@ function InfluencerJobs() {
 
   const handleStatus = async (
     id: string,
-    status: "ACCEPTED" | "DECLINED" | "PENDED"
+    status:"ALL JOBS"|"ACCEPTED" | "DECLINED" | "PENDED"
   ) => {
     try {
       setActingOn(id);
@@ -132,7 +132,7 @@ function InfluencerJobs() {
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 1500);
     } catch {
-      /* clipboard unavailable */
+
     }
   };
 
@@ -158,7 +158,7 @@ function InfluencerJobs() {
        rounded-none
         bg-transparent
           text-white
-           data-[state=active]:bg-transparent
+       
         data-[state=active]:border-b-amber-500 "
               >
                 {t.label}

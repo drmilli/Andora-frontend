@@ -34,7 +34,7 @@ export const SignupPage: React.FC = () => {
   return (
     <AuthLayout
       title="Create an Account"
-      subtitle="Let's Get Started With Your 30 Day Free Trial"
+      subtitle="Create an account with audora..."
       maxWidth="xl"
       diskwaveSize="92vw"
     >
