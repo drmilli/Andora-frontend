@@ -29,7 +29,7 @@ import {
 } from "@/lib/influencer";
 
 // Tab label -> the status filter the API expects
-const TABS = [ {label: "All Jobs", status: "ALL_JOBS" },
+const TABS = [
   { label: "Accepted", status: "ACCEPTED" },
   { label: "Pending", status: "PENDING,PENDED" },
   { label: "Completed", status: "COMPLETED,DISPUTED" },
@@ -79,7 +79,7 @@ function InfluencerJobs() {
 
   const handleStatus = async (
     id: string,
-    status:"ALL JOBS"|"ACCEPTED" | "DECLINED" | "PENDED"
+    status: "ACCEPTED" | "DECLINED" | "PENDED"
   ) => {
     try {
       setActingOn(id);
