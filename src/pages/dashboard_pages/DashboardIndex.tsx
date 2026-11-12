@@ -136,10 +136,8 @@ export function RoleWallet() {
   return <BillingPage />;
 }
 
-/* ---- Route table (used by index.tsx to mount nested routes) ----
-   Each entry is a relative path from /dashboard */
 export const DASHBOARD_ROUTES = [
-  // Role-based main routes
+
   { path: "", element: <RoleDashboardHome /> },
   { path: "notifications", element: <RoleNotifications /> },
   { path: "notifications/:id", element: <NotificationDetails /> },

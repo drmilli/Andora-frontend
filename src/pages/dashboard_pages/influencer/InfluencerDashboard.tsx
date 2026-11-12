@@ -94,7 +94,7 @@ function InfluencerDashboard() {
   return (
     <div className="px-1">
       <div>
-        <h1>Hello, {firstName ?? "there"}</h1>
+        <h1>Welcome, {firstName ?? "there"}</h1>
       </div>
 
       {error && (

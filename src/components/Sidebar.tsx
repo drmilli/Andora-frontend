@@ -208,15 +208,14 @@ export const Sidebar: React.FC<{
           </button>
         </div>
 
-        {/* Top scrollable area */}
+      
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="overflow-y-auto pr-2">
-            {/* Profile */}
-            {/* Centered logo (kept inside scroll area so it stays visually with nav on small screens) */}
+         
             <div className="flex  justify-start my-6 px-2">
               <img src={audoraLogo} alt="Audora logo" className="w-30" />
             </div>
-            {/* Navigation */}
+           
             <nav className="space-y-3 px-2" aria-label="Main navigation">
               {navItems.map((item) => (
                 <NavLink
@@ -242,7 +241,7 @@ export const Sidebar: React.FC<{
 
           </div>
 
-          {/* Bottom-sticky settings */}
+        
           <div className="mt-auto pt-4">
             {isCampaignStrategist(role) && (
               <div className="mb-4 flex items-center gap-3 px-2">

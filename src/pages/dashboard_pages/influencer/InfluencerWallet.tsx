@@ -136,7 +136,7 @@ function InfluencerWallet() {
       });
       setWithdrawSuccess("Withdrawal requested. It is now pending approval.");
       setWithdrawForm({ bankName: "", accountNumber: "", accountName: "", amount: "" });
-      // Balance and transaction list both change after a withdrawal
+     
       const refreshed = await fetchEarnings();
       setEarnings(refreshed);
     } catch (err) {
@@ -167,7 +167,7 @@ console.log(loading)
         setLoading(false);
       }
     };
-    //fetch transactions
+
 
     const loadTransactions = async () => {
       try {
@@ -201,7 +201,7 @@ console.log(loading)
   // };
 
   return (
-    <div className='  px-10 '>
+    <div className='  px-10   '>
       <div className="">
         <Carousel>
           <CarouselContent>

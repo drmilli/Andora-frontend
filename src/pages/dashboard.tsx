@@ -15,16 +15,7 @@ import {
 import { AppContext } from "../Context/AppContext";
 import { isCampaignStrategist } from "../lib/roles";
 
-/**
- * Dashboard layout component
- *
- * - Renders the Sidebar on the left
- * - Renders the Header on top of the main content area
- * - Uses <Outlet /> to render nested routes (Dashboard pages)
- * - Renders a mobile bottom navbar so navigation is available across dashboard routes
- *
- * Keep the named export `DashboardPage` for compatibility with existing imports.
- */
+
 export function DashboardPage(): React.ReactElement {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const context = useContext(AppContext);
@@ -33,7 +24,7 @@ export function DashboardPage(): React.ReactElement {
   const navItemClass = (isActive: boolean) =>
     `flex flex-col items-center gap-1 ${isActive ? "text-[#A67102]" : "text-gray-200"}`;
 
-  // Use the current location to compute a contextual header title
+
   const location = useLocation();
   const pathname = location.pathname.replace(/\/$/, ""); // normalize trailing slash
 
@@ -66,8 +57,7 @@ export function DashboardPage(): React.ReactElement {
           onMenuClick={() => setIsSidebarOpen(true)}
         />
 
-        {/* Main content area where nested routes will render */}
-        <div className="flex-1 overflow-y-auto p-4 pt-4">
+        <div className="flex-1 overflow-y-auto sm:p-4 p-1 pb-30 t-4">
           <Outlet />
         </div>
       </main>
