@@ -26,6 +26,7 @@ import { SelectRole } from "./pages/SelectRole";
 import { InfluencerLogin } from "./pages/dashboard_pages/influencer/auth/InfluencerLogin";
 import { InfluencerSignup } from "./pages/dashboard_pages/influencer/auth/InfluncerSignUp";
 import Terms from "./pages/Terms";
+import Unauthorized from "./pages/Unauthorized";
 
 
 
@@ -76,6 +77,9 @@ if (loading) {
           ))}
         </Route>
   <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
+      
+
       </Routes>
       </BrowserRouter>
   );

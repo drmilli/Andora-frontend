@@ -52,6 +52,7 @@ import { CampaignStrategistDashboard } from "./strategist/CampaignStrategistDash
 import CampaignStrategistNotifications from "./strategist/CampaignStrategistNotifications";
 import CampaignStrategistJobs from "./strategist/CampaignStrategistJobs";
 import CampaignStrategistReports from "./strategist/CampaignStrategistReports";
+import RoleGuard from "@/components/auth/RoleGuard";
 
 export function RoleDashboardHome() {
   const context = useContext(AppContext);
@@ -155,45 +156,45 @@ export const DASHBOARD_ROUTES = [
   { path: "my-songs/:id", element: <SongDetails /> },
 
   // Campaign strategist
-  { path: "strategist-dashboard", element: <CampaignStrategistDashboard /> },
-  { path: "song-submissions", element: <CampaignStrategistJobs /> },
-  { path: "reports", element: <CampaignStrategistReports /> },
+  { path: "strategist-dashboard", element: <RoleGuard allowedRoles={["campaign_strategist"]}><CampaignStrategistDashboard /></RoleGuard> },
+  { path: "song-submissions", element: <RoleGuard allowedRoles={["campaign_strategist"]}><CampaignStrategistJobs /></RoleGuard> },
+  { path: "reports", element: <RoleGuard allowedRoles={["campaign_strategist"]}><CampaignStrategistReports /></RoleGuard> },
 
   // Influencer direct routes
-  { path: "influencer-dashboard", element: <InfluencerDashboard /> },
-  { path: "influencer-notifications", element: <InfluencerNotifications /> },
-  { path: "influencer-notifications/:id", element: <InfluencerNotificationsDetail /> },
-  { path: "influencer-jobs", element: <InfluencerJobs /> },
-  { path: "influencer-profile", element: <InfluencerProfile /> },
-  { path: "influencer-wallets", element: <InfluencerWallet /> },
+  { path: "influencer-dashboard", element: <RoleGuard allowedRoles={["influencer"]}><InfluencerDashboard /></RoleGuard> },
+  { path: "influencer-notifications", element: <RoleGuard allowedRoles={["influencer"]}><InfluencerNotifications /></RoleGuard> },
+  { path: "influencer-notifications/:id", element: <RoleGuard allowedRoles={["influencer"]}><InfluencerNotificationsDetail /></RoleGuard> },
+  { path: "influencer-jobs", element: <RoleGuard allowedRoles={["influencer"]}><InfluencerJobs /></RoleGuard> },
+  { path: "influencer-profile", element: <RoleGuard allowedRoles={["influencer"]}><InfluencerProfile /></RoleGuard> },
+  { path: "influencer-wallets", element: <RoleGuard allowedRoles={["influencer"]}><InfluencerWallet /></RoleGuard> },
   {
     path: "influencernotifications/:id",
-    element: <InfluencerNotificationsDetail />,
+    element: <RoleGuard allowedRoles={["influencer"]}><InfluencerNotificationsDetail /></RoleGuard>,
   },
 
   // Station routes
-  { path: "station-dashboard", element: <StationDashboard /> },
-  { path: "station-notifications", element: <StationNotifications /> },
-  { path: "station-notification/:id", element: <StationNotificationsDetail /> },
-  { path: "station-profile", element: <StationProfile /> },
-  { path: "station-jobs", element: <StationJobs /> },
-  { path: "station-pricing", element: <StationPricing /> },
+  { path: "station-dashboard", element: <RoleGuard allowedRoles={["station"]}><StationDashboard /></RoleGuard> },
+  { path: "station-notifications", element: <RoleGuard allowedRoles={["station"]}><StationNotifications /></RoleGuard> },
+  { path: "station-notification/:id", element: <RoleGuard allowedRoles={["station"]}><StationNotificationsDetail /></RoleGuard> },
+  { path: "station-profile", element: <RoleGuard allowedRoles={["station"]}><StationProfile /></RoleGuard> },
+  { path: "station-jobs", element: <RoleGuard allowedRoles={["station"]}><StationJobs /></RoleGuard> },
+  { path: "station-pricing", element: <RoleGuard allowedRoles={["station"]}><StationPricing /></RoleGuard> },
 
   // Admin routes
-  { path: "admin-dashboard", element: <AdminDashboard /> },
-  { path: "admin-notification", element: <AdminNotifications /> },
-  { path: "admin-notification/:id", element: <AdminNotificationsDetails /> },
-  { path: "admin-wallets", element: <AdminWallet /> },
-  { path: "admin-profile", element: <AdminProfile /> },
-  { path: "admin-influencers", element: <AdminInfluencers /> },
-  { path: "admin-influencers/:id", element: <AdminInfluencersDetail /> },
-  { path: "admin-radios", element: <AdminRadio /> },
-  { path: "admin-radios/:id", element: <AdminRadioDetails /> },
-  { path: "admin-tv", element: <AdminTv /> },
-  { path: "admin-tv/:id", element: <AdminTvDetails /> },
-  { path: "admin-job", element: <AdminJob /> },
-  { path: "admin/artist", element: <AdminArtist /> },
-  { path: "admin/artist/:id", element: <AdminArtistDetails /> },
+  { path: "admin-dashboard", element: <RoleGuard allowedRoles={["admin"]}><AdminDashboard /></RoleGuard> },
+  { path: "admin-notification", element: <RoleGuard allowedRoles={["admin"]}><AdminNotifications /></RoleGuard> },
+  { path: "admin-notification/:id", element: <RoleGuard allowedRoles={["admin"]}><AdminNotificationsDetails /></RoleGuard> },
+  { path: "admin-wallets", element: <RoleGuard allowedRoles={["admin"]}><AdminWallet /></RoleGuard> },
+  { path: "admin-profile", element: <RoleGuard allowedRoles={["admin"]}><AdminProfile /></RoleGuard> },
+  { path: "admin-influencers", element: <RoleGuard allowedRoles={["admin"]}><AdminInfluencers /></RoleGuard> },
+  { path: "admin-influencers/:id", element: <RoleGuard allowedRoles={["admin"]}><AdminInfluencersDetail /></RoleGuard> },
+  { path: "admin-radios", element: <RoleGuard allowedRoles={["admin"]}><AdminRadio /></RoleGuard> },
+  { path: "admin-radios/:id", element: <RoleGuard allowedRoles={["admin"]}><AdminRadioDetails /></RoleGuard> },
+  { path: "admin-tv", element: <RoleGuard allowedRoles={["admin"]}><AdminTv /></RoleGuard> },
+  { path: "admin-tv/:id", element: <RoleGuard allowedRoles={["admin"]}><AdminTvDetails /></RoleGuard> },
+  { path: "admin-job", element: <RoleGuard allowedRoles={["admin"]}><AdminJob /></RoleGuard> },
+  { path: "admin/artist", element: <RoleGuard allowedRoles={["admin"]}><AdminArtist /></RoleGuard> },
+  { path: "admin/artist/:id", element: <RoleGuard allowedRoles={["admin"]}><AdminArtistDetails /></RoleGuard> },
 ];
 
 export default RoleDashboardHome;
