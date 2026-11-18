@@ -1,10 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import heroImage from "../assets/work-with-us-sections/image2.png";
-import sectionOneImage from "../assets/work-with-us-sections/section-1.png";
-import sectionTwoImage from "../assets/work-with-us-sections/section-2.png";
-import sectionThreeImage from "../assets/work-with-us-sections/section-3.png";
-import sectionFourImage from "../assets/work-with-us-sections/section-4.png";
 import influencer from "../assets/work-with-us-sections/image5.png";
 import tvpresenter from "../assets/work-with-us-sections/image3.png";
 import mic from "../assets/landing-page/mic.png";
@@ -25,41 +21,7 @@ export const navLinks: Array<{
     { label: "Work With Us", href: "/work-with-us", isActive: true },
   ];
 
-export const opportunityHighlights: Array<{
-  title: string;
-  description: string;
-  image: string;
-  metric: string;
-}> = [
-    {
-      title: "Creator Campaigns",
-      description:
-        "Deploy branded challenges, reviews, and live drops with vetted hosts across podcasts, YouTube, and social audio.",
-      image: sectionOneImage,
-      metric: "2.5x avg. engagement lift",
-    },
-    {
-      title: "Sync & Broadcast",
-      description:
-        "Place your artists on radio and TV lineups with ready-to-air assets, clearance support, and localized rollouts.",
-      image: sectionTwoImage,
-      metric: "120+ broadcast partners",
-    },
-    {
-      title: "Influencer Partnerships",
-      description:
-        "Pair campaigns with storytellers who already love the culture—curated to match your tone, territory, and goals.",
-      image: sectionThreeImage,
-      metric: "Verified roster in 14 countries",
-    },
-    {
-      title: "Performance Analytics",
-      description:
-        "Track every deliverable with transparent dashboards, conversion insights, and automated payout workflows.",
-      image: sectionFourImage,
-      metric: "Live impact dashboards",
-    },
-  ];
+
 
 export const processSteps: Array<{ title: string; description: string }> = [
   {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Music, User, Download, ThumbsUp } from "lucide-react";
-import { useEffect, useState } from "react";
+
 import type { ArtistStatistics } from "@/types/artist/statistics";
 import { fetchArtistStatistics } from "@/services/artist/statistics";
 import { apiErrorMessage } from "@/lib/influencer";

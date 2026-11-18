@@ -8,7 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { initialTracks } from "@/data/mockTracks";
 import type { TrackDetail } from "@/types/artist/song";
 
 const statusStyles: Record<TrackDetail["status"], string> = {
@@ -19,7 +18,7 @@ const statusStyles: Record<TrackDetail["status"], string> = {
 
 export const MySongs: React.FC = () => {
   const navigate = useNavigate();
-  const [tracks, setTracks] = useState<TrackDetail[]>(initialTracks);
+  const [tracks, setTracks] = useState<TrackDetail[]>([]);
   const [openMenuId, setOpenMenuId] = React.useState<string | null>(null);
 
   // Upload modal state
@@ -113,7 +112,6 @@ export const MySongs: React.FC = () => {
     navigate(`/dashboard/my-songs/${trackId}`);
   };
 
-  // const activeCount = media.filter((t) => t.status === "Active").length;
   const genres = [
     { id: 1, name: "Afrobeats" },
     { id: 2, name: "Amapiano" },
@@ -139,12 +137,10 @@ export const MySongs: React.FC = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto pb-28 md:pb-10">
-      {/* Subheader row */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <p className="text-gray-400 text-sm font-medium">
             {tracks.length} Tracks In Catalog •{" "}
-            {/* <span className="text-[#f5b640]">{activeCount} Active In Rotation</span> */}
           </p>
           <p className="text-gray-500 text-xs mt-0.5">
             Click any track to view comprehensive analytics, metadata, campaign history, and airplay.
@@ -159,7 +155,6 @@ export const MySongs: React.FC = () => {
           <span>Upload Song</span>
         </button>
 
-        {/* ----------- UPLOAD SONG MODAL ----------- */}
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogContent className="bg-[#0D0B07] border border-gray-800 text-white sm:max-w-lg p-6 overflow-hidden">
             <div>
@@ -175,7 +170,7 @@ export const MySongs: React.FC = () => {
 
               <form onSubmit={handleUploadSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* Audio Upload Box */}
+                 
                   <div
                     onClick={handleUploadAudioClick}
                     className="border flex bg-white/[0.02] flex-col items-center justify-center space-y-2 border-gray-800 hover:border-[#A67102] rounded-xl p-4 text-center cursor-pointer transition-colors"
@@ -196,7 +191,6 @@ export const MySongs: React.FC = () => {
                     </span>
                   </div>
 
-                  {/* Cover Upload Box */}
                   <div
                     onClick={handleUploadCoverClick}
                     className="border flex flex-col bg-white/[0.02] items-center justify-center space-y-2 border-gray-800 hover:border-[#A67102] rounded-xl p-4 text-center cursor-pointer transition-colors"
@@ -267,7 +261,6 @@ export const MySongs: React.FC = () => {
         </Dialog>
       </div>
 
-      {/* Table */}
       <div className="bg-[#0D0B07] rounded-2xl border border-gray-900 overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
@@ -283,7 +276,15 @@ export const MySongs: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-900/60">
-              {tracks.map((track) => (
+              {tracks.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-20 text-center">
+                    <Music size={36} className="text-gray-600 mx-auto mb-3" />
+                    <p className="text-white font-semibold text-base mb-1">No songs yet</p>
+                    <p className="text-gray-500 text-xs">Upload your first track to get started.</p>
+                  </td>
+                </tr>
+              ) : tracks.map((track) => (
                 <tr
                   key={track.id}
                   onClick={() => handleRowClick(track.id)}

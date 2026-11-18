@@ -1,9 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import { getUserMedia, uploadMedia, deleteMedia } from "../../services/media";
+import { getUserMedia, uploadMedia, deleteMedia, getActiveMediaCampign, getRecentMediaCampign, getTopMediaCampign } from "../../services/media";
 import type { Media, MediaType } from "../../types/media";
 
 export const useMedia = (type?: MediaType) => {
   const [media, setMedia] = useState<Media[]>([]);
+  const [activecampaigns, setActivecampaigns] = useState<Media[]>([]);
+  const [recentcampaigns, setRecentcampaigns] = useState<Media[]>([]);
+  const [topcampaigns, setTopcampaigns] = useState<Media[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,10 +23,52 @@ export const useMedia = (type?: MediaType) => {
       setLoading(false);
     }
   }, [type]);
+  const fetchActiveCampaigns = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getActiveMediaCampign();
+      const filtered = type ? data.filter((m) => m.type === type) : data;
+      setActivecampaigns(filtered);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to active fetch media");
+    } finally {
+      setLoading(false);
+    }
+  }, [type])
+  const fetchRecentCampaigns = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getRecentMediaCampign();
+      const filtered = type ? data.filter((m) => m.type === type) : data;
+      setRecentcampaigns(filtered);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to recent fetch media");
+    } finally {
+      setLoading(false);
+    }
+  }, [type])
+  const fetchTopCampaigns = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getTopMediaCampign();
+      const filtered = type ? data.filter((m) => m.type === type) : data;
+      setTopcampaigns(filtered);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to top fetch media");
+    } finally {
+      setLoading(false);
+    }
+  }, [type])
 
   useEffect(() => {
     fetchMedia();
-  }, [fetchMedia]);
+    fetchActiveCampaigns();
+    fetchRecentCampaigns();
+    fetchTopCampaigns(); 
+  }, [fetchMedia,fetchRecentCampaigns,fetchRecentCampaigns, fetchTopCampaigns]);
 
   const upload = async (file: File, title?: string, description?: string) => {
     try {
@@ -53,5 +98,5 @@ export const useMedia = (type?: MediaType) => {
     }
   };
 
-  return { media, loading, error, upload, remove, refetch: fetchMedia };
+  return { media, loading, error, upload, remove, refetch: fetchMedia,activecampaigns,topcampaigns,recentcampaigns };
 };

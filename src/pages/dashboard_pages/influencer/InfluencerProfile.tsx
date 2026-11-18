@@ -49,30 +49,30 @@ function InfluencerProfile() {
     setProfilePreview(URL.createObjectURL(file));
   };
 
-  // Get existing profile 
-  useEffect(() => { 
-    const getProfile = async () => { 
-      try { 
+
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
         setLoading(true);
-        const data = await fetchProfile(); 
+        const data = await fetchProfile();
         setProfile(data);
-        setFormData({ 
-          phone: data.phone || "", 
-          email: data.email || "", 
-          followerCount: data.followerCount ?? "", 
-          rate: data.rate ?? "", 
-          instagram: data.instagram || "", 
-          tiktok: data.tiktok || "", 
-          snapchat: data.snapchat || "", 
-          twitter: data.twitter || "", 
-        }); 
-      } catch (error) { 
-        console.error("Failed to get profile:", error); 
+        setFormData({
+          phone: data.phone || "",
+          email: data.email || "",
+          followerCount: data.followerCount ?? "",
+          rate: data.rate ?? "",
+          instagram: data.instagram || "",
+          tiktok: data.tiktok || "",
+          snapchat: data.snapchat || "",
+          twitter: data.twitter || "",
+        });
+      } catch (error) {
+        console.error("Failed to get profile:", error);
       } finally {
         setLoading(false);
       }
-    }; 
-    getProfile(); 
+    };
+    getProfile();
   }, []);
 
 
@@ -107,50 +107,50 @@ function InfluencerProfile() {
 
 
   return (
-    <div>
-      <div className="flex w-full max-w-full lg:max-w-sm flex-col gap-6 mt-10">
-        <Tabs defaultValue="Info" className="w-full">
-          <TabsList className="flex bg-transparent p-2 gap-2 lg:gap-25 ">
+    <div className="w-full overflow-x-hidden">
+      <div className="flex  max-w-full lg:max-w-sm flex-col gap-6 mt-10">
+        <Tabs defaultValue="Info" className="w-full sm:w-[2000px]">
+          <TabsList className="flex bg-transparent p-2 gap-2 lg:gap-25">
             {tabs.map((tab) => (
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
                 className="
-        w-[120px] h-[120px]
-        md:w-[50px] md:h-[50px]
-        lg:w-[450px] lg:h-[52px]
-       rounded-none
-        bg-transparent
-          text-white
-           data-[state=active]:bg-transparent
-        data-[state=active]:border-b-amber-500 "
+                  w-auto h-auto px-6 py-3
+                  md:w-[50px] md:h-[50px]
+                  lg:w-[450px] lg:h-[52px]
+                  rounded-none
+                  bg-transparent
+                  text-white
+                  data-[state=active]:bg-transparent
+                  data-[state=active]:border-b-amber-500"
               >
                 {tab.value}
               </TabsTrigger>
             ))}
           </TabsList>
 
-          <TabsContent value="Info" className=" w-full sm:w-5xl">
+          <TabsContent value="Info" className="w-full max-w-5xl">
             <div className="relative w-full mt-10 flex justify-center">
-              <div className="relative    rounded-lg overflow-hidden shadow-2xl">
-                <img src={Cover} alt="" className="w-[400px] sm:w-[1032px] " />
+              <div className="relative rounded-lg overflow-hidden shadow-2xl w-full">
+                <img src={Cover} alt="" className="w-full max-w-[1032px]" />
               </div>
 
               {/* Profile section */}
-              <div className="absolute bottom-0 left-8 transform translate-y-1/2 flex items-end gap-4">
+              <div className="absolute bottom-0 left-4 sm:left-8 transform translate-y-1/2 flex items-end gap-4">
                 {/* Profile image */}
                 <div className="relative">
-                  <div className="w-20 h-20 sm:h-32 sm:w-32  rounded-full overflow-hidden border-4 border-gray-900 shadow-xl bg-gray-700">
+                  <div className="w-20 h-20 sm:h-32 sm:w-32 rounded-full overflow-hidden border-4 border-gray-900 shadow-xl bg-gray-700">
                     <img
                       src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop"
                       alt="Profile"
-                      className="w-full  h-full object-cover"
+                      className="w-full h-full object-cover"
                     />
                   </div>
                 </div>
 
                 {/* Name badge */}
-                <div className="  px-4  mb-2 rounded shadow-lg">
+                <div className="px-4 mb-2 rounded shadow-lg">
                   <h2 className="text-white font-bold text-lg whitespace-nowrap">
                     {profile?.username}
                   </h2>
@@ -159,39 +159,39 @@ function InfluencerProfile() {
             </div>
 
             {/* profile info */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 w-[1032px] h-[328px] gap-10 mt-20 mb-10  p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 w-full max-w-[1032px] gap-6 sm:gap-10 mt-20 mb-10 p-4">
               <div>
-                <div className="mt-10">
+                <div className="mt-6 sm:mt-10">
                   <div>Followers</div>
                   <div>{profile?.followerCount?.toLocaleString("en-NG") ?? "Not set"}</div>
                 </div>
-                <div className="mt-10">
+                <div className="mt-6 sm:mt-10">
                   <div>Rate per promotion</div>
                   <div>{profile?.rate != null ? `₦${profile.rate.toLocaleString("en-NG")}` : "Negotiable"}</div>
                 </div>
-                <div className="mt-10">
+                <div className="mt-6 sm:mt-10">
                   <div>Phone Number</div>
                   <div>{profile?.phone}</div>
                 </div>
-                <div className="mt-10">
+                <div className="mt-6 sm:mt-10">
                   <div>Instagram link</div>
                   <div>{profile?.instagram}</div>
                 </div>
-                <div className="mt-10">
+                <div className="mt-6 sm:mt-10">
                   <div>TikTok link</div>
                   <div>{profile?.tiktok}</div>
                 </div>
               </div>
               <div>
-                <div className="mt-10">
+                <div className="mt-6 sm:mt-10">
                   <div>Email</div>
                   <div>{profile?.email}</div>
                 </div>
-                <div className="mt-10">
+                <div className="mt-6 sm:mt-10">
                   <div>Snapchat link</div>
                   <div>{profile?.snapchat}</div>
                 </div>
-                <div className="mt-10">
+                <div className="mt-6 sm:mt-10">
                   <div>Twitter link</div>
                   <div>{profile?.twitter}</div>
                 </div>
@@ -199,17 +199,17 @@ function InfluencerProfile() {
             </div>
           </TabsContent>
 
-          <TabsContent value="Edit" className=" w-full sm:w-5xl">
+          <TabsContent value="Edit" className="w-full max-w-5xl">
             <form onSubmit={handleSubmit}>
               <div className="relative w-full mt-10 flex justify-center">
-                <div className="relative    rounded-lg overflow-hidden shadow-2xl">
+                <div className="relative rounded-lg overflow-hidden shadow-2xl w-full">
                   <img
                     src={banner ?? profile?.coverPicture ?? Nopic}
                     alt=""
-                    className="w-[400px] sm:w-[1032px] h-30 sm:h-90 object-cover"
+                    className="w-full max-w-[1032px] h-30 sm:h-90 object-cover"
                   />
 
-                  <div className="absolute  sm:bottom-25 bottom-5  right-10 sm:right-90 m-4">
+                  <div className="absolute sm:bottom-25 bottom-5 right-10 sm:right-90 m-4">
                     <label>
                       <input
                         type="file"
@@ -226,7 +226,7 @@ function InfluencerProfile() {
                         <Button
                           type="button"
                           variant="outline"
-                          className="sm:hidden block bg-[#B88D35] text-white sm:w-[297px] w-30 border-0 "
+                          className="sm:hidden block bg-[#B88D35] text-white sm:w-[297px] w-30 border-0"
                           onClick={() => fileInputRef.current?.click()}
                         >
                           Upload Image
@@ -237,34 +237,33 @@ function InfluencerProfile() {
                 </div>
 
                 {/* Profile section */}
-                <div className="absolute bottom-0 left-8 transform translate-y-1/2 flex items-end gap-4">
+                <div className="absolute bottom-0 left-4 sm:left-8 transform translate-y-1/2 flex items-end gap-4">
                   {/* Profile image */}
                   <div className="relative">
-                    <div className="w-20 h-20 sm:h-32 sm:w-32  rounded-full overflow-hidden border-4 border-gray-900 shadow-xl bg-gray-700">
+                    <div className="w-20 h-20 sm:h-32 sm:w-32 rounded-full overflow-hidden border-4 border-gray-900 shadow-xl bg-gray-700">
                       <img
                         src={profilePreview ?? profile?.profilePicture ?? Nopic}
                         alt="Profile"
-                        className="w-full  h-full  object-cover"
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   </div>
+<div className=" w-full h-full flex items-center justify-center">
+  <label className="absolute inset-0 right-35 flex items-center justify-center cursor-pointer">
+    <input
+      type="file"
+      accept="image/*"
+      className="hidden"
+      onChange={handleProfileUpload}
+    />
 
-                  <div className="absolute -bottom-3 sm:bottom-3 right-41 sm:right-48 m-4">
-                    <label>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleProfileUpload}
-                      />
-                      <div className="text-center align-middle m-auto">
-                        <Plus className=" w-10 sm:20 h-20 text-[#B88D35] hover:text-gray-300 cursor-pointer text-center m-auto" />
-                      </div>
-                    </label>
-                  </div>
+    <Plus className="w-8 h-8 sm:w-10 sm:h-10 text-[#B88D35] hover:text-gray-300 transition-colors" />
+  </label>
+</div>
+
 
                   {/* Name badge */}
-                  <div className="  px-4  mb-2 rounded shadow-lg">
+                  <div className="px-4 mb-2 rounded shadow-lg">
                     <h2 className="text-white font-bold text-lg whitespace-nowrap">
                       {profile?.username}
                     </h2>
@@ -273,95 +272,95 @@ function InfluencerProfile() {
               </div>
 
               {/* profile form for ful name,phone number and email intsagram link*/}
-              <div className="grid grid-cols-1 sm:grid-cols-1 w-[1032px] h-[328px] gap-10 mt-20 mb-10  p-4">
+              <div className="w-full max-w-[1032px] mt-20 mb-10 p-4">
                 <div>
-                  <div className="mt-10">
+                  <div className="mt-6 sm:mt-10">
                     <div className="mb-2">Followers</div>
                     <input
                       type="number"
                       min={0}
-                      className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
+                      className="border border-gray-300 rounded px-4 py-2 w-full"
                       value={formData.followerCount ?? ""}
                       onChange={(e) => setFormData((prev) => ({ ...prev, followerCount: e.target.value }))}
                       placeholder="e.g. 346000"
                     />
                     <p className="text-xs text-gray-400 mt-1">Shown to artists browsing for promoters.</p>
                   </div>
-                  <div className="mt-10">
+                  <div className="mt-6 sm:mt-10">
                     <div className="mb-2">Rate per promotion (₦)</div>
                     <input
                       type="number"
                       min={0}
-                      className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
+                      className="border border-gray-300 rounded px-4 py-2 w-full"
                       value={formData.rate ?? ""}
                       onChange={(e) => setFormData((prev) => ({ ...prev, rate: e.target.value }))}
                       placeholder="e.g. 20000"
                     />
                     <p className="text-xs text-gray-400 mt-1">Leave blank to show "Negotiable".</p>
                   </div>
-                  <div className="mt-10">
+                  <div className="mt-6 sm:mt-10">
                     <div className="mb-2">Phone Number</div>
                     <input
                       type="text"
-                      className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
+                      className="border border-gray-300 rounded px-4 py-2 w-full"
                       value={formData.phone || ""}
                       name="phone"
                       onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
                     />
                   </div>
-                  <div className="mt-10">
+                  <div className="mt-6 sm:mt-10">
                     <div className="mb-2">Email</div>
                     <input
                       type="text"
-                      className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
+                      className="border border-gray-300 rounded px-4 py-2 w-full"
                       value={formData.email || ""}
                       name="email"
                       onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                     />
                   </div>
-                  <div className="mt-10">
+                  <div className="mt-6 sm:mt-10">
                     <div className="mb-2">Instagram link</div>
                     <input
                       type="text"
-                      className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
+                      className="border border-gray-300 rounded px-4 py-2 w-full"
                       value={formData.instagram || ""}
                       name="instagram"
                       onChange={(e) => setFormData((prev) => ({ ...prev, instagram: e.target.value }))}
                     />
                   </div>
-                  <div className="mt-10">
+                  <div className="mt-6 sm:mt-10">
                     <div className="mb-2">TikTok link</div>
                     <input
                       type="text"
-                      className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
+                      className="border border-gray-300 rounded px-4 py-2 w-full"
                       value={formData.tiktok || ""}
                       name="tiktok"
                       onChange={(e) => setFormData((prev) => ({ ...prev, tiktok: e.target.value }))}
                     />
                   </div>
-                  <div className="mt-10">
+                  <div className="mt-6 sm:mt-10">
                     <div className="mb-2">Snapchat link</div>
                     <input
                       type="text"
-                      className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
+                      className="border border-gray-300 rounded px-4 py-2 w-full"
                       value={formData.snapchat || ""}
                       name="snapchat"
                       onChange={(e) => setFormData((prev) => ({ ...prev, snapchat: e.target.value }))}
                     />
                   </div>
 
-                  <div className="mt-10">
+                  <div className="mt-6 sm:mt-10">
                     <div className="mb-2">Twitter link</div>
                     <input
                       type="text"
-                      className="border border-gray-300 rounded px-4 py-2 w-70 sm:w-full"
+                      className="border border-gray-300 rounded px-4 py-2 w-full"
                       value={formData.twitter || ""}
                       name="twitter"
                       onChange={(e) => setFormData((prev) => ({ ...prev, twitter: e.target.value }))}
                     />
                   </div>
 
-                  <div className="mt-10 mb-10">
+                  <div className="mt-6 sm:mt-10 mb-10">
                     {error && (
                       <p className="text-red-400 text-sm mb-3" role="alert">{error}</p>
                     )}
@@ -372,12 +371,12 @@ function InfluencerProfile() {
                       type="submit"
                       disabled={loading}
                       variant="outline"
-                      className="bg-[#B88D35] text-white w-70 border-0 sm:w-full  "
+                      className="bg-[#B88D35] text-white w-full border-0"
                     >
                       {loading ? "Saving..." : "Save Changes"}
                     </Button>
                   </div>
-               
+
                 </div>
               </div>
             </form>

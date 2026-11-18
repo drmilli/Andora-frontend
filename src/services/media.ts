@@ -5,6 +5,18 @@ export const getUserMedia = async (): Promise<Media[]> => {
   const res = await api.get("/media/mine");
   return res.data;
 };
+export const getActiveMediaCampign = async (): Promise<Media[]> => {
+  const res = await api.get("");
+  return res.data;
+};
+export const getRecentMediaCampign = async (): Promise<Media[]> => {
+  const res = await api.get("");
+  return res.data;
+};
+export const getTopMediaCampign = async (): Promise<Media[]> => {
+  const res = await api.get("");
+  return res.data;
+};
 
 export const uploadMedia = async (
   file: File,

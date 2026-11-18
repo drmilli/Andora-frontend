@@ -1,26 +1,13 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { LayoutDashboard, BarChart2, Music, Megaphone, User, X, CheckCircle,  Wallet,  Music2, Notebook } from "lucide-react";
+import { X, CheckCircle, Wallet, Music2, Notebook, Megaphone } from "lucide-react";
 import { StatCard } from "@/components/artist/StatCard";
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "@/Context/AppContext";
 import { useLocation } from "react-router-dom";
-import { getDashboardStats, type DashboardStats } from "@/services/dashboard";
-import { Progress, } from "@/components/ui/progress";
+import { useDashboardStats } from "@/hooks/artist/useDashboardStats";
+import { useMedia } from "@/hooks/artist/useMedia";
 
 
-type CompletedCampaign = {
-  title: string;
-  type: string;
-  date: string;
-  image: string;
-};
-
-const completedCampaigns: CompletedCampaign[] = [
-  { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=30" },
-  { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=31" },
-  { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=32" },
-  { title: "Smoke", type: "Influencer", date: "05-26", image: "https://i.pravatar.cc/200?img=33" },
-];
 
 
 export const DashboardHome: React.FC = () => {
@@ -28,8 +15,8 @@ export const DashboardHome: React.FC = () => {
   const user = context?.user;
   const location = useLocation();
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loadingStats, setLoadingStats] = useState(true);
+  const { stats, loading: loadingStats, balance } = useDashboardStats();
+  const {  topcampaigns, recentcampaigns } = useMedia();
 
   useEffect(() => {
     const state = location.state as { signupSuccess?: boolean; username?: string } | null;
@@ -43,28 +30,7 @@ export const DashboardHome: React.FC = () => {
     }
   }, [location.state, user?.username]);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const data = await getDashboardStats();
-        setStats(data);
-      } catch {
-      
-      } finally {
-        setLoadingStats(false);
-      }
-    };
-    fetchStats();
-  }, []);
 
-  const balance = stats
-    ? `$${Number(stats.walletBalance).toLocaleString("en-US", { minimumFractionDigits: 2 })}`
-    : "$0.00";
-  const [progress, setProgress] = useState(13)
-  useEffect(() => {
-    const timer = setTimeout(() => setProgress(66), 500)
-    return () => clearTimeout(timer)
-  }, [])
   return (
     <div className="w-full pb-28 md:pb-0">
       {successMessage && (
@@ -133,103 +99,70 @@ export const DashboardHome: React.FC = () => {
           <div className="mb-4 flex items-center justify-between">
             <h3 className="font-semibold text-white">Top Campaign</h3>
           </div>
-          <div className="space-y-4">
-            {
-              Array.from({ length: 2}).map((_, i) => (
+          {!topcampaigns || topcampaigns.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <Megaphone size={28} className="text-gray-600 mb-2" />
+              <p className="text-gray-500 text-sm">No campaign data yet</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {topcampaigns.slice(0, 2).map((campaign, i) => (
+                <div
+                  key={campaign.id || i}
+                  className="flex justify-between items-center border-b border-gray-800 pb-2"
+                >
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={campaign.fileUrl || "https://i.pravatar.cc/200?img=30"}
+                      alt={campaign.title || "Campaign"}
+                      className="rounded-full w-10 h-10 object-cover"
+                    />
+                    <p className="text-white">{campaign.title}</p>
+                  </div>
 
-                <div key={i} className="flex justify-between border-b border-gray-800 pb-2">
-                <div className="flex gap-4">
-                  <img src="https://i.pravatar.cc/200?img=30" alt="" className="rounded-full w-10 h-10"/>
-                  <p>smoke</p>
+                  <div className="flex items-center gap-2 text-right">
+                    <p className="text-gray-400">{campaign.duration || "30 days"}</p>
+                    {/* <p className="text-white">{campaign.percentage || "60%"}</p> */}
+                  </div>
                 </div>
-                <div className="text-right flex items-center gap-2 ">
-                  <p className="text-gray-400">30 days</p>.
-                  <p className="text-white">60%</p>
-                </div>
-              </div>
-              ))
-            }
+              ))}
+            </div>
+          )}
 
-          </div>
 
-          <div className="mt-10 text-center bg-[#1A1A1A] rounded p-6">
-            <p className="text-white">Assign campaign to Adoura</p>
-          </div>
         </div>
 
 
       </div>
-                    {/* Completed Campaigns */}
       <div>
         <h3 className="text-white font-semibold mb-4">Recent Campaigns</h3>
-
+        {!recentcampaigns || recentcampaigns.length === 0 ? (
+          <div className="rounded-2xl border border-gray-900 bg-[#0D0B07] p-12 text-center">
+            <Megaphone size={36} className="text-gray-600 mx-auto mb-3" />
+            <p className="text-white font-semibold text-base mb-1">No campaigns yet</p>
+            <p className="text-gray-500 text-xs">Start a campaign to promote your music.</p>
+          </div>
+        ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {completedCampaigns.map((c, i) => (
+          {recentcampaigns.map((c, i) => (
             <div key={i} className="rounded-lg overflow-hidden">
-              <img src={c.image} alt={c.title} className="w-full h-50 object-cover" />
+              <img src={c.fileUrl} alt={c.title|| "Campaign"} className="w-full h-50 object-cover" />
               <div className="p-3 space-y-2">
                 <p className="text-white font-medium text-sm">{c.title}</p>
                 <p className="text-gray-500 text-xs uppercase tracking-wide">
-                  {c.type} &bull; {c.date}
+                  {c.type} &bull; {c.createdAt}
                 </p>
               </div>
             </div>
           ))}
         </div>
+        
+        )
+
+        }
+
+
       </div>
-
-            <div className="mt-10">
-        <h3 className="text-white font-semibold mb-4">Active Campaigns</h3>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {completedCampaigns.map((c, i) => (
-            <div key={i} className="bg-[#0D0B07] border border-gray-900 hover:border-[#A67102]/30 p-3 rounded-xl">
-              <div className="flex  items-center">
-                <img src={c.image} alt={c.title} className="w-10 h-10 object-cover" />
-                <div className="p-2 space-y-2">
-                  <div className="flex items-center justify-between gap-2">
- <p className="text-white font-medium text-sm">{c.title}</p>
- <span className="text-[#F7C946] bg-amber-600/20 rounded px-2 py-1 text-xs">Active</span>
-                  </div>
-                 
-                  <p className="text-gray-500 text-xs uppercase tracking-wide">
-                    Starter Package . 30 days
-                  </p>
-                </div>
-              </div>
-              <div className="">
-                <p className="text-white">Influncer</p>
-<Progress value={progress} className="w-[60%]" />
-         
-              </div>
-           </div>
-    
-          ))}
-        </div>
-      </div>
-
-      <nav className="fixed bottom-4 left-1/2 z-50 flex w-[94%] max-w-3xl -translate-x-1/2 items-center justify-between rounded-full border border-white/10 bg-white/5 p-2 px-3 backdrop-blur-md md:hidden">
-        <a href="/dashboard" className="flex flex-col items-center gap-1 text-[#A67102]">
-          <LayoutDashboard size={22} />
-          <span className="text-[11px]">Dashboard</span>
-        </a>
-        <a href="/dashboard/statistics" className="flex flex-col items-center gap-1 text-gray-200">
-          <BarChart2 size={22} />
-          <span className="text-[11px]">Statistics</span>
-        </a>
-        <a href="/dashboard/media" className="flex flex-col items-center gap-1 text-gray-200">
-          <Music size={22} />
-          <span className="text-[11px]">Media</span>
-        </a>
-        <a href="/dashboard/promotion" className="flex flex-col items-center gap-1 text-gray-200">
-          <Megaphone size={22} />
-          <span className="text-[11px]">Promotion</span>
-        </a>
-        <a href="/dashboard/profile" className="flex flex-col items-center gap-1 text-gray-200">
-          <User size={22} />
-          <span className="text-[11px]">Profile</span>
-        </a>
-      </nav>
     </div>
   );
 };
