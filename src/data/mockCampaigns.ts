@@ -18,7 +18,9 @@ export interface CampaignDetailData {
   genre: string;
   duration: string;
   coverImage: string;
-  status: "Active" | "Completed" | "Cancelled";
+  status: "In review" | "Declined" | "Active" | "Completed" | "Cancelled";
+  /** Shown when a strategist declined the campaign */
+  declineNote?: string;
   daysLeft: number;
   budget: number;
   durationDays: number;

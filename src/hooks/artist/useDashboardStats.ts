@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getDashboardStats, type DashboardStats } from "@/services/dashboard";
+import { formatNaira } from "@/lib/influencer";
 
 export function useDashboardStats() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -12,9 +13,8 @@ export function useDashboardStats() {
       .finally(() => setLoading(false));
   }, []);
 
-  const balance = stats
-    ? `$${Number(stats.walletBalance).toLocaleString("en-US", { minimumFractionDigits: 2 })}`
-    : "$0.00";
+  // Wallet is in naira, like every other amount on the platform
+  const balance = formatNaira(stats ? Number(stats.walletBalance) : 0);
 
   return { stats, loading, balance };
 }

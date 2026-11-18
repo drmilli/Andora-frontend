@@ -12,9 +12,9 @@ export const InfluencerLogin: React.FC = () => {
   const navigate = useNavigate();
 
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = new FormData(e.target);
+    const form = new FormData(e.currentTarget);
     await login({
       email: String(form.get("email")),
       password: String(form.get("password")),

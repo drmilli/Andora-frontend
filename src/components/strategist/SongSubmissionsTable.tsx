@@ -1,22 +1,20 @@
 import React from "react";
-import type { SongSubmission } from "@/pages/dashboard_pages/strategist/mockData";
-
-export const defaultStatusStyles: Record<SongSubmission["status"], string> = {
-  Pending: "bg-[#A67102]/20 text-[#A67102]",
-  Approved: "bg-green-500/20 text-green-500",
-  Declined: "bg-red-500/20 text-red-500",
-};
+import type { StrategistSubmission } from "@/types/strategist";
+import { formatNaira } from "@/lib/influencer";
+import { UserAvatar } from "@/components/community/UserAvatar";
+import { displayName } from "@/components/community/displayName";
+import { defaultStatusStyles } from "./statusStyles";
 
 type Props = {
-  rows: SongSubmission[];
-  statusStyles?: Record<SongSubmission["status"], string>;
+  rows: StrategistSubmission[];
   onReview?: (id: string) => void;
+  emptyText?: string;
 };
 
 export const SongSubmissionsTable: React.FC<Props> = ({
   rows,
-  statusStyles = defaultStatusStyles,
   onReview,
+  emptyText = "No song submissions match these filters.",
 }) => {
   return (
     <div className="overflow-x-auto">
@@ -28,7 +26,7 @@ export const SongSubmissionsTable: React.FC<Props> = ({
             <th className="px-4 py-2 font-medium">Genre</th>
             <th className="px-4 py-2 font-medium">Goal</th>
             <th className="px-4 py-2 font-medium">Budget</th>
-            <th className="px-4 py-2 font-medium">Uploaded</th>
+            <th className="px-4 py-2 font-medium">Submitted</th>
             <th className="px-4 py-2 font-medium">Status</th>
             <th className="px-4 py-2 font-medium">Action</th>
           </tr>
@@ -37,7 +35,7 @@ export const SongSubmissionsTable: React.FC<Props> = ({
           {rows.length === 0 ? (
             <tr>
               <td colSpan={8} className="rounded-xl bg-[#15120C] px-4 py-8 text-center text-sm text-gray-500">
-                No song submissions match these filters.
+                {emptyText}
               </td>
             </tr>
           ) : (
@@ -45,23 +43,20 @@ export const SongSubmissionsTable: React.FC<Props> = ({
               <tr key={row.id} className="text-sm text-gray-200">
                 <td className="rounded-l-xl bg-[#15120C] px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <img
-                      src={row.artwork}
-                      alt={row.track}
-                      className="h-10 w-10 rounded-md object-cover"
-                    />
-                    <span className="font-medium text-white">{row.track}</span>
+                    <UserAvatar user={row.artist} size="sm" />
+                    <span className="font-medium text-white">{row.track?.title || "Untitled"}</span>
                   </div>
                 </td>
-                <td className="bg-[#15120C] px-4 py-3">{row.artist}</td>
-                <td className="bg-[#15120C] px-4 py-3">{row.genre}</td>
-                <td className="bg-[#15120C] px-4 py-3">{row.goal}</td>
-                <td className="bg-[#15120C] px-4 py-3">{row.budget}</td>
-                <td className="bg-[#15120C] px-4 py-3">{row.uploaded}</td>
+                <td className="bg-[#15120C] px-4 py-3">{displayName(row.artist)}</td>
+                <td className="bg-[#15120C] px-4 py-3">{row.genre || "—"}</td>
+                <td className="bg-[#15120C] px-4 py-3">{row.goal || "—"}</td>
                 <td className="bg-[#15120C] px-4 py-3">
-                  <span
-                    className={`inline-flex rounded-full px-3 py-1 text-[11px] font-medium ${statusStyles[row.status]}`}
-                  >
+                  {formatNaira(row.budget)}
+                  <span className="block text-[11px] text-gray-500">{row.packageName}</span>
+                </td>
+                <td className="bg-[#15120C] px-4 py-3">{new Date(row.submittedAt).toLocaleDateString("en-GB")}</td>
+                <td className="bg-[#15120C] px-4 py-3">
+                  <span className={`inline-flex rounded-full px-3 py-1 text-[11px] font-medium ${defaultStatusStyles[row.status]}`}>
                     {row.status}
                   </span>
                 </td>
@@ -71,7 +66,7 @@ export const SongSubmissionsTable: React.FC<Props> = ({
                     onClick={() => onReview?.(row.id)}
                     className="rounded-md border border-gray-700 bg-[#1A1A1A] px-3 py-1 text-xs text-white hover:border-[#A67102]"
                   >
-                    Review
+                    {row.status === "Pending" ? "Review" : "View"}
                   </button>
                 </td>
               </tr>

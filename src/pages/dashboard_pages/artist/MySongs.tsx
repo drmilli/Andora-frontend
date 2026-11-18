@@ -1,6 +1,6 @@
 import { CloudUpload, MoreVertical, Upload, Music, ChevronRight, Play } from "lucide-react";
 import * as React from "react";
-import { useState, useRef } from "react";
+import { useState, useRef, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Dialog,
@@ -9,6 +9,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { TrackDetail } from "@/types/artist/song";
+import type { Campaign } from "@/types/artist/campaign";
+import { useMedia } from "@/hooks/artist/useMedia";
+import { fetchCampaigns } from "@/services/artist/campaigns";
+import { trackFromMedia } from "@/lib/trackFromMedia";
+import { apiErrorMessage } from "@/lib/influencer";
+import { GENRES } from "@/lib/genres";
+import { AppContext } from "@/Context/AppContext";
 
 const statusStyles: Record<TrackDetail["status"], string> = {
   Active: "bg-[#A67102]/20 text-[#A67102] border border-[#A67102]/30",
@@ -16,20 +23,35 @@ const statusStyles: Record<TrackDetail["status"], string> = {
   "Not Active": "bg-gray-800 text-gray-500 border border-gray-800",
 };
 
+// Matches the upload limit the backend accepts comfortably
+const MAX_UPLOAD_MB = 50;
+
 export const MySongs: React.FC = () => {
   const navigate = useNavigate();
-  const [tracks, setTracks] = useState<TrackDetail[]>([]);
+  const user = useContext(AppContext)?.user;
+  const { media, loading, error, upload, remove } = useMedia("audio");
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [openMenuId, setOpenMenuId] = React.useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  // Campaign status per track for the table
+  useEffect(() => {
+    fetchCampaigns(1, 100)
+      .then((r) => setCampaigns(r.data))
+      .catch(() => setCampaigns([]));
+  }, []);
+
+  const artistName = [user?.firstname, user?.surname].filter(Boolean).join(" ") || user?.username || "You";
+  const tracks = media.map((m) => trackFromMedia(m, campaigns, artistName));
 
   // Upload modal state
   const [open, setOpen] = useState(false);
   const [newSongTitle, setNewSongTitle] = useState("");
   const [newSongGenre, setNewSongGenre] = useState("");
-
+  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const audioInputRef = useRef<HTMLInputElement>(null);
-  const coverInputRef = useRef<HTMLInputElement>(null);
-  const [audioFileName, setAudioFileName] = useState<string>("");
-  const [coverFileName, setCoverFileName] = useState<string>("");
 
   const handleUploadAudioClick = () => {
     audioInputRef.current?.click();
@@ -38,112 +60,64 @@ export const MySongs: React.FC = () => {
   const handleAudioFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setAudioFileName(file.name);
+    if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
+      setUploadError(`That file is over ${MAX_UPLOAD_MB} MB. Export a smaller MP3 and try again.`);
+      return;
+    }
+    setUploadError(null);
+    setAudioFile(file);
     if (!newSongTitle) {
       setNewSongTitle(file.name.replace(/\.[^/.]+$/, ""));
     }
   };
 
-  const handleUploadCoverClick = () => {
-    coverInputRef.current?.click();
-  };
-
-  const handleCoverFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setCoverFileName(file.name);
-  };
-
   function openUploadModal() {
+    setNewSongTitle("");
+    setNewSongGenre("");
+    setAudioFile(null);
+    setUploadError(null);
     setOpen(true);
   }
 
   const handleUploadSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!newSongTitle) return;
+    if (!audioFile) return setUploadError("Choose an audio file to upload.");
+    if (!newSongTitle.trim()) return setUploadError("Give the track a title.");
+    try {
+      setUploading(true);
+      setUploadError(null);
+      await upload(audioFile, newSongTitle.trim(), undefined, newSongGenre || undefined);
+      setOpen(false);
+    } catch (err) {
+      setUploadError(apiErrorMessage(err, "Upload failed. Check your connection and try again."));
+    } finally {
+      setUploading(false);
+    }
+  };
 
-    const newTrack: TrackDetail = {
-      id: String(Date.now()),
-      name: newSongTitle,
-      artist: "Runty",
-      status: "Active",
-      campaigns: 0,
-      uploaded: new Date().toISOString().split("T")[0],
-      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&auto=format&fit=crop&q=80",
-      genre: newSongGenre || "Afrobeats",
-      duration: "3:30",
-      bpm: 112,
-      musicalKey: "C Minor",
-      isrc: `NG-ADR-26-00${Math.floor(100 + Math.random() * 900)}`,
-      upc: `19871100${Math.floor(1000 + Math.random() * 9000)}`,
-      releaseDate: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-      album: "Singles & Unreleased",
-      label: "Audora Music Group",
-      explicit: false,
-      fileSize: "38.5 MB",
-      fileFormat: "WAV 24-bit / 48.0 kHz",
-      streams: 0,
-      radioPlays: 0,
-      tvPlays: 0,
-      influencerPosts: 0,
-      totalReach: "0",
-      revenue: "₦ 0.00",
-      description: "Freshly uploaded audio master ready for distribution and campaign push.",
-      credits: {
-        producers: ["Self-Produced"],
-        writers: ["Runty"],
-      },
-      platforms: [],
-      campaignsList: [],
-      radioSpins: [],
-      streamHistory: [{ date: "Today", streams: 0, radio: 0 }],
-      lyrics: "[Lyrics pending]",
-    };
-
-    setTracks([newTrack, ...tracks]);
-    setOpen(false);
-    setNewSongTitle("");
-    setNewSongGenre("");
-    setAudioFileName("");
-    setCoverFileName("");
+  const handleDelete = async (track: TrackDetail) => {
+    if (!window.confirm(`Delete "${track.name}"? This removes the audio file and can't be undone.`)) return;
+    try {
+      setActionError(null);
+      await remove(track.id);
+    } catch (err) {
+      setActionError(apiErrorMessage(err, "Could not delete this track"));
+    }
   };
 
   const handleRowClick = (trackId: string) => {
     navigate(`/dashboard/my-songs/${trackId}`);
   };
 
-  const genres = [
-    { id: 1, name: "Afrobeats" },
-    { id: 2, name: "Amapiano" },
-    { id: 3, name: "Gospel" },
-    { id: 4, name: "HipHop" },
-    { id: 5, name: "R&B" },
-    { id: 6, name: "Dancehall" },
-    { id: 7, name: "Highlife" },
-    { id: 8, name: "Afro-soul" },
-    { id: 9, name: "Jazz/Blues" },
-    { id: 10, name: "EDM" },
-    { id: 11, name: "Lofi" },
-    { id: 12, name: "Country" },
-    { id: 13, name: "House-Music" },
-    { id: 14, name: "Rock/Alternative" },
-    { id: 15, name: "Fuji" },
-    { id: 16, name: "Funk" },
-    { id: 17, name: "Trap/Rap" },
-  ];
-
-
-
-
   return (
     <div className="w-full max-w-7xl mx-auto pb-28 md:pb-10">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div>
           <p className="text-gray-400 text-sm font-medium">
-            {tracks.length} Tracks In Catalog •{" "}
+            {tracks.length} {tracks.length === 1 ? "Track" : "Tracks"} In Catalog
           </p>
           <p className="text-gray-500 text-xs mt-0.5">
-            Click any track to view comprehensive analytics, metadata, campaign history, and airplay.
+            Click any track to play it, edit its details and see its plays and campaigns.
           </p>
         </div>
 
@@ -165,11 +139,11 @@ export const MySongs: React.FC = () => {
                 </DialogTitle>
               </DialogHeader>
               <p className="text-gray-500 text-xs uppercase tracking-wide mb-5">
-                Upload your audio file and cover art to register on Audora
+                Upload your audio file to add it to your catalog
               </p>
 
               <form onSubmit={handleUploadSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3">
                  
                   <div
                     onClick={handleUploadAudioClick}
@@ -184,32 +158,13 @@ export const MySongs: React.FC = () => {
                     />
                     <CloudUpload size={28} className="text-[#A67102]" />
                     <p className="text-white font-medium text-xs">
-                      {audioFileName ? audioFileName : "Upload Audio (MP3 / WAV)"}
+                      {audioFile ? audioFile.name : "Upload Audio (MP3 / WAV)"}
                     </p>
                     <span className="bg-[#A67102]/20 text-[#A67102] text-[10px] px-2 py-0.5 rounded font-medium">
-                      {audioFileName ? "Selected" : "Browse File"}
+                      {audioFile ? "Selected" : "Browse File"}
                     </span>
                   </div>
 
-                  <div
-                    onClick={handleUploadCoverClick}
-                    className="border flex flex-col bg-white/[0.02] items-center justify-center space-y-2 border-gray-800 hover:border-[#A67102] rounded-xl p-4 text-center cursor-pointer transition-colors"
-                  >
-                    <input
-                      ref={coverInputRef}
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleCoverFileChange}
-                    />
-                    <CloudUpload size={28} className="text-[#A67102]" />
-                    <p className="text-white font-medium text-xs">
-                      {coverFileName ? coverFileName : "Cover Artwork (JPG/PNG)"}
-                    </p>
-                    <span className="bg-[#A67102]/20 text-[#A67102] text-[10px] px-2 py-0.5 rounded font-medium">
-                      {coverFileName ? "Selected" : "Browse Image"}
-                    </span>
-                  </div>
                 </div>
 
                 <div>
@@ -240,26 +195,32 @@ export const MySongs: React.FC = () => {
                     <option value="" className="bg-[#1f1f1f] text-gray-400">
                       Select a genre
                     </option>
-                    {genres.map((genre) => (
-                      <option key={genre.id} value={genre.name} className="bg-[#1f1f1f] text-white">
-                        {genre.name}
+                    {GENRES.map((genre) => (
+                      <option key={genre} value={genre} className="bg-[#1f1f1f] text-white">
+                        {genre}
                       </option>
                     ))}
                   </select>
                 </div>
 
+                {uploadError && <p className="text-xs text-red-400" role="alert">{uploadError}</p>}
+
                 <button
                   type="submit"
-                  disabled={!newSongTitle}
+                  disabled={uploading || !audioFile || !newSongTitle.trim()}
                   className="w-full bg-[#A67102] hover:bg-[#8a5e02] disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors mt-2"
                 >
-                 Upload
+                  {uploading ? "Uploading..." : "Upload"}
                 </button>
               </form>
             </div>
           </DialogContent>
         </Dialog>
       </div>
+
+      {(error || actionError) && (
+        <p className="mb-4 text-sm text-red-400" role="alert">{actionError || error}</p>
+      )}
 
       <div className="bg-[#0D0B07] rounded-2xl border border-gray-900 overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
@@ -276,7 +237,11 @@ export const MySongs: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-900/60">
-              {tracks.length === 0 ? (
+              {loading && tracks.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-20 text-center text-sm text-gray-400">Loading your songs...</td>
+                </tr>
+              ) : tracks.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-20 text-center">
                     <Music size={36} className="text-gray-600 mx-auto mb-3" />
@@ -371,11 +336,20 @@ export const MySongs: React.FC = () => {
                         <button
                           onClick={() => {
                             setOpenMenuId(null);
-                            navigate(`/dashboard/my-songs/${track.id}`);
+                            navigate("/dashboard/campaigns", { state: { startCampaign: { mediaId: track.id } } });
                           }}
                           className="w-full text-left text-xs text-[#f5b640] hover:bg-white/5 px-4 py-2.5 transition-colors"
                         >
                           Launch Campaign
+                        </button>
+                        <button
+                          onClick={() => {
+                            setOpenMenuId(null);
+                            handleDelete(track);
+                          }}
+                          className="w-full text-left text-xs text-red-400 hover:bg-white/5 px-4 py-2.5 transition-colors"
+                        >
+                          Delete
                         </button>
                       </div>
                     )}

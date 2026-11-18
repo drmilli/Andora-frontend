@@ -29,9 +29,18 @@ export interface CountrySelectProps {
   onValueChange?: (value: string) => void;
 }
 
-export const getFlagEmoji = (code?: string): string | undefined => {
+const getFlagEmoji = (code?: string): string | undefined => {
   if (!code || code.length !== 2) return undefined;
   return String.fromCodePoint(...code.toUpperCase().split("").map((c) => 127397 + c.charCodeAt(0)));
+};
+
+// The shapes restcountries (v2 and v3) and our fallback list use
+type RestCountry = {
+  name?: { common?: string } | string;
+  cca2?: string;
+  alpha2Code?: string;
+  code?: string;
+  flag?: string;
 };
 
 const DEFAULT_COUNTRIES: SelectOption[] = [
@@ -87,18 +96,16 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
   value,
   defaultValue,
   options: customOptions,
-
+  onValueChange,
   disabled,
   required,
 }) => {
   const [countries, setCountries] = useState<SelectOption[]>(DEFAULT_COUNTRIES);
-  const [internalValue, setInternalValue] = useState<string | undefined>(value ?? defaultValue);
+  // Controlled when `value` is passed, otherwise keeps its own state
+  const [internalValue, setInternalValue] = useState<string | undefined>(defaultValue);
+  const selectedValue = value !== undefined ? value : internalValue;
 
   const isCountrySelect = label.toLowerCase().includes("country") && !customOptions;
-
-  useEffect(() => {
-    if (value !== undefined) setInternalValue(value);
-  }, [value]);
 
 useEffect(() => {
   if (!isCountrySelect) return;
@@ -107,8 +114,8 @@ useEffect(() => {
     .then((data) => {
       if (!Array.isArray(data) || data.length === 0) return;
 
-      const list = data.map((country: any) => ({
-        name: country.name?.common || country.name || "",
+      const list = data.map((country: RestCountry) => ({
+        name: (typeof country.name === "string" ? country.name : country.name?.common) || "",
         code: country.cca2 || country.alpha2Code || country.code,
         flag: country.flag || getFlagEmoji(
           country.cca2 || country.alpha2Code || country.code
@@ -134,7 +141,7 @@ useEffect(() => {
 
   const handleValueChange = (val: string) => {
     setInternalValue(val);
-
+    onValueChange?.(val);
   };
 
   return (
@@ -143,7 +150,7 @@ useEffect(() => {
 
       <Select
         name={name}
-        value={internalValue}
+        value={selectedValue}
         onValueChange={handleValueChange}
         disabled={disabled}
         required={required}

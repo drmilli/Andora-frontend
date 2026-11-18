@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { AppContext } from "@/Context/AppContext";
 import { updateProfile, uploadProfilePhoto } from "@/services/user";
+import { apiErrorMessage } from "@/lib/influencer";
 
 const EditProfileDialog: React.FC = () => {
   const context = useContext(AppContext);
@@ -87,8 +88,8 @@ const EditProfileDialog: React.FC = () => {
       });
       setUser(updatedUser);
       setOpen(false);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to update profile");
+    } catch (err) {
+      setError(apiErrorMessage(err, "Failed to update profile"));
     } finally {
       setSaving(false);
     }

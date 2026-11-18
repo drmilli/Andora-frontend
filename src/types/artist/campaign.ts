@@ -15,7 +15,14 @@ export interface Campaign {
   influencerCount: number;
   durationDays: number;
   message: string;
-  status: "ACTIVE" | "COMPLETED" | "CANCELLED";
+  /** PENDING_REVIEW: paid, waiting for a strategist. DECLINED: refunded in full. */
+  status: "PENDING_REVIEW" | "DECLINED" | "ACTIVE" | "COMPLETED" | "CANCELLED";
+  genre: string | null;
+  goal: string | null;
+  reviewedAt: string | null;
+  declineTitle: string | null;
+  declineCategory: string | null;
+  declineReason: string | null;
   /** Mean progress across assigned influencers, 0-100 */
   progress: number;
   assigned: number;
@@ -48,6 +55,9 @@ export interface PaginatedCampaigns {
 
 export interface CreateCampaignPayload {
   tier: CampaignPackage["tier"];
-  mediaId?: string | null;
+  /** Required: a strategist reviews the track before the campaign goes live */
+  mediaId: string;
+  genre?: string;
+  goal?: string;
   message?: string;
 }

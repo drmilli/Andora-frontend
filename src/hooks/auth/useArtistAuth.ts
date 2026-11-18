@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 import { loginUser, signupUser } from "../../services/auth";
 import type { LoginPayload, SignupPayload } from "../../types/auth";
 import { AppContext } from "../../Context/AppContext";
+import { apiErrorMessage } from "../../lib/influencer";
 
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);
@@ -26,9 +27,9 @@ export const useAuth = () => {
       setUser(data.user);
       return data;
 
-    } catch (err: any) {
+    } catch (err) {
       console.error("Login error:", err);
-      setError(err.response?.data?.message || "Login failed");
+      setError(apiErrorMessage(err, "Login failed"));
       throw err;
     } finally {
       setLoading(false);
@@ -45,8 +46,8 @@ export const useAuth = () => {
       setToken(data.token);
       setUser(data.user);
       return data;
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Register failed");
+    } catch (err) {
+      setError(apiErrorMessage(err, "Register failed"));
       throw err;
     } finally {
       setLoading(false);

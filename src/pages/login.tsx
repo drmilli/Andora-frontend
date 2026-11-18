@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthLayout } from "../components/auth/AuthLayout";
 import { AuthInput } from "../components/auth/AuthInput";
 import { AuthButton } from "../components/auth/AuthButton";
@@ -10,10 +10,12 @@ import { useAuth } from "../hooks/auth/useArtistAuth";
 export const LoginPage: React.FC = () => {
   const { login, error } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const passwordReset = (location.state as { passwordReset?: boolean } | null)?.passwordReset;
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = new FormData(e.target);
+    const form = new FormData(e.currentTarget);
     await login({
       email: String(form.get("email")),
       password: String(form.get("password")),
@@ -40,6 +42,9 @@ export const LoginPage: React.FC = () => {
       </div>
 
       <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        {passwordReset && !error && (
+          <p className="text-green-400 text-sm" role="status">Password updated. Log in with your new password.</p>
+        )}
         {error && <p className="text-red-500">{error}</p>}
         <AuthInput
           id="email"

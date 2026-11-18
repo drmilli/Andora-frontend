@@ -39,17 +39,14 @@ export const CampaignDetails: React.FC = () => {
   const navigate = useNavigate();
 
   const [campaign, setCampaign] = useState<CampaignDetailData>(MOCK_CAMPAIGN_DETAIL);
-  const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInfluencer, setSelectedInfluencer] = useState<CampaignInfluencerItem>(
     MOCK_CAMPAIGN_DETAIL.topPerformer
   );
-  console.log(loading)
   useEffect(() => {
     if (!id) return;
-    setLoading(true);
     fetchCampaignById(id)
-      .then((res: any) => {
+      .then((res) => {
         if (res && res.id) {
 
           setCampaign({
@@ -60,16 +57,23 @@ export const CampaignDetails: React.FC = () => {
             budget: res.budget || MOCK_CAMPAIGN_DETAIL.budget,
             durationDays: res.durationDays || MOCK_CAMPAIGN_DETAIL.durationDays,
             influencersAssigned: res.assigned || MOCK_CAMPAIGN_DETAIL.influencersAssigned,
-            status: res.status === "ACTIVE" ? "Active" : res.status === "COMPLETED" ? "Completed" : "Cancelled",
+            status: ({
+              PENDING_REVIEW: "In review",
+              DECLINED: "Declined",
+              ACTIVE: "Active",
+              COMPLETED: "Completed",
+              CANCELLED: "Cancelled",
+            } as const)[res.status],
+            declineNote:
+              res.status === "DECLINED" && res.declineTitle
+                ? `${res.declineTitle} (${res.declineCategory}): ${res.declineReason}`
+                : undefined,
           });
         }
       })
       .catch(() => {
         // Fallback gracefully to mock data
         setCampaign(MOCK_CAMPAIGN_DETAIL);
-      })
-      .finally(() => {
-        setLoading(false);
       });
   }, [id]);
 
@@ -127,6 +131,12 @@ export const CampaignDetails: React.FC = () => {
                   <Download className="w-4 h-4 text-gray-400" />
                 </button>
               </div>
+              {campaign.status === "In review" && (
+                <p className="mt-2 text-xs text-blue-300">A strategist is reviewing your track. Your payment is held until then.</p>
+              )}
+              {campaign.declineNote && (
+                <p className="mt-2 text-xs text-red-400">Not approved: {campaign.declineNote}. You were refunded in full.</p>
+              )}
 
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 pt-5  w-[900px]  text-left">
                 <div>

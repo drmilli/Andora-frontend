@@ -108,11 +108,17 @@ console.log(loading)
     setStep("package");
   }
 
+  // Hand off to the Campaigns page, which collects genre, goal and brief,
+  // shows the cost and submits the campaign for strategist review
   function handleLaunchCampaign() {
-    // TODO: hook this up to your API call
-    console.log("Launching campaign:", { selectedSong, selectedPackage });
+    if (!selectedSong || !selectedPackage) return;
     setOpen(false);
+    navigate("/dashboard/campaigns", {
+      state: { startCampaign: { tier: selectedPackage.id.toUpperCase(), mediaId: selectedSong.id } },
+    });
   }
+
+  const [strategistSearch, setStrategistSearch] = useState("");
 
   useEffect(() => {
     const loadMedia = async () => {
@@ -131,7 +137,7 @@ console.log(loading)
     loadMedia();
   }, []);
 
-  const handleUploadMedia = async (e: any) => {
+  const handleUploadMedia = async (e: React.FormEvent) => {
     e.preventDefault();
     try{
     const res = await uploadMedia(formData);
@@ -167,14 +173,28 @@ console.log(loading)
 
       <div className="flex items-center gap-4">
         {isCampaignStrategist(role) ? (
-          <div className="relative hidden sm:block">
-            <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+          <form
+            role="search"
+            className="relative hidden sm:block"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const q = strategistSearch.trim();
+              if (!q) return;
+              // Search every submission (any status) by song or artist
+              navigate("/dashboard/song-submissions", { state: { search: q, view: "all" } });
+            }}
+          >
+            <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" aria-hidden="true" />
+            <label htmlFor="strategist-search" className="sr-only">Search submissions</label>
             <input
+              id="strategist-search"
               type="search"
-              placeholder="Search here"
+              value={strategistSearch}
+              onChange={(e) => setStrategistSearch(e.target.value)}
+              placeholder="Search songs or artists"
               className="w-56 rounded-lg border border-gray-800 bg-[#0D0B07] py-2 pl-9 pr-3 text-sm text-gray-200 placeholder:text-gray-500 focus:border-[#A67102] focus:outline-none"
             />
-          </div>
+          </form>
         ) : (
           showSearch &&
           role !== "influencer" &&
@@ -232,7 +252,7 @@ console.log(loading)
               </DialogTitle>
             </DialogHeader>
             <p className="text-gray-500 text-xs uppercase tracking-wide mb-6">
-              {step === "uploadSong" ? "Please fill the form below " : "Audora auto-assigns influencers based on your package."}
+              {step === "uploadSong" ? "Please fill the form below " : "A strategist reviews your track, then Audora assigns influencers based on your package."}
             </p>
 
             {/* upload a new song */}
@@ -404,7 +424,7 @@ console.log(loading)
                   disabled={!selectedPackage}
                   className="mt-2 bg-[#A67102] hover:bg-[#8a5e02] disabled:opacity-40 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium text-sm transition-colors"
                 >
-                  Launch Campaign
+                  Continue
                 </button>
               </div>
             )}

@@ -5,18 +5,6 @@ export const getUserMedia = async (): Promise<Media[]> => {
   const res = await api.get("/media/mine");
   return res.data;
 };
-export const getActiveMediaCampign = async (): Promise<Media[]> => {
-  const res = await api.get("");
-  return res.data;
-};
-export const getRecentMediaCampign = async (): Promise<Media[]> => {
-  const res = await api.get("");
-  return res.data;
-};
-export const getTopMediaCampign = async (): Promise<Media[]> => {
-  const res = await api.get("");
-  return res.data;
-};
 
 export const uploadMedia = async (
   file: File,
@@ -58,4 +46,13 @@ export const recordLike = async (id: string) => {
 export const recordDownload = async (id: string) => {
   const res = await api.post(`/media/${id}/download`);
   return res.data as { id: string; plays: number; likes: number; downloads: number };
+};
+
+/** Edit a track's title, genre or description (owner only). */
+export const updateMedia = async (
+  id: string,
+  data: { title?: string; genre?: string; description?: string }
+): Promise<Media> => {
+  const res = await api.put(`/media/${id}`, data);
+  return res.data;
 };

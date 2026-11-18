@@ -8,66 +8,6 @@ import { SEO } from "../components/SEO";
 import { Headphones } from "lucide-react";
 import radiopresenter from "../assets/work-with-us-sections/image4.png";
 
-export const navLinks: Array<{
-  label: string;
-  href: string;
-  isActive?: boolean;
-}> = [
-    { label: "Home", href: "/" },
-    { label: "What we offer", href: "/#offer" },
-    { label: "FAQ", href: "/#faq" },
-    { label: "About", href: "/#about-us" },
-    { label: "Contact Us", href: "/#contact" },
-    { label: "Work With Us", href: "/work-with-us", isActive: true },
-  ];
-
-
-
-export const processSteps: Array<{ title: string; description: string }> = [
-  {
-    title: "Discovery & Scoping",
-    description:
-      "We co-create the brief, define your KPIs, and audit existing assets so our teams can plug in seamlessly.",
-  },
-  {
-    title: "Talent Matchmaking",
-    description:
-      "Our partnership leads handpick hosts, influencers, and broadcasters, then align schedules and publishing windows.",
-  },
-  {
-    title: "Production & Launch",
-    description:
-      "We manage creative direction, deliverables, and approvals, making sure every asset is on-brand and on time.",
-  },
-  {
-    title: "Measurement & Iteration",
-    description:
-      "Your dashboard shows reach, engagement, and spend in real-time—so we can optimize quickly and scale what works.",
-  },
-];
-
-export const testimonials: Array<{
-  quote: string;
-  name: string;
-  role: string;
-  image: string;
-}> = [
-    {
-      quote:
-        "Audora connected our newsroom with hosts who actually understood our audience. We filled a full programming block within two weeks.",
-      name: "Oluwaseyi Martins",
-      role: "Senior Producer, Pulse NG",
-      image: influencer,
-    },
-    {
-      quote:
-        "From contracts to campaign metrics, everything lives in one place. It feels like an in-house team, without the overhead.",
-      name: "Marcos Alvarez",
-      role: "Marketing Lead, SONI México",
-      image: tvpresenter,
-    },
-  ];
-
 export const WorkWithUsPage: React.FC = () => {
   return (
     <div className="relative bg-black text-white">

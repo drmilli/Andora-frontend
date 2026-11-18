@@ -11,6 +11,11 @@ export const getPageTitle = (pathname: string): string => {
   if (pathname.startsWith("/dashboard/settings")) return "Settings";
   if (pathname.startsWith("/dashboard/my-songs/")) return "Song Details";
   if (pathname.startsWith("/dashboard/my-songs")) return "My Songs";
+  if (pathname.startsWith("/dashboard/marketplace")) return "Marketplace";
+  if (pathname.startsWith("/dashboard/community")) return "Community";
+  if (pathname.startsWith("/dashboard/people/")) return "Profile";
+  if (pathname.startsWith("/dashboard/admin-disputes")) return "Disputes";
+  if (pathname.startsWith("/dashboard/admin-strategists")) return "Strategists";
 
       if (pathname.startsWith("/dashboard/campaigns")) return "Campaigns";
         if (pathname.startsWith("/dashboard/billings")) return "Billings";

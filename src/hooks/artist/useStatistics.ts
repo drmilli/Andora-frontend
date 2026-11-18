@@ -3,20 +3,28 @@ import type { ArtistStatistics } from "@/types/artist/statistics";
 import { fetchArtistStatistics } from "@/services/artist/statistics";
 import { apiErrorMessage } from "@/lib/influencer";
 
+type Result = { months: number; stats: ArtistStatistics | null; error: string | null };
+
 export function useStatistics(months = 12) {
-  const [stats, setStats] = useState<ArtistStatistics | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<Result | null>(null);
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
+    let cancelled = false;
     fetchArtistStatistics(months)
-      .then(setStats)
-      .catch((err) => setError(apiErrorMessage(err, "Could not load your statistics")))
-      .finally(() => setLoading(false));
+      .then((stats) => !cancelled && setResult({ months, stats, error: null }))
+      .catch((err) =>
+        !cancelled && setResult({ months, stats: null, error: apiErrorMessage(err, "Could not load your statistics") })
+      );
+    return () => {
+      cancelled = true;
+    };
   }, [months]);
 
+  // Loading until a result for the range currently asked for has arrived
+  const current = result?.months === months ? result : null;
+  const stats = current?.stats ?? null;
+
+  // Real per-track counters, highest streams first
   const topSongs = (stats?.tracks ?? []).slice(0, 5).map((t) => ({
     title: t.title ?? "Untitled",
     streams: t.streams,
@@ -29,5 +37,5 @@ export function useStatistics(months = 12) {
     value: m.plays,
   }));
 
-  return { stats, loading, error, topSongs, streamData };
+  return { stats, loading: current === null, error: current?.error ?? null, topSongs, streamData };
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, Download, Share, PlusSquare } from 'lucide-react';
 
 interface InstallBannerProps {
@@ -8,22 +8,23 @@ interface InstallBannerProps {
 }
 
 export const InstallBanner: React.FC<InstallBannerProps> = ({ onInstall, show, isIOS = false }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
-
-  useEffect(() => {
-    const hasDismissed = localStorage.getItem('audora_install_dismissed');
-    if (show && !dismissed && !hasDismissed) {
-      setIsVisible(true);
-    } else {
-      setIsVisible(false);
+  // Remembered across visits; storage can be unavailable (private mode), so guard it
+  const [dismissed, setDismissed] = useState(() => {
+    try {
+      return !!localStorage.getItem('audora_install_dismissed');
+    } catch {
+      return false;
     }
-  }, [show, dismissed]);
+  });
+  const isVisible = show && !dismissed;
 
   const handleDismiss = () => {
     setDismissed(true);
-    setIsVisible(false);
-    localStorage.setItem('audora_install_dismissed', 'true');
+    try {
+      localStorage.setItem('audora_install_dismissed', 'true');
+    } catch {
+      // Not persisted; it stays hidden for this visit
+    }
   };
 
   if (!isVisible) return null;

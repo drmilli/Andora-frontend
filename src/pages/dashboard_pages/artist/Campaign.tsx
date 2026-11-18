@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import type { Campaign as CampaignType, CampaignPackage } from "@/types/artist/campaign";
@@ -17,11 +18,23 @@ import {
 import { getUserMedia } from "@/services/media";
 import type { Media } from "@/types/media";
 import { apiErrorMessage, formatNaira, platformIcon } from "@/lib/influencer";
+import { useLocation, useNavigate } from "react-router-dom";
+import { CAMPAIGN_GOALS, GENRES } from "@/lib/genres";
 
 const statusStyles: Record<CampaignType["status"], string> = {
+  PENDING_REVIEW: "bg-blue-500/15 text-blue-300",
+  DECLINED: "bg-red-500/15 text-red-400",
   ACTIVE: "bg-[#A67102]/20 text-[#A67102]",
   COMPLETED: "bg-gray-700/40 text-gray-300",
   CANCELLED: "bg-gray-800 text-gray-500",
+};
+
+const statusLabel: Record<CampaignType["status"], string> = {
+  PENDING_REVIEW: "In review",
+  DECLINED: "Declined",
+  ACTIVE: "Active",
+  COMPLETED: "Completed",
+  CANCELLED: "Cancelled",
 };
 
 export const Campaign: React.FC = () => {
@@ -35,7 +48,11 @@ export const Campaign: React.FC = () => {
   const [tier, setTier] = React.useState<CampaignPackage["tier"] | "">("");
   const [mediaId, setMediaId] = React.useState("");
   const [message, setMessage] = React.useState("");
+  const [genre, setGenre] = React.useState("");
+  const [goal, setGoal] = React.useState("");
   const [submitting, setSubmitting] = React.useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
   const [cancelling, setCancelling] = React.useState<string | null>(null);
 
   const load = React.useCallback(async () => {
@@ -65,18 +82,38 @@ export const Campaign: React.FC = () => {
       .catch(() => setMedia([]));
   }, []);
 
-  const openDialog = (preselect?: CampaignPackage["tier"]) => {
+  const openDialog = (preselect?: CampaignPackage["tier"], preselectMedia?: string) => {
     setTier(preselect ?? "");
-    setMediaId("");
+    setMediaId(preselectMedia ?? "");
     setMessage("");
+    setGenre("");
+    setGoal("");
     setError(null);
     setNotice(null);
     setOpen(true);
   };
 
+  // Arriving from the header's "Start Campaign" flow with a song and package picked
+  // From the header (song + package) or My Songs / Song Details (song, maybe package)
+  const handoff = (location.state as { startCampaign?: { tier?: CampaignPackage["tier"]; mediaId: string } } | null)?.startCampaign;
+  React.useEffect(() => {
+    if (!handoff) return;
+    openDialog(handoff.tier, handoff.mediaId);
+    navigate(location.pathname, { replace: true, state: null });
+    // Run once per handoff
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [handoff?.tier, handoff?.mediaId]);
+
+  // Use the track's own genre when it has one
+  const selectedMedia = media.find((m) => m.id === mediaId);
+
   const submit = async () => {
     if (!tier) {
       setError("Pick a package first.");
+      return;
+    }
+    if (!mediaId) {
+      setError("Pick the track you want to promote.");
       return;
     }
     try {
@@ -84,12 +121,14 @@ export const Campaign: React.FC = () => {
       setError(null);
       const created = await createCampaign({
         tier,
-        mediaId: mediaId || null,
+        mediaId,
+        genre: genre || undefined,
+        goal: goal || undefined,
         message: message.trim() || undefined,
       });
       setOpen(false);
       setNotice(
-        `Campaign started — ${created.assigned} influencer${created.assigned === 1 ? "" : "s"} assigned, ${formatNaira(created.budget)} held until the work completes.`
+        `Submitted for review. ${formatNaira(created.budget)} is held from your wallet; a strategist will review your track and the campaign goes live once approved. If it's declined you're refunded in full.`
       );
       await load();
     } catch (err) {
@@ -100,12 +139,11 @@ export const Campaign: React.FC = () => {
   };
 
   const onCancel = async (campaign: CampaignType) => {
-    if (
-      !window.confirm(
-        "Cancel this campaign? Requests no influencer has accepted yet are refunded; accepted work keeps running."
-      )
-    )
-      return;
+    const question =
+      campaign.status === "PENDING_REVIEW"
+        ? `Withdraw this campaign? It hasn't been reviewed yet, so the full ${formatNaira(campaign.budget)} is refunded.`
+        : "Cancel this campaign? Requests no influencer has accepted yet are refunded; accepted work keeps running.";
+    if (!window.confirm(question)) return;
     try {
       setCancelling(campaign.id);
       setError(null);
@@ -129,7 +167,7 @@ export const Campaign: React.FC = () => {
           <div>
             <h3 className="text-white text-lg font-semibold mb-1">Start a new campaign</h3>
             <p className="text-gray-500 text-xs uppercase tracking-wide">
-              Audora auto-assigns influencers based on your package.
+              A strategist reviews your track, then Audora assigns influencers based on your package.
             </p>
           </div>
 
@@ -218,8 +256,13 @@ export const Campaign: React.FC = () => {
                       <span
                         className={`text-[11px] px-3 py-1 rounded-full font-medium ${statusStyles[c.status]}`}
                       >
-                        {c.status}
+                        {statusLabel[c.status]}
                       </span>
+                      {c.status === "DECLINED" && c.declineTitle && (
+                        <p className="mt-1 max-w-[220px] text-[11px] text-gray-400" title={c.declineReason ?? undefined}>
+                          {c.declineTitle}: {c.declineReason}
+                        </p>
+                      )}
                     </td>
                     <td className="px-6 py-3">
                       <div className="flex items-center gap-1">
@@ -248,16 +291,18 @@ export const Campaign: React.FC = () => {
                     </td>
                     <td className="px-6 py-3 text-gray-300">{formatNaira(c.budget)}</td>
                     <td className="px-6 py-3 text-gray-300">
-                      {new Date(c.startedAt).toLocaleDateString("en-GB")}
+                      {c.status === "PENDING_REVIEW" || c.status === "DECLINED"
+                        ? "—"
+                        : new Date(c.startedAt).toLocaleDateString("en-GB")}
                     </td>
                     <td className="px-6 py-3 text-right">
-                      {c.status === "ACTIVE" ? (
+                      {c.status === "ACTIVE" || c.status === "PENDING_REVIEW" ? (
                         <button
                           onClick={() => onCancel(c)}
                           disabled={cancelling === c.id}
                           className="text-xs text-gray-300 border border-zinc-700 rounded-md px-3 py-1.5 hover:bg-zinc-900 disabled:opacity-40"
                         >
-                          {cancelling === c.id ? "Cancelling..." : "Cancel"}
+                          {cancelling === c.id ? "Working..." : c.status === "PENDING_REVIEW" ? "Withdraw" : "Cancel"}
                         </button>
                       ) : (
                         <span className="text-gray-600 text-xs">—</span>
@@ -275,9 +320,9 @@ export const Campaign: React.FC = () => {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-[500px] border-0 bg-black text-white shadow-lg shadow-white/20">
           <DialogHeader className="pt-4">
-            <h2 className="text-xl">Start a campaign</h2>
+            <DialogTitle className="text-xl font-normal">Start a campaign</DialogTitle>
             <p className="text-sm text-gray-400">
-              Audora picks the influencers for you.
+              A strategist reviews your track first. Once approved, Audora picks the influencers.
             </p>
           </DialogHeader>
 
@@ -304,7 +349,7 @@ export const Campaign: React.FC = () => {
 
             <div className="flex flex-col">
               <label htmlFor="campaign-media" className="text-sm mb-1">
-                Track (optional)
+                Track
               </label>
               <select
                 id="campaign-media"
@@ -312,13 +357,48 @@ export const Campaign: React.FC = () => {
                 onChange={(e) => setMediaId(e.target.value)}
                 className="p-2 bg-zinc-900 border border-zinc-700 rounded-md text-white"
               >
-                <option value="">No track attached</option>
+                <option value="">Select a track</option>
                 {media.map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.title || "Untitled"} ({m.type})
                   </option>
                 ))}
               </select>
+            </div>
+
+            {media.length === 0 && (
+              <p className="text-xs text-gray-400">Upload a track first (My Songs) to start a campaign.</p>
+            )}
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="flex flex-col">
+                <label htmlFor="campaign-genre" className="text-sm mb-1">Genre</label>
+                <select
+                  id="campaign-genre"
+                  value={genre}
+                  onChange={(e) => setGenre(e.target.value)}
+                  className="p-2 bg-zinc-900 border border-zinc-700 rounded-md text-white"
+                >
+                  <option value="">{selectedMedia?.genre ? `Track genre (${selectedMedia.genre})` : "Select a genre"}</option>
+                  {GENRES.map((g) => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="campaign-goal" className="text-sm mb-1">Goal</label>
+                <select
+                  id="campaign-goal"
+                  value={goal}
+                  onChange={(e) => setGoal(e.target.value)}
+                  className="p-2 bg-zinc-900 border border-zinc-700 rounded-md text-white"
+                >
+                  <option value="">Let influencers decide</option>
+                  {CAMPAIGN_GOALS.map((g) => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div className="flex flex-col">
@@ -338,9 +418,10 @@ export const Campaign: React.FC = () => {
             {selected && (
               <p className="text-xs text-gray-400">
                 {formatNaira(selected.budget)} comes out of your wallet now and is held
-                until each influencer finishes. Anyone who declines is refunded
-                automatically. If fewer than {selected.influencerCount} influencers are
-                available you are only charged for those assigned.
+                while a strategist reviews your track. If it's declined, or you withdraw
+                before review, you get it all back. Once approved, it's held until each
+                influencer finishes; if fewer than {selected.influencerCount} are available
+                you're refunded the difference.
               </p>
             )}
 
@@ -353,11 +434,11 @@ export const Campaign: React.FC = () => {
 
           <DialogFooter>
             <Button
-              disabled={submitting || !tier}
+              disabled={submitting || !tier || !mediaId}
               onClick={submit}
               className="w-full bg-[#A67102] h-[48px] disabled:opacity-50"
             >
-              {submitting ? "Starting..." : "Start campaign"}
+              {submitting ? "Submitting..." : "Submit for review"}
             </Button>
           </DialogFooter>
         </DialogContent>

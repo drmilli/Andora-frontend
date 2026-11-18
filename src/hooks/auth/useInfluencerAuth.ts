@@ -1,7 +1,9 @@
 import { useState, useContext } from "react";
 import { influencerLogin, influencerSignup } from "../../services/influencer/auth/authService";
 import type { LoginInfluencerPayload, SignupInfluencerPayload } from "../../types/influencer/auth";
+import axios from "axios";
 import { AppContext } from "../../Context/AppContext";
+import { apiErrorMessage } from "../../lib/influencer";
 
 export const useInfluencerAuth = () => {
   const [loading, setLoading] = useState(false);
@@ -25,9 +27,9 @@ export const useInfluencerAuth = () => {
       setToken(data.token);
       setUser(data.user);
       return data;
-    } catch (err: any) {
+    } catch (err) {
       console.error("Login error:", err);
-      setError(err.response?.data?.message || "Login failed");
+      setError(apiErrorMessage(err, "Login failed"));
       throw err;
     } finally {
       setLoading(false);
@@ -44,14 +46,12 @@ export const useInfluencerAuth = () => {
       setToken(data.token);
       setUser(data.user);
       return data;
-    } catch (err: any) {
-      console.error("Register error status:", err.response?.status);
-      console.error("Register error response body:", err.response?.data);
+    } catch (err) {
+      const data = axios.isAxiosError(err) ? err.response?.data : undefined;
+      console.error("Register error status:", axios.isAxiosError(err) ? err.response?.status : undefined);
+      console.error("Register error response body:", data);
       const serverMessage =
-        err.response?.data?.message ||
-        err.response?.data?.error ||
-        (typeof err.response?.data === "string" ? err.response?.data : null) ||
-        "Register failed";
+        (typeof data === "string" && data) || apiErrorMessage(err, "Register failed");
       setError(serverMessage);
       throw err;
     } finally {

@@ -124,7 +124,7 @@ console.log(platformsData)
               {[{ id: "details", label: "Details" }, { id: "tracks", label: "Tracks" }, { id: "schedule", label: "Schedule" }, { id: "platforms", label: "Platforms" }, { id: "review", label: "Review" }].map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setUploadStep(tab.id as any)}
+                  onClick={() => setUploadStep(tab.id as typeof uploadStep)}
                   className={`pb-3 text-sm font-medium transition-colors w-[80px] h-[80px] md:w-[50px] md:h-[50px] lg:w-[250px] lg:h-[52px] ${uploadStep === tab.id ? "text-white border-b-2 border-[#A67102]" : "text-gray-400"}`}
                 >
                   {tab.label}

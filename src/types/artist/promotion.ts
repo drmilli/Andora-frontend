@@ -4,10 +4,8 @@ export interface InfluencerListItem {
   firstname: string;
   surname: string;
   username: string;
-  email: string;
   role: string;
   bio: string | null;
-  phone: string | null;
   followerCount: number | null;
   rate: number | null;
   profilePicture: string | null;

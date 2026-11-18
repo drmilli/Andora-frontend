@@ -1,4 +1,4 @@
-import React, { useState,  useEffect } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ChevronLeft,
@@ -44,8 +44,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { initialTracks, getTrackById } from "@/data/mockTracks";
 import type { TrackDetail } from "@/types/artist/song";
+import { getMediaById, recordPlay, updateMedia } from "@/services/media";
+import { fetchCampaigns } from "@/services/artist/campaigns";
+import { trackFromMedia } from "@/lib/trackFromMedia";
+import { apiErrorMessage } from "@/lib/influencer";
+import { AppContext } from "@/Context/AppContext";
 
 const statusStyles: Record<TrackDetail["status"], string> = {
   Active: "bg-[#A67102]/20 text-[#A67102] border-[#A67102]/30",
@@ -53,11 +57,10 @@ const statusStyles: Record<TrackDetail["status"], string> = {
   "Not Active": "bg-gray-800/60 text-gray-400 border-gray-700/40",
 };
 
-export const SongDetails: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+const SongDetailsView: React.FC<{ initialTrack: TrackDetail }> = ({ initialTrack }) => {
   const navigate = useNavigate();
 
-  const [track, setTrack] = useState<TrackDetail | null>(null);
+  const [track, setTrack] = useState<TrackDetail | null>(initialTrack);
   const [activeTab, setActiveTab] = useState<
     "overview" | "analytics" | "campaigns" | "airplay" | "lyrics"
   >("overview");
@@ -65,10 +68,14 @@ export const SongDetails: React.FC = () => {
   // Audio Player State
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(204); // Default 3:24 in seconds
+  const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.8);
   const [isMuted, setIsMuted] = useState(false);
-console.log(setDuration)
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const countedPlay = useRef(false);
+  const [playerError, setPlayerError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   // Modal States
   const [isCampaignModalOpen, setIsCampaignModalOpen] = useState(false);
@@ -77,52 +84,19 @@ console.log(setDuration)
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedLyrics, setCopiedLyrics] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState<string>("medium");
-  const [campaignSuccess, setCampaignSuccess] = useState(false);
 
   // Edit form state
+  // Only what the backend stores for a track
   const [editFormData, setEditFormData] = useState({
-    name: "",
-    genre: "",
-    secondaryGenre: "",
-    bpm: 0,
-    musicalKey: "",
-    album: "",
-    label: "",
-    description: "",
+    name: initialTrack.name,
+    genre: initialTrack.genre === "—" ? "" : initialTrack.genre,
+    description: initialTrack.description,
   });
 
+  // Keep the real audio element's volume in step with the controls
   useEffect(() => {
-    if (id) {
-      const found = getTrackById(id) || initialTracks[0];
-      setTrack(found);
-      setEditFormData({
-        name: found.name,
-        genre: found.genre,
-        secondaryGenre: found.secondaryGenre || "",
-        bpm: found.bpm,
-        musicalKey: found.musicalKey,
-        album: found.album,
-        label: found.label,
-        description: found.description,
-      });
-    }
-  }, [id]);
-
-  useEffect(() => {
-    let interval: any;
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setCurrentTime((prev) => {
-          if (prev >= duration) {
-            setIsPlaying(false);
-            return 0;
-          }
-          return prev + 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying, duration]);
+    if (audioRef.current) audioRef.current.volume = isMuted ? 0 : volume;
+  }, [volume, isMuted]);
 
   if (!track) {
     return (
@@ -138,12 +112,31 @@ console.log(setDuration)
     );
   }
 
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
+  const togglePlay = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (isPlaying) {
+      audio.pause();
+      return;
+    }
+    try {
+      setPlayerError(null);
+      await audio.play();
+      // Count one play per visit toward the track's statistics
+      if (!countedPlay.current) {
+        countedPlay.current = true;
+        recordPlay(track.id)
+          .then((r) => setTrack((t) => (t ? { ...t, streams: r.plays } : t)))
+          .catch(() => {});
+      }
+    } catch {
+      setPlayerError("This file can't be played in the browser. Use the download button instead.");
+    }
   };
 
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = Number(e.target.value);
+    if (audioRef.current) audioRef.current.currentTime = newTime;
     setCurrentTime(newTime);
   };
 
@@ -167,30 +160,37 @@ console.log(setDuration)
     }
   };
 
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (track) {
+    try {
+      setSaving(true);
+      setSaveError(null);
+      const updated = await updateMedia(track.id, {
+        title: editFormData.name.trim(),
+        genre: editFormData.genre.trim(),
+        description: editFormData.description.trim(),
+      });
       setTrack({
         ...track,
-        name: editFormData.name,
-        genre: editFormData.genre,
-        secondaryGenre: editFormData.secondaryGenre,
-        bpm: editFormData.bpm,
-        musicalKey: editFormData.musicalKey,
-        album: editFormData.album,
-        label: editFormData.label,
-        description: editFormData.description,
+        name: updated.title || "Untitled",
+        genre: updated.genre || "—",
+        description: updated.description || "",
       });
       setIsEditModalOpen(false);
+    } catch (err) {
+      setSaveError(apiErrorMessage(err, "Could not save your changes"));
+    } finally {
+      setSaving(false);
     }
   };
 
+  // Hand off to the Campaigns page, which collects the goal and brief, shows
+  // the cost and submits the campaign for strategist review
   const handleLaunchCampaign = () => {
-    setCampaignSuccess(true);
-    setTimeout(() => {
-      setCampaignSuccess(false);
-      setIsCampaignModalOpen(false);
-    }, 1800);
+    setIsCampaignModalOpen(false);
+    navigate("/dashboard/campaigns", {
+      state: { startCampaign: { tier: selectedPackage.toUpperCase(), mediaId: track.id } },
+    });
   };
 
   const packages = [
@@ -200,7 +200,7 @@ console.log(setDuration)
       price: "₦ 32,000.00",
       influencers: 2,
       duration: "14 days",
-      features: ["2 Influencer Video Creations", "Social Reposting", "Basic Analytics"],
+      features: ["2 influencers", "Strategist review before launch", "Progress tracking"],
     },
     {
       id: "medium",
@@ -209,7 +209,7 @@ console.log(setDuration)
       influencers: 4,
       duration: "30 days",
       popular: true,
-      features: ["4 Top Influencer Reals/TikToks", "Radio Playlist Submission", "Standard Analytics"],
+      features: ["4 influencers", "Strategist review before launch", "Progress tracking"],
     },
     {
       id: "pro",
@@ -217,7 +217,7 @@ console.log(setDuration)
       price: "₦ 100,000.00",
       influencers: 6,
       duration: "60 days",
-      features: ["6 Premium Creator Activations", "Radio Tour Syndication", "TV Sync Priority", "Dedicated Campaign Manager"],
+      features: ["6 influencers", "Strategist review before launch", "Progress tracking"],
     },
   ];
 
@@ -373,17 +373,33 @@ console.log(setDuration)
                           <span className="w-1 bg-[#A67102] h-1/2 animate-pulse delay-100" />
                         </div>
                       )}
-                      <span>{track.duration}</span>
+                      <span>{duration ? formatTime(duration) : track.duration}</span>
                     </div>
                   </div>
 
                   <input
                     type="range"
                     min="0"
-                    max={duration}
+                    max={duration || 0}
+                    step={0.1}
                     value={currentTime}
                     onChange={handleSeek}
+                    aria-label="Seek"
                     className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-[#A67102]"
+                  />
+                  {playerError && <p className="mt-1 text-xs text-red-400" role="alert">{playerError}</p>}
+                  <audio
+                    ref={audioRef}
+                    src={track.audioUrl}
+                    preload="metadata"
+                    onPlay={() => setIsPlaying(true)}
+                    onPause={() => setIsPlaying(false)}
+                    onEnded={() => { setIsPlaying(false); setCurrentTime(0); }}
+                    onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+                    onLoadedMetadata={(e) => {
+                      const d = e.currentTarget.duration;
+                      if (Number.isFinite(d)) setDuration(d);
+                    }}
                   />
                 </div>
 
@@ -436,9 +452,8 @@ console.log(setDuration)
           <p className="text-2xl sm:text-3xl font-bold text-white mb-1">
             {track.streams.toLocaleString()}
           </p>
-          <p className="text-xs text-emerald-400 flex items-center gap-1 font-medium">
-            <span>+18.4%</span>
-            <span className="text-gray-500 font-normal">vs last month</span>
+          <p className="text-xs text-gray-500 font-medium">
+            Plays on Audora
           </p>
         </div>
 
@@ -455,7 +470,10 @@ console.log(setDuration)
             {track.totalReach}
           </p>
           <p className="text-xs text-[#f5b640] flex items-center gap-1 font-medium">
-            <span>{track.campaigns} Active Campaigns</span>
+            <span>
+              {track.campaigns} active campaign{track.campaigns === 1 ? "" : "s"}
+              {track.influencerPosts > 0 && ` • ${track.influencerPosts} post${track.influencerPosts === 1 ? "" : "s"} done`}
+            </span>
           </p>
         </div>
 
@@ -488,8 +506,8 @@ console.log(setDuration)
           <p className="text-2xl sm:text-3xl font-bold text-white mb-1">
             {track.revenue}
           </p>
-          <p className="text-xs text-emerald-400 font-medium">
-            Verified payouts
+          <p className="text-xs text-gray-500 font-medium">
+            Royalty tracking isn't available yet
           </p>
         </div>
       </div>
@@ -505,7 +523,7 @@ console.log(setDuration)
         ].map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
+            onClick={() => setActiveTab(tab.id as typeof activeTab)}
             className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold whitespace-nowrap transition-all border-b-2 -mb-1 ${
               activeTab === tab.id
                 ? "border-[#A67102] text-[#A67102]"
@@ -963,20 +981,10 @@ console.log(setDuration)
             </DialogTitle>
           </DialogHeader>
 
-          {campaignSuccess ? (
-            <div className="py-8 text-center flex flex-col items-center">
-              <div className="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-3">
-                <CheckCircle2 size={32} />
-              </div>
-              <h4 className="text-lg font-bold text-white">Campaign Initiated!</h4>
-              <p className="text-xs text-gray-400 mt-1">
-                Audora is matching "{track.name}" with top influencers and stations now.
-              </p>
-            </div>
-          ) : (
+          {(
             <div className="space-y-4">
               <p className="text-xs text-gray-400">
-                Choose a push package to immediately activate viral creators and station rotations.
+                Pick a package. On the next step you'll add a goal and brief, then submit it for strategist review. Influencers are assigned once it's approved.
               </p>
 
               <div className="space-y-3">
@@ -1031,7 +1039,7 @@ console.log(setDuration)
                   onClick={handleLaunchCampaign}
                   className="flex-1 bg-[#A67102] hover:bg-[#8a5e02] text-white font-semibold py-2.5 rounded-xl text-xs transition-colors"
                 >
-                  Proceed with Campaign
+                  Continue
                 </button>
               </div>
             </div>
@@ -1061,7 +1069,7 @@ console.log(setDuration)
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3">
               <div>
                 <label className="text-xs text-gray-400 block mb-1">Genre</label>
                 <input
@@ -1071,46 +1079,6 @@ console.log(setDuration)
                   className="w-full bg-[#1A1A1A] border border-gray-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-[#A67102]"
                 />
               </div>
-              <div>
-                <label className="text-xs text-gray-400 block mb-1">Secondary Genre</label>
-                <input
-                  type="text"
-                  value={editFormData.secondaryGenre}
-                  onChange={(e) => setEditFormData({ ...editFormData, secondaryGenre: e.target.value })}
-                  className="w-full bg-[#1A1A1A] border border-gray-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-[#A67102]"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs text-gray-400 block mb-1">BPM (Tempo)</label>
-                <input
-                  type="number"
-                  value={editFormData.bpm}
-                  onChange={(e) => setEditFormData({ ...editFormData, bpm: Number(e.target.value) })}
-                  className="w-full bg-[#1A1A1A] border border-gray-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-[#A67102]"
-                />
-              </div>
-              <div>
-                <label className="text-xs text-gray-400 block mb-1">Musical Key</label>
-                <input
-                  type="text"
-                  value={editFormData.musicalKey}
-                  onChange={(e) => setEditFormData({ ...editFormData, musicalKey: e.target.value })}
-                  className="w-full bg-[#1A1A1A] border border-gray-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-[#A67102]"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-xs text-gray-400 block mb-1">Album / Release Collection</label>
-              <input
-                type="text"
-                value={editFormData.album}
-                onChange={(e) => setEditFormData({ ...editFormData, album: e.target.value })}
-                className="w-full bg-[#1A1A1A] border border-gray-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-[#A67102]"
-              />
             </div>
 
             <div>
@@ -1123,6 +1091,8 @@ console.log(setDuration)
               />
             </div>
 
+            {saveError && <p className="text-xs text-red-400" role="alert">{saveError}</p>}
+
             <div className="pt-2 flex gap-3">
               <button
                 type="button"
@@ -1133,9 +1103,10 @@ console.log(setDuration)
               </button>
               <button
                 type="submit"
-                className="flex-1 bg-[#A67102] hover:bg-[#8a5e02] text-white font-semibold py-2.5 rounded-xl text-xs transition-colors"
+                disabled={saving}
+                className="flex-1 bg-[#A67102] hover:bg-[#8a5e02] text-white font-semibold py-2.5 rounded-xl text-xs transition-colors disabled:opacity-50"
               >
-                Save Changes
+                {saving ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </form>
@@ -1206,6 +1177,51 @@ console.log(setDuration)
       </Dialog>
     </div>
   );
+};
+
+// Loads the real track and its campaigns, then renders the page. Keyed by the
+// URL id so moving between songs starts from fresh state.
+export const SongDetails: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
+  return id ? <SongDetailsLoader key={id} id={id} /> : null;
+};
+
+const SongDetailsLoader: React.FC<{ id: string }> = ({ id }) => {
+  const navigate = useNavigate();
+  const user = useContext(AppContext)?.user;
+  const [track, setTrack] = useState<TrackDetail | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([getMediaById(id), fetchCampaigns(1, 100)])
+      .then(([media, campaigns]) => {
+        if (cancelled) return;
+        const artistName =
+          [user?.firstname, user?.surname].filter(Boolean).join(" ") || user?.username || "You";
+        setTrack(trackFromMedia(media, campaigns.data, artistName));
+      })
+      .catch((err) => !cancelled && setError(apiErrorMessage(err, "Song not found")));
+    return () => {
+      cancelled = true;
+    };
+  }, [id, user?.firstname, user?.surname, user?.username]);
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+        <p className="text-gray-400 text-sm">{error}</p>
+        <button
+          onClick={() => navigate("/dashboard/my-songs")}
+          className="text-[#A67102] text-sm underline hover:text-[#d49102]"
+        >
+          Back to My Songs
+        </button>
+      </div>
+    );
+  }
+  if (!track) return <p className="p-6 text-sm text-gray-400">Loading...</p>;
+  return <SongDetailsView initialTrack={track} />;
 };
 
 export default SongDetails;

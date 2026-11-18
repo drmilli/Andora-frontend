@@ -1,20 +1,18 @@
 import { Instagram, Twitter, Music2, Globe } from "lucide-react";
 import * as React from "react";
-import { useContext,useEffect,useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AppContext } from "@/Context/AppContext";
 import EditProfileDialog from "@/components/profile/EditProfileDialog";
 import { fetchSentPromotionRequests } from "@/services/artist/promotions";
 import type { GetInfluencerRequest } from "@/types/influencer/requests";
-import { getDashboardStats, type DashboardStats } from "@/services/dashboard";
+import { useDashboardStats } from "@/hooks/artist/useDashboardStats";
 
 
 export const ProfilePage: React.FC = () => {
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [loadingStats, setLoadingStats] = useState<boolean>(true);
+  const { stats } = useDashboardStats();
   const context = useContext(AppContext);
   const user = context?.user;
   const [completedCampaigns, setCompletedCampaigns] = useState<GetInfluencerRequest[]>([]);
-  console.log(loadingStats)
   useEffect(() => {
     fetchSentPromotionRequests(1, 8, "COMPLETED")
       .then((res) => setCompletedCampaigns(res.data))
@@ -28,22 +26,12 @@ export const ProfilePage: React.FC = () => {
     ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
     : "Artist";
   const profilePic = user?.profilePicture
-    ? `${user.profilePicture}?t=${user.updatedAt || Date.now()}`
+    ? // updatedAt changes when the photo does, so it busts the image cache
+      user.updatedAt
+      ? `${user.profilePicture}?t=${encodeURIComponent(user.updatedAt)}`
+      : user.profilePicture
     : "https://i.pravatar.cc/150?img=12";
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const data = await getDashboardStats();
-        setStats(data);
-      } catch {
-      
-      } finally {
-        setLoadingStats(false);
-      }
-    };
-    fetchStats();
-  }, []);
 
   return (
     <div className="w-full pb-28 md:pb-0">

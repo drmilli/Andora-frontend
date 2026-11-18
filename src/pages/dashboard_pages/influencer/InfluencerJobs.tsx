@@ -132,7 +132,7 @@ function InfluencerJobs() {
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 1500);
     } catch {
-
+      // Clipboard can be blocked (permissions, insecure context); the email is still visible
     }
   };
 
@@ -215,8 +215,12 @@ function InfluencerJobs() {
 
                               <Dialog>
                                 <DialogTrigger asChild>
-                                  <Button className="bg-[#497718] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px] text-xs sm:text-base">
-                                    <MessageSquareReply /> Review
+                                  <Button
+                                    disabled={job.progress === 100}
+                                    title={job.progress === 100 ? "Waiting for the artist to confirm" : undefined}
+                                    className="bg-[#497718] w-full md:w-[150px] lg:w-[200px] h-[48px] md:h-[50px] lg:h-[52px] text-xs sm:text-base disabled:opacity-60"
+                                  >
+                                    <MessageSquareReply /> {job.progress === 100 ? "Awaiting confirmation" : "Review"}
                                   </Button>
                                 </DialogTrigger>
 
@@ -232,6 +236,12 @@ function InfluencerJobs() {
                                       <span className="flex justify-center">
                                         Hey! your job is {progress}% Complete
                                       </span>
+                                      {progress === 100 && (
+                                        <span className="flex justify-center text-center text-xs text-gray-400">
+                                          The artist will be asked to confirm. Payment is released when they do,
+                                          or automatically after 7 days if they don&apos;t respond.
+                                        </span>
+                                      )}
                                     </div>
                                   </DialogDescription>
 
@@ -271,7 +281,7 @@ function InfluencerJobs() {
                                         {busy
                                           ? "Submitting..."
                                           : progress === 100
-                                          ? "Complete job & get paid"
+                                          ? "Submit as finished"
                                           : "Submit Review"}
                                       </Button>
                                     </div>

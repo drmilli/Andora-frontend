@@ -4,6 +4,7 @@ import { ChevronLeft, Loader2 } from "lucide-react";
 import { NotificationIcon } from "../../../assets/notification";
 import api from "../../../lib/axios";
 import type { Notification } from "../../../types/artist/notificationtypes";
+import { apiErrorMessage } from "@/lib/influencer";
 
 const NotificationDetails: React.FC = () => {
   const navigate = useNavigate();
@@ -21,8 +22,8 @@ const NotificationDetails: React.FC = () => {
         setNotification(res.data);
         // Mark as read
         await api.put(`/notifications/${id}/read`);
-      } catch (err: any) {
-        setError(err.response?.data?.message || "Failed to load notification");
+      } catch (err) {
+        setError(apiErrorMessage(err, "Failed to load notification"));
       } finally {
         setLoading(false);
       }

@@ -12,6 +12,7 @@ export interface DashboardStats {
   walletBalance: number;
   activeCampaigns: number;
   completedCampaigns: number;
+  campaignsInReview: number;
   postCount: number;
   transactionCount: number;
   monthlyUploads: MonthlyDataPoint[];

@@ -27,6 +27,11 @@ import AdminTvDetails from "./admin/AdminTvDetails";
 import AdminJob from "./admin/AdminJob";
 import AdminArtist from "./admin/AdminArtist";
 import AdminArtistDetails from "./admin/AdminArtistDetails";
+import AdminDisputes from "./admin/AdminDisputes";
+import AdminStrategists from "./admin/AdminStrategists";
+import MarketplacePage from "./marketplace/MarketplacePage";
+import CommunityPage from "./community/CommunityPage";
+import PersonProfilePage from "./community/PersonProfilePage";
 import { DashboardHome } from "./artist/DashboardHome";
 import { NotificationPage } from "./artist/NotificationPage";
 import NotificationDetails from "./artist/NotificationDetails";
@@ -137,6 +142,9 @@ export function RoleWallet() {
   return <BillingPage />;
 }
 
+// The route table sits next to the role switchers it renders; fast refresh
+// falls back to a full reload for this file, which is fine.
+// eslint-disable-next-line react-refresh/only-export-components
 export const DASHBOARD_ROUTES = [
 
   { path: "", element: <RoleDashboardHome /> },
@@ -154,6 +162,11 @@ export const DASHBOARD_ROUTES = [
   { path: "settings", element: <SettingsPage /> },
   { path: "my-songs", element: <MySongs /> },
   { path: "my-songs/:id", element: <SongDetails /> },
+
+  // Shared by every signed-in role
+  { path: "marketplace", element: <MarketplacePage /> },
+  { path: "community", element: <CommunityPage /> },
+  { path: "people/:id", element: <PersonProfilePage /> },
 
   // Campaign strategist
   { path: "strategist-dashboard", element: <RoleGuard allowedRoles={["campaign_strategist"]}><CampaignStrategistDashboard /></RoleGuard> },
@@ -193,6 +206,8 @@ export const DASHBOARD_ROUTES = [
   { path: "admin-tv", element: <RoleGuard allowedRoles={["admin"]}><AdminTv /></RoleGuard> },
   { path: "admin-tv/:id", element: <RoleGuard allowedRoles={["admin"]}><AdminTvDetails /></RoleGuard> },
   { path: "admin-job", element: <RoleGuard allowedRoles={["admin"]}><AdminJob /></RoleGuard> },
+  { path: "admin-disputes", element: <RoleGuard allowedRoles={["admin"]}><AdminDisputes /></RoleGuard> },
+  { path: "admin-strategists", element: <RoleGuard allowedRoles={["admin"]}><AdminStrategists /></RoleGuard> },
   { path: "admin/artist", element: <RoleGuard allowedRoles={["admin"]}><AdminArtist /></RoleGuard> },
   { path: "admin/artist/:id", element: <RoleGuard allowedRoles={["admin"]}><AdminArtistDetails /></RoleGuard> },
 ];

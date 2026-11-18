@@ -13,6 +13,8 @@ import {
   Lock,
   Scale,
   LogOut,
+  Store,
+  Users,
 } from "lucide-react";
 import audoraLogo from "../assets/audora-logo.svg";
 import { AppContext } from "@/Context/AppContext";
@@ -47,6 +49,8 @@ const artistNavItems: NavItem[] = [
 
       { to: "/dashboard/my-songs", label: "My Songs", icon: <Music size={20} />  },
     { to: "/dashboard/campaigns", label: "Campaigns", icon: <BarChart2 size={20} /> },
+  { to: "/dashboard/marketplace", label: "Marketplace", icon: <Store size={20} /> },
+  { to: "/dashboard/community", label: "Community", icon: <Users size={20} /> },
   { to: "/dashboard/billings", label: "Billing", icon: <Wallet size={20} /> },
   { to: "/dashboard/profile", label: "Profile", icon: <User size={20} /> },
 ];
@@ -68,6 +72,8 @@ const influencerNavItems: NavItem[] = [
     label: "Wallet",
     icon: <Wallet size={20} />,
   },
+  { to: "/dashboard/marketplace", label: "Marketplace", icon: <Store size={20} /> },
+  { to: "/dashboard/community", label: "Community", icon: <Users size={20} /> },
   {
     to: "/dashboard/influencer-profile",
     label: "Profile",
@@ -154,6 +160,16 @@ const adminNavItems: NavItem[] = [
     to: "/dashboard/admin-job",
     label: "Jobs",
     icon: <Briefcase size={20} />,
+  },
+  {
+    to: "/dashboard/admin-disputes",
+    label: "Disputes",
+    icon: <Scale size={20} />,
+  },
+  {
+    to: "/dashboard/admin-strategists",
+    label: "Strategists",
+    icon: <Users size={20} />,
   },
   {
     to: "/dashboard/admin-profile",

@@ -1,6 +1,9 @@
-import { ChevronLeft, Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { ChevronLeft, Music, Pause, Play, Volume2, VolumeX } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
-import { defaultStatusStyles } from "./SongSubmissionsTable";
+import { defaultStatusStyles } from "./statusStyles";
+import type { DeclinePayload, StrategistSubmission } from "@/types/strategist";
+import { formatNaira } from "@/lib/influencer";
+import { displayName } from "@/components/community/displayName";
 
 
 import {
@@ -10,32 +13,13 @@ import {
   DialogContent,
 } from "@/components/ui/dialog";
 
-import {
-  type SongSubmission,
-  DEFAULT_SUBMISSION_AUDIO,
-  DEFAULT_SUBMISSION_COVER,
-} from "@/pages/dashboard_pages/strategist/mockData";
-
-
-const reasonCategories = [
-  { id: 1, name: "Curse words" },
-  { id: 2, name: "Explicit sexual content" },
-  { id: 3, name: "Hate speech or discrimination" },
-  { id: 4, name: "Violence or graphic content" },
-  { id: 5, name: "Copyright or uncleared sample" },
-  { id: 6, name: "Low audio quality" },
-  { id: 7, name: "Incomplete submission" },
-  { id: 8, name: "Off-brand for campaign" },
-  { id: 9, name: "Misleading track or artist info" },
-  { id: 10, name: "Duplicate or spam submission" },
-  { id: 11, name: "Other" },
-];
-
 type Props = {
-  submission: SongSubmission;
+  submission: StrategistSubmission;
+  /** Decline categories from the API, so the form and the server agree */
+  categories: string[];
   onBack: () => void;
-  onDecline: (id: string) => void;
-  onApprove: (id: string) => void;
+  onDecline: (id: string, payload: DeclinePayload) => Promise<void>;
+  onApprove: (id: string) => Promise<void>;
 };
 
 function formatTime(seconds: number) {
@@ -45,14 +29,9 @@ function formatTime(seconds: number) {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 }
 
-function formatSubmittedDate(value: string) {
-  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!match) return value;
-  return `${match[3]}-${match[2]}-${match[1]}`;
-}
-
 export const SongSubmissionReview: React.FC<Props> = ({
   submission,
+  categories,
   onBack,
   onDecline,
   onApprove,
@@ -66,16 +45,12 @@ export const SongSubmissionReview: React.FC<Props> = ({
   const isPending = submission.status === "Pending";
   const [open, setOpen] = useState(false);
   const [reasonTitle, setReasonTitle] = useState("");
-  const [reasonCategory, setReasonCategory] = useState(reasonCategories[0].name);
+  const [reasonCategory, setReasonCategory] = useState(categories[0] ?? "");
   const [reasonDescription, setReasonDescription] = useState("");
-
-  useEffect(() => {
-    setIsPlaying(false);
-    setCurrentTime(0);
-    setDuration(0);
-    audioRef.current?.pause();
-    if (audioRef.current) audioRef.current.currentTime = 0;
-  }, [submission.id]);
+  const [busy, setBusy] = useState<"approve" | "decline" | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [declineError, setDeclineError] = useState<string | null>(null);
+  const audioUrl = submission.track?.fileUrl;
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -92,7 +67,11 @@ export const SongSubmissionReview: React.FC<Props> = ({
       return;
     }
 
-    await audio.play();
+    try {
+      await audio.play();
+    } catch {
+      setActionError("This track can't be played in the browser. Open it directly to listen.");
+    }
   };
 
   const handleSeek = (value: number) => {
@@ -118,8 +97,9 @@ export const SongSubmissionReview: React.FC<Props> = ({
 
   const resetDeclineForm = () => {
     setReasonTitle("");
-    setReasonCategory(reasonCategories[0].name);
+    setReasonCategory(categories[0] ?? "");
     setReasonDescription("");
+    setDeclineError(null);
   };
 
   const handleDeclineModalChange = (nextOpen: boolean) => {
@@ -127,10 +107,42 @@ export const SongSubmissionReview: React.FC<Props> = ({
     if (!nextOpen) resetDeclineForm();
   };
 
-  const handleDeclineSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const errorText = (err: unknown, fallback: string) =>
+    (err as { response?: { data?: { message?: string } } })?.response?.data?.message || fallback;
+
+  const handleDeclineSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onDecline(submission.id);
-    handleDeclineModalChange(false);
+    if (!reasonTitle.trim() || !reasonDescription.trim()) {
+      setDeclineError("Add a title and a description so the artist knows what to fix.");
+      return;
+    }
+    try {
+      setBusy("decline");
+      setDeclineError(null);
+      await onDecline(submission.id, {
+        title: reasonTitle.trim(),
+        category: reasonCategory,
+        reason: reasonDescription.trim(),
+      });
+      handleDeclineModalChange(false);
+    } catch (err) {
+      setDeclineError(errorText(err, "Could not decline this submission"));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const handleApprove = async () => {
+    if (!window.confirm(`Approve "${submission.track?.title || "this track"}"? Influencers will be assigned and the campaign goes live.`)) return;
+    try {
+      setBusy("approve");
+      setActionError(null);
+      await onApprove(submission.id);
+    } catch (err) {
+      setActionError(errorText(err, "Could not approve this submission"));
+    } finally {
+      setBusy(null);
+    }
   };
 
   return (
@@ -194,13 +206,13 @@ export const SongSubmissionReview: React.FC<Props> = ({
                         onChange={(event) => setReasonCategory(event.target.value)}
                         className="mt-2 w-full appearance-none rounded-lg border bg-[#3333334D] p-3 text-white focus:border-[#A67102] focus:outline-none"
                       >
-                        {reasonCategories.map((category) => (
+                        {categories.map((category) => (
                           <option
-                            key={category.id}
-                            value={category.name}
+                            key={category}
+                            value={category}
                             className="bg-[#1f1f1f] text-white"
                           >
-                            {category.name}
+                            {category}
                           </option>
                         ))}
                       </select>
@@ -220,12 +232,18 @@ export const SongSubmissionReview: React.FC<Props> = ({
                     </label>
                   </div>
 
+                  <p className="mt-3 text-xs text-gray-500">
+                    The artist sees this reason and is refunded {formatNaira(submission.budget)} in full.
+                  </p>
+                  {declineError && <p className="mt-2 text-sm text-red-400" role="alert">{declineError}</p>}
+
                   <div className="mt-3 flex items-center gap-2">
                     <button
                       type="submit"
-                      className="mt-5 w-full bg-[#A67102] hover:bg-[#8a5e02] transition-colors text-white px-5 py-2 rounded-lg text-sm font-medium"
+                      disabled={busy === "decline"}
+                      className="mt-5 w-full bg-[#A67102] hover:bg-[#8a5e02] transition-colors text-white px-5 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
                     >
-                      Submit
+                      {busy === "decline" ? "Declining..." : "Submit"}
                     </button>
 
                     <button
@@ -244,24 +262,29 @@ export const SongSubmissionReview: React.FC<Props> = ({
 
           <button
             type="button"
-            disabled={!isPending}
-            onClick={() => onApprove(submission.id)}
+            disabled={!isPending || busy !== null}
+            onClick={handleApprove}
             className="rounded-lg border border-[#A67102] px-4 py-1.5 text-sm text-[#A67102] hover:bg-[#A67102] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
           >
-            Approve & create campaign
+            {busy === "approve" ? "Approving..." : "Approve & create campaign"}
           </button>
         </div>
       </div>
 
-      <img
-        src={submission.cover || DEFAULT_SUBMISSION_COVER}
-        alt={submission.track}
-        className="mb-5 h-56 w-full rounded-2xl object-cover sm:h-72"
-      />
+      {actionError && <p className="mb-4 text-sm text-red-400" role="alert">{actionError}</p>}
+
+      <div className="mb-5 flex h-40 w-full items-center justify-center rounded-2xl bg-gradient-to-br from-[#A67102]/40 via-[#1a1207] to-black sm:h-56">
+        <Music size={56} className="text-[#f5b640]/70" aria-hidden="true" />
+      </div>
 
       <div className="mb-3 flex flex-wrap items-center gap-2">
+        {submission.genre && (
+          <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] font-medium text-gray-300">
+            {submission.genre}
+          </span>
+        )}
         <span className="rounded-full bg-white/10 px-3 py-1 text-[11px] font-medium text-gray-300">
-          {submission.genre}
+          {submission.packageName}
         </span>
         <span
           className={`rounded-full px-3 py-1 text-[11px] font-medium ${defaultStatusStyles[submission.status]}`}
@@ -270,24 +293,50 @@ export const SongSubmissionReview: React.FC<Props> = ({
         </span>
       </div>
 
-      <h2 className="text-2xl font-semibold text-white">{submission.track}</h2>
-      <p className="mt-1 text-sm text-gray-400">by {submission.artist}</p>
+      <h2 className="text-2xl font-semibold text-white">{submission.track?.title || "Untitled"}</h2>
+      <p className="mt-1 text-sm text-gray-400">by {displayName(submission.artist)} (@{submission.artist.username})</p>
 
       <div className="mt-6 grid grid-cols-1 gap-4 text-sm sm:grid-cols-3">
         <div>
           <p className="text-xs text-gray-500">Campaign goal</p>
-          <p className="mt-1 text-gray-200">{submission.goal}</p>
+          <p className="mt-1 text-gray-200">{submission.goal || "Not specified"}</p>
         </div>
         <div>
           <p className="text-xs text-gray-500">Budget</p>
-          <p className="mt-1 text-gray-200">{submission.budget}</p>
+          <p className="mt-1 text-gray-200">
+            {formatNaira(submission.budget)} &bull; {submission.influencerCount} influencers, {submission.durationDays} days
+          </p>
         </div>
         <div className="sm:text-right">
           <p className="text-xs text-gray-500">Submitted</p>
-          <p className="mt-1 text-gray-200">{formatSubmittedDate(submission.uploaded)}</p>
+          <p className="mt-1 text-gray-200">{new Date(submission.submittedAt).toLocaleDateString("en-GB")}</p>
         </div>
       </div>
 
+      <div className="mt-6 rounded-lg bg-[#15120C] p-4">
+        <p className="text-xs text-gray-500">Brief for influencers</p>
+        <p className="mt-1 whitespace-pre-wrap text-sm text-gray-200">{submission.brief}</p>
+      </div>
+
+      {submission.reviewedAt && (
+        <div className={`mt-4 rounded-lg border p-4 text-sm ${submission.decline ? "border-red-500/30" : "border-green-500/30"}`}>
+          <p className="text-gray-300">
+            {submission.decline ? "Declined" : "Approved"} by{" "}
+            {submission.reviewedBy ? displayName(submission.reviewedBy) : "a strategist"} on{" "}
+            {new Date(submission.reviewedAt).toLocaleDateString("en-GB")}
+            {!submission.decline && ` • ${submission.assigned} influencer${submission.assigned === 1 ? "" : "s"} assigned`}
+          </p>
+          {submission.decline && (
+            <p className="mt-2 text-gray-400">
+              <span className="text-white">{submission.decline.title}</span> ({submission.decline.category}):{" "}
+              {submission.decline.reason}
+            </p>
+          )}
+        </div>
+      )}
+
+      {!audioUrl && <p className="mt-8 text-sm text-gray-500">No audio attached to this submission.</p>}
+      {audioUrl && (
       <div className="mt-8 flex items-center gap-8 md:gap-16 rounded-lg border border-[#A67102]/60 px-3 py-2">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           <button
@@ -336,9 +385,17 @@ export const SongSubmissionReview: React.FC<Props> = ({
         </div>
       </div>
 
+      )}
+
+      {audioUrl && (
+        <a href={audioUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-xs text-[#A67102] hover:underline">
+          Open audio file
+        </a>
+      )}
+
       <audio
         ref={audioRef}
-        src={submission.audioUrl || DEFAULT_SUBMISSION_AUDIO}
+        src={audioUrl}
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onEnded={() => setIsPlaying(false)}

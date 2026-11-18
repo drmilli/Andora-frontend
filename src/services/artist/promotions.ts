@@ -61,3 +61,14 @@ export const disputeSentRequest = async (
   const res = await api.post(`/influencer/requests/${id}/dispute`, payload);
   return res.data;
 };
+
+/**
+ * Confirm the influencer finished the job. Releases the escrowed payment to them.
+ * Only valid once they have reported 100%.
+ */
+export const confirmSentRequest = async (
+  id: string
+): Promise<{ message: string; request: GetInfluencerRequest }> => {
+  const res = await api.post(`/influencer/requests/${id}/confirm`);
+  return res.data;
+};

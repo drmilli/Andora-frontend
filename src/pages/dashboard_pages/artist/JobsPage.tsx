@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  confirmSentRequest,
   disputeSentRequest,
   fetchSentPromotionRequests,
 } from "@/services/artist/promotions";
@@ -84,6 +85,25 @@ export const JobsPage: React.FC = () => {
   const pendingJobs = promotions.map(toJob);
   const completedJobs = pendingJobs;
 
+  const confirmingJob = pendingJobs.find((j) => j.id === confirmationModal.jobId);
+
+  const submitConfirm = async () => {
+    const id = confirmationModal.jobId;
+    if (!id) return;
+    try {
+      setActing(true);
+      setError(null);
+      await confirmSentRequest(String(id));
+      setConfirmationModal({ isOpen: false, jobId: null });
+      await load();
+    } catch (err) {
+      setConfirmationModal({ isOpen: false, jobId: null });
+      setError(apiErrorMessage(err, "Could not confirm this promotion"));
+    } finally {
+      setActing(false);
+    }
+  };
+
   const submitDispute = async () => {
     const id = disputeModal.jobId;
     if (!id || !disputeReason.trim()) {
@@ -111,6 +131,7 @@ export const JobsPage: React.FC = () => {
   const tabs = [
     { id: "pending", label: "Pending" },
     { id: "completed", label: "Completed" },
+    { id: "disputes", label: "Disputes" },
   ];
   return (
     <div className="min-h-screen bg-black text-white p-4">
@@ -122,7 +143,7 @@ export const JobsPage: React.FC = () => {
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveMainTab(tab.id as "pending" | "completed")}
+              onClick={() => setActiveMainTab(tab.id as "pending" | "completed" | "disputes")}
               className={`
           w-[120px] h-[120px]
         md:w-[50px] md:h-[50px]
@@ -222,13 +243,6 @@ export const JobsPage: React.FC = () => {
                       <div className="space-y-3">
                         {job.songs?.map((song, idx) => (
                           <div key={idx} className="flex items-center gap-3">
-                            <div className="bg-white rounded-lg p-2 flex-shrink-0">
-                              <div className="w-16 h-16 flex items-center justify-center">
-                                <div className="text-red-600 font-bold text-xs">
-                                  fm 92.5
-                                </div>
-                              </div>
-                            </div>
                             <div className="flex-1 bg-[#2a2a2a] rounded-lg p-3">
                               <p className="text-white text-sm font-medium mb-1">
                                 {song.title}
@@ -238,39 +252,40 @@ export const JobsPage: React.FC = () => {
                                 <span>{song.format}</span>
                               </div>
                             </div>
-                            <div className="flex flex-col items-center gap-2">
-                              <div className="bg-[#A67102] text-white text-xs font-bold px-3 py-1 rounded">
-                                {job.completion}%
-                              </div>
-                              {idx === 0 && (
-                                <button
-                                  onClick={() =>
-                                    setConfirmationModal({
-                                      isOpen: true,
-                                      jobId: job.id,
-                                    })
-                                  }
-                                  className="px-4 py-2 bg-[#A67102] text-white rounded-lg hover:bg-[#8a5e02] transition-colors text-sm font-medium"
-                                >
-                                  Accept
-                                </button>
-                              )}
-                              {idx === 1 && (
-                                <button
-                                  onClick={() =>
-                                    setDisputeModal({
-                                      isOpen: true,
-                                      jobId: job.id,
-                                    })
-                                  }
-                                  className="px-4 py-2 bg-transparent border border-gray-600 text-white rounded-lg hover:bg-[#2a2a2a] transition-colors text-sm font-medium"
-                                >
-                                  Dispute
-                                </button>
-                              )}
-                            </div>
                           </div>
                         ))}
+                        <div className="flex items-center justify-between gap-3 flex-wrap">
+                          <div className="flex items-center gap-2">
+                            <div className="bg-[#A67102] text-white text-xs font-bold px-3 py-1 rounded">
+                              {job.completion}%
+                            </div>
+                            <span className="text-xs text-gray-400">
+                              {job.status === "ACCEPTED" && job.completion === 100
+                                ? "Finished, waiting for your confirmation"
+                                : job.status === "ACCEPTED"
+                                ? "In progress"
+                                : "Waiting for influencer to respond"}
+                            </span>
+                          </div>
+                          <div className="flex gap-2">
+                            {job.status === "ACCEPTED" && job.completion === 100 && (
+                              <button
+                                onClick={() => setConfirmationModal({ isOpen: true, jobId: job.id })}
+                                className="px-4 py-2 bg-[#A67102] text-white rounded-lg hover:bg-[#8a5e02] transition-colors text-sm font-medium"
+                              >
+                                Confirm &amp; pay
+                              </button>
+                            )}
+                            {job.status === "ACCEPTED" && (
+                              <button
+                                onClick={() => setDisputeModal({ isOpen: true, jobId: job.id })}
+                                className="px-4 py-2 bg-transparent border border-gray-600 text-white rounded-lg hover:bg-[#2a2a2a] transition-colors text-sm font-medium"
+                              >
+                                Dispute
+                              </button>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -332,6 +347,9 @@ export const JobsPage: React.FC = () => {
                       {job.platform} &bull; {formatNaira(job.amount)}
                     </p>
                     <p className="text-gray-400 text-sm mt-2">{job.description}</p>
+                    <p className="text-[#A67102] text-xs mt-3">
+                      Under review by Audora. The payment is held until the dispute is resolved.
+                    </p>
                   </div>
                 ))}
               </div>
@@ -367,12 +385,18 @@ export const JobsPage: React.FC = () => {
                 Confirmation
               </h2>
               <p className="text-gray-300 text-center mb-8">
-                Are you sure you want to accept that [influencer] has completed
-                50% of the project?
+                Confirm that {confirmingJob?.influencer.name ?? "the influencer"} has
+                finished this promotion? {confirmingJob ? formatNaira(confirmingJob.amount) : "The payment"} will
+                be released to them. This can't be undone. If something is wrong,
+                raise a dispute instead.
               </p>
               <div className="flex gap-4">
-                <button className="flex-1 px-6 py-3 bg-[#A67102] text-white rounded-lg hover:bg-[#8a5e02] transition-colors font-medium">
-                  Accept Request
+                <button
+                  onClick={submitConfirm}
+                  disabled={acting}
+                  className="flex-1 px-6 py-3 bg-[#A67102] text-white rounded-lg hover:bg-[#8a5e02] transition-colors font-medium disabled:opacity-50"
+                >
+                  {acting ? "Releasing..." : "Confirm & pay"}
                 </button>
                 <button
                   onClick={() =>
@@ -380,7 +404,7 @@ export const JobsPage: React.FC = () => {
                   }
                   className="flex-1 px-6 py-3 bg-transparent border border-gray-600 text-white rounded-lg hover:bg-[#2a2a2a] transition-colors font-medium"
                 >
-                  Decline Request
+                  Cancel
                 </button>
               </div>
             </div>

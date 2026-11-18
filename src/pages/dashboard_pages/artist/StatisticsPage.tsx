@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   LineChart,
   Line,
@@ -10,9 +10,7 @@ import {
 } from "recharts";
 import { Music, User, Download, ThumbsUp } from "lucide-react";
 
-import type { ArtistStatistics } from "@/types/artist/statistics";
-import { fetchArtistStatistics } from "@/services/artist/statistics";
-import { apiErrorMessage } from "@/lib/influencer";
+import { useStatistics } from "@/hooks/artist/useStatistics";
 
 export const StatisticsPage: React.FC = () => {
   const [selectedLocation, setSelectedLocation] = React.useState<{
@@ -23,37 +21,7 @@ export const StatisticsPage: React.FC = () => {
     downloads: number;
   } | null>(null);
 
-  const [stats, setStats] = useState<ArtistStatistics | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        setStats(await fetchArtistStatistics(12));
-      } catch (err) {
-        setError(apiErrorMessage(err, "Could not load your statistics"));
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, []);
-
-  // Real per-track counters, highest streams first
-  const topSongs = (stats?.tracks ?? []).slice(0, 5).map((t) => ({
-    title: t.title ?? "Untitled",
-    streams: t.streams,
-    likes: t.likes,
-    downloads: t.downloads,
-  }));
-
-  const streamData = (stats?.monthly ?? []).map((m) => ({
-    month: m.month,
-    value: m.plays,
-  }));
+  const { loading, error, topSongs, streamData } = useStatistics(12);
 
   // Audience geography and per-DSP figures need listener-location tracking and
   // Spotify/Apple integrations, neither of which exists yet. Showing empty
