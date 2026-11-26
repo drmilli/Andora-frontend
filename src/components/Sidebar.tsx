@@ -275,7 +275,7 @@ export const Sidebar: React.FC<{
             <div className="px-2">
               <p className="text-white font-medium mb-4">Settings</p>
               <div className="flex items-center justify-start gap-6 text-gray-500 pb-4">
-                <button
+                {/* <button
                   type="button"
                   aria-label="Lock"
                   className="hover:text-white focus:outline-none"
@@ -288,7 +288,7 @@ export const Sidebar: React.FC<{
                   className="hover:text-white focus:outline-none"
                 >
                   <Scale size={18} />
-                </button>
+                </button> */}
                 <NavLink
                   to={role === "influencer" ? "/dashboard/influencer-profile" : "/dashboard/profile"}
                   aria-label="User"

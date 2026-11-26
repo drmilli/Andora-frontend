@@ -326,7 +326,7 @@ export const Campaign: React.FC = () => {
             </p>
           </DialogHeader>
 
-          <div className="space-y-4 mt-2">
+          <form className="space-y-4 mt-2 w-75 sm:w-full">
             <div className="flex flex-col">
               <label htmlFor="campaign-tier" className="text-sm mb-1">
                 Package
@@ -430,7 +430,7 @@ export const Campaign: React.FC = () => {
                 {error}
               </p>
             )}
-          </div>
+          </form>
 
           <DialogFooter>
             <Button
