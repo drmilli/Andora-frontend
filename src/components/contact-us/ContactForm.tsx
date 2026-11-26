@@ -44,7 +44,7 @@ const ContactForm = () => {
               </span>
               <div>
                 <p className="text-sm font-semibold text-white/80">Email</p>
-                <p className="text-sm text-[#f5b640]">audorasounds@gmail.com</p>
+                <p className="text-sm text-[#f5b640]">hello@audorasounds.com</p>
               </div>
             </div>
 
@@ -65,7 +65,7 @@ const ContactForm = () => {
                   Phone number
                 </p>
                 <p className="text-sm text-[#f5b640]">
-                 +(234) 708 - 707 - 7113 
+                 +(234)-9061156581
                 </p>
               </div>
             </div>

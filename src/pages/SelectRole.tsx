@@ -107,15 +107,10 @@ export const SelectRole: React.FC = () => {
       <div className="mt-8 space-y-2 text-center text-sm">
         <p className="text-white/60">
           Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-[#f5b640] underline-offset-4 transition hover:underline"
-          >
-            Log in as an artist
-          </Link>
+
         </p>
         <p className="text-white/40 text-xs">
-          Influencer?{" "}
+       
           <Link
             to="/influencer-login"
             className="text-[#f5b640] underline-offset-4 transition hover:underline"

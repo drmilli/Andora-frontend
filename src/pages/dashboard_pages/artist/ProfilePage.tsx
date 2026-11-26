@@ -30,7 +30,7 @@ export const ProfilePage: React.FC = () => {
       user.updatedAt
       ? `${user.profilePicture}?t=${encodeURIComponent(user.updatedAt)}`
       : user.profilePicture
-    : "https://i.pravatar.cc/150?img=12";
+    : "https://img.icons8.com/?size=100&id=7819&format=png&color=000000";
 
 
   return (

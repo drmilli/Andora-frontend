@@ -51,9 +51,9 @@ const faqCategories: FaqCategory[] = [
           "Head to your profile settings, update the email field, and confirm the change through the verification link we will send to your new inbox.",
       },
       {
-        question: "Is there a discount for yearly plans?",
+        question: "What kind of songs do Audora promote?",
         answer:
-          "Yes! Switching to an annual subscription instantly saves you 20% compared to paying monthly. You can upgrade inside the billing preferences tab.",
+   " We do not promote explicit content, hate speech, or songs with misleading information. Our platform is dedicated to supporting uplifting and positive music across all g prefces tab.",
       },
       {
         question: "What is your refund policy?",

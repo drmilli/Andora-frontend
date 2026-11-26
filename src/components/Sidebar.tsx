@@ -49,8 +49,8 @@ const artistNavItems: NavItem[] = [
 
       { to: "/dashboard/my-songs", label: "My Songs", icon: <Music size={20} />  },
     { to: "/dashboard/campaigns", label: "Campaigns", icon: <BarChart2 size={20} /> },
-  { to: "/dashboard/marketplace", label: "Marketplace", icon: <Store size={20} /> },
-  { to: "/dashboard/community", label: "Community", icon: <Users size={20} /> },
+  // { to: "/dashboard/marketplace", label: "Marketplace", icon: <Store size={20} /> },
+  // { to: "/dashboard/community", label: "Community", icon: <Users size={20} /> },
   { to: "/dashboard/billings", label: "Billing", icon: <Wallet size={20} /> },
   { to: "/dashboard/profile", label: "Profile", icon: <User size={20} /> },
 ];
